@@ -32,12 +32,15 @@ public class GroupChat {
     @Column(name = "groupChatName", columnDefinition = "TEXT", nullable = false)
     private String groupChatName;
 
+    @Column(name = "fileName", columnDefinition = "TEXT", nullable = false)
+    private String fileName;
+
     public GroupChat() {}
 
-    public GroupChat(Long id, User user, String groupChatName) {
-        this.id = id;
+    public GroupChat(User user, String groupChatName, String fileName) {
         this.user = user;
         this.groupChatName = groupChatName;
+        this.fileName = fileName;
     }
 
     public Long getId() { return id; }

@@ -13,6 +13,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.time.LocalDateTime;
+
 @SpringBootApplication
 public class BackendApplication {
 
@@ -30,11 +32,11 @@ public class BackendApplication {
 			MessageRepository messageRepository) {
 		return args -> {
 			User user = new User(1L, "test", "password");
-			GroupChat groupChat = new GroupChat(1L, user, "testChat");
-			Participant participant = new Participant(1L, groupChat, "Nathan");
-			Message message1 = new Message(1L, participant, groupChat, "Message 1");
-			Message message2 = new Message(2L, participant, groupChat, "Message 2");
-			Message message3 = new Message(3L, participant, groupChat, "Message 3");
+			GroupChat groupChat = new GroupChat(user, "testChat", "test.txt");
+			Participant participant = new Participant(groupChat, "Nathan");
+			Message message1 = new Message(participant, groupChat, "Message 1", LocalDateTime.now());
+			Message message2 = new Message(participant, groupChat, "Message 2", LocalDateTime.now());
+			Message message3 = new Message(participant, groupChat, "Message 3", LocalDateTime.now());
 			if (userRepository.count() == 0) {
 				userRepository.save(user);
 			}

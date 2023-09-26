@@ -2,6 +2,8 @@ package com.backend.WhoSaidIt.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity
@@ -27,13 +29,16 @@ public class Message {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Column(name = "timestamp", columnDefinition = "TIMESTAMP WITHOUT TIME ZONE", nullable = false)
+    private LocalDateTime timestamp;
+
     public Message() {}
 
-    public Message(Long id, Participant participant, GroupChat groupChat, String content) {
-        this.id = id;
+    public Message(Participant participant, GroupChat groupChat, String content, LocalDateTime timestamp) {
         this.participant = participant;
         this.groupChat = groupChat;
         this.content = content;
+        this.timestamp = timestamp;
     }
 
     public Long getId() { return id; }

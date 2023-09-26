@@ -31,8 +31,7 @@ public class Participant {
 
     public Participant() {}
 
-    public Participant(Long id, GroupChat groupChat, String name) {
-        this.id = id;
+    public Participant(GroupChat groupChat, String name) {
         this.groupChat = groupChat;
         this.name = name;
     }
