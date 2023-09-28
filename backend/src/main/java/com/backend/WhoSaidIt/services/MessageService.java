@@ -33,7 +33,9 @@ public class MessageService {
     }
 
     public Message get(long id) {
-        return messageRepository.findById(id).orElse(null);
+        return messageRepository.findById(id).orElseThrow(
+                () -> new DataNotFoundException("Message with id " + id + " not found.")
+        );
     }
 
     public void remove(long id) {

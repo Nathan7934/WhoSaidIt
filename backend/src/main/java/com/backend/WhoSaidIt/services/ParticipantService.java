@@ -2,6 +2,7 @@ package com.backend.WhoSaidIt.services;
 
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.Participant;
+import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.ParticipantRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,9 @@ public class ParticipantService {
     }
 
     public Participant get(Long id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElseThrow(
+                () -> new DataNotFoundException("Participant with id " + id + " not found.")
+        );
     }
 
     public void remove(Long id) {
