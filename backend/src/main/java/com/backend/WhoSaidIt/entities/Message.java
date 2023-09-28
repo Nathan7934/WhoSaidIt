@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -20,10 +21,12 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "participantId", referencedColumnName = "participantId", nullable = false)
+    @JsonManagedReference
     private Participant participant;
 
     @ManyToOne
     @JoinColumn(name = "groupChatId", referencedColumnName = "groupChatId", nullable = false)
+    @JsonManagedReference
     private GroupChat groupChat;
 
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)

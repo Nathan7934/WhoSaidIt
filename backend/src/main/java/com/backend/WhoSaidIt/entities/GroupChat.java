@@ -1,5 +1,8 @@
 package com.backend.WhoSaidIt.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -21,13 +24,16 @@ public class GroupChat {
 
     @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
+    @JsonManagedReference
     private User user;
 
     @OneToMany(mappedBy = "groupChat")
-    private List<Participant> participants = new ArrayList<Participant>();
+    @JsonBackReference
+    private List<Participant> participants = new ArrayList<>();
 
     @OneToMany(mappedBy = "groupChat")
-    private List<Message> messages = new ArrayList<Message>();
+    @JsonBackReference
+    private List<Message> messages = new ArrayList<>();
 
     @Column(name = "groupChatName", columnDefinition = "TEXT", nullable = false)
     private String groupChatName;

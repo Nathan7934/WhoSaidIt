@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class User {
 	private String password;
 
 	@OneToMany(mappedBy = "user")
+	@JsonBackReference
 	private List<GroupChat> groupChats = new ArrayList<GroupChat>();
 
 	public User() {}

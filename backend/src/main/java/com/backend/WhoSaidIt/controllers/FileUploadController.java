@@ -10,10 +10,10 @@ import java.io.IOException;
 @RestController
 public class FileUploadController {
 
-    private final FileUploadService service;
+    private final FileUploadService fileUploadService;
 
-    public FileUploadController(FileUploadService service) {
-        this.service = service;
+    public FileUploadController(FileUploadService fileUploadService) {
+        this.fileUploadService = fileUploadService;
     }
 
     @PostMapping("/upload/{userId}")
@@ -23,7 +23,7 @@ public class FileUploadController {
             @RequestParam String name
     ) {
         try {
-            service.persistGroupChatFromFile(userId, name, file);
+            fileUploadService.persistGroupChatFromFile(userId, name, file);
             return ResponseEntity.ok("File uploaded successfully");
         } catch (IOException e) {
             return ResponseEntity.badRequest().body("Error uploading file");

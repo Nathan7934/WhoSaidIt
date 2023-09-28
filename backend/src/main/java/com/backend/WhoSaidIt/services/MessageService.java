@@ -3,31 +3,46 @@ package com.backend.WhoSaidIt.services;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.Message;
 import com.backend.WhoSaidIt.entities.Participant;
+import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.MessageRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Random;
 
 @Service
 public class MessageService {
 
-    private final MessageRepository repository;
+    private final MessageRepository messageRepository;
 
-    public MessageService(MessageRepository repository) {
-        this.repository = repository;
+    public MessageService(MessageRepository messageRepository) {
+        this.messageRepository = messageRepository;
     }
 
-    public Message get(Long id) {
-        return repository.findById(id).orElse(null);
+    public Message getRandom(long groupChatId, List<Long> excludedMessageIds) {
+        long messageCount = messageRepository.countByGroupChatId(groupChatId);
+        Random rand = new Random();
+        long id = rand.nextInt((int) messageCount) + 1;
+        Message randomMessage = messageRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Random generated an invalid id."));
+        while (excludedMessageIds.contains(randomMessage.getId())) {
+            id = rand.nextInt((int) messageCount) + 1;
+            randomMessage = messageRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Random generated an invalid id."));
+        }
+        return randomMessage;
     }
 
-    public void remove(Long id) {
-        repository.deleteById(id);
+    public Message get(long id) {
+        return messageRepository.findById(id).orElse(null);
+    }
+
+    public void remove(long id) {
+        messageRepository.deleteById(id);
     }
 
     public Message save(Participant participant, GroupChat groupChat, String content, LocalDateTime timestamp) {
         Message message = new Message(participant, groupChat, content, timestamp);
-        repository.save(message);
+        messageRepository.save(message);
         return message;
     }
 }
