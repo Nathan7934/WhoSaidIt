@@ -1,0 +1,34 @@
+package com.backend.WhoSaidIt.entities.quiz;
+
+import com.backend.WhoSaidIt.entities.GroupChat;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
+@Entity
+@DiscriminatorValue("TIME_ATTACK")
+public class TimeAttackQuiz extends Quiz{
+
+    @Column(name = "numberOfQuestions", columnDefinition = "INT", nullable = false)
+    private Integer numberOfQuestions;
+
+    @Column(name = "initialQuestionScore", columnDefinition = "INT", nullable = false)
+    private Integer initialQuestionScore;
+
+    @Column(name = "penaltyPerSecond", columnDefinition = "INT", nullable = false)
+    private Integer penaltyPerSecond;
+
+    @Column(name = "wrongAnswerPenalty", columnDefinition = "INT", nullable = false)
+    private Integer wrongAnswerPenalty;
+
+    public TimeAttackQuiz() {}
+
+    public TimeAttackQuiz(GroupChat groupChat, String quizName, String description, Integer numberOfQuestions,
+                          Integer initialQuestionScore, Integer penaltyPerSecond, Integer wrongAnswerPenalty) {
+        super(groupChat, quizName, description);
+        this.numberOfQuestions = numberOfQuestions;
+        this.initialQuestionScore = initialQuestionScore;
+        this.penaltyPerSecond = penaltyPerSecond;
+        this.wrongAnswerPenalty = wrongAnswerPenalty;
+    }
+}

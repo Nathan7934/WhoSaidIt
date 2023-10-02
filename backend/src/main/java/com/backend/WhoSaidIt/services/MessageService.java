@@ -59,9 +59,18 @@ public class MessageService {
         ));
     }
 
-    public Message get(long id) {
-        return messageRepository.findById(id).orElseThrow(
+    public MessageDTO get(long id) {
+        Message message = messageRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Message with id " + id + " not found.")
+        );
+        return new MessageDTO(
+                message.getId(),
+                new ParticipantDTO(
+                        message.getParticipant().getId(),
+                        message.getParticipant().getName()
+                ),
+                message.getContent(),
+                message.getTimestamp()
         );
     }
 

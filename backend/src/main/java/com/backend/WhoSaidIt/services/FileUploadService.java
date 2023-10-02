@@ -40,7 +40,7 @@ public class FileUploadService {
     // For now, we will only filter based on the length of the message.
     // Longer messages are more likely to be attributable to a specific person.
     private static boolean passesFilter(String message) {
-        return message.length() > 50;
+        return message.length() > 100;
     }
 
     // Returns a string array of length 3

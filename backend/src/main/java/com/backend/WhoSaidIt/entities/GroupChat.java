@@ -1,7 +1,7 @@
 package com.backend.WhoSaidIt.entities;
 
+import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -34,6 +34,10 @@ public class GroupChat {
     @OneToMany(mappedBy = "groupChat")
     @JsonBackReference
     private List<Message> messages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "groupChat")
+    @JsonBackReference
+    private List<Quiz> quizzes = new ArrayList<>();
 
     @Column(name = "groupChatName", columnDefinition = "TEXT", nullable = false)
     private String groupChatName;

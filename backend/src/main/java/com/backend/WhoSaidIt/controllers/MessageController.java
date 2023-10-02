@@ -57,4 +57,14 @@ public class MessageController {
                 messages.getContent()
         ));
     }
+
+    @GetMapping("/messages/{messageId}")
+    public ResponseEntity<MessageDTO> getMessage(@PathVariable long messageId) {
+        return ResponseEntity.ok(messageService.get(messageId));
+    }
+
+    @DeleteMapping("/messages/{messageId}")
+    public void deleteMessage(@PathVariable long messageId) {
+        messageService.remove(messageId);
+    }
 }
