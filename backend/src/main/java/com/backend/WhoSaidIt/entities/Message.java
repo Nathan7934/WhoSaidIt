@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities;
 
+import com.backend.WhoSaidIt.DTOs.MessageDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -62,13 +63,12 @@ public class Message {
 
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "id=" + id +
-                ", participant=" + participant +
-                ", groupChat=" + groupChat +
-                ", content='" + content + '\'' +
-                '}';
+    public MessageDTO toDTO() {
+        return new MessageDTO(
+                this.id,
+                this.participant.toDTO(),
+                this.content,
+                this.timestamp
+        );
     }
 }

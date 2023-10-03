@@ -35,43 +35,19 @@ public class MessageService {
             rMessage = messageRepository.findById(id)
                     .orElseThrow(() -> new DataNotFoundException("Random generated an invalid id."));
         }
-        return new MessageDTO(
-                rMessage.getId(),
-                new ParticipantDTO(
-                        rMessage.getParticipant().getId(),
-                        rMessage.getParticipant().getName()
-                ),
-                rMessage.getContent(),
-                rMessage.getTimestamp()
-        );
+        return rMessage.toDTO();
     }
 
     public Page<MessageDTO> getPaginatedMessages(long groupChatId, Pageable pageable) {
         Page<Message> messages = messageRepository.findByGroupChatId(groupChatId, pageable);
-        return messages.map(message -> new MessageDTO(
-                message.getId(),
-                new ParticipantDTO(
-                        message.getParticipant().getId(),
-                        message.getParticipant().getName()
-                ),
-                message.getContent(),
-                message.getTimestamp()
-        ));
+        return messages.map(Message::toDTO);
     }
 
     public MessageDTO get(long id) {
         Message message = messageRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Message with id " + id + " not found.")
         );
-        return new MessageDTO(
-                message.getId(),
-                new ParticipantDTO(
-                        message.getParticipant().getId(),
-                        message.getParticipant().getName()
-                ),
-                message.getContent(),
-                message.getTimestamp()
-        );
+        return message.toDTO();
     }
 
     public void remove(long id) {

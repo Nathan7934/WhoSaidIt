@@ -45,4 +45,10 @@ public abstract class Quiz {
         this.quizName = quizName;
         this.description = description;
     }
+
+    public Long getId() { return id; }
+
+    public String getQuizName() { return quizName; }
+
+    public String getDescription() { return description; }
 }

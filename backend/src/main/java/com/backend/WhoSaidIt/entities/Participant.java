@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities;
 
+import com.backend.WhoSaidIt.DTOs.ParticipantDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -54,13 +55,7 @@ public class Participant {
 
     public void setName(String name) { this.name = name; }
 
-    @Override
-    public String toString() {
-        return "Participant{" +
-                "id=" + id +
-                ", groupChat=" + groupChat +
-                ", messages=" + messages +
-                ", name='" + name + '\'' +
-                '}';
+    public ParticipantDTO toDTO() {
+        return new ParticipantDTO(this.id, this.name);
     }
 }

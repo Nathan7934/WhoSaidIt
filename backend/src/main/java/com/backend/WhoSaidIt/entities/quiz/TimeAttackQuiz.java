@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities.quiz;
 
+import com.backend.WhoSaidIt.DTOs.quiz.TimeAttackQuizDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -30,5 +31,25 @@ public class TimeAttackQuiz extends Quiz{
         this.initialQuestionScore = initialQuestionScore;
         this.penaltyPerSecond = penaltyPerSecond;
         this.wrongAnswerPenalty = wrongAnswerPenalty;
+    }
+
+    public Integer getNumberOfQuestions() { return numberOfQuestions; }
+
+    public Integer getInitialQuestionScore() { return initialQuestionScore; }
+
+    public Integer getPenaltyPerSecond() { return penaltyPerSecond; }
+
+    public Integer getWrongAnswerPenalty() { return wrongAnswerPenalty; }
+
+    public TimeAttackQuizDTO toDTO() {
+        return new TimeAttackQuizDTO(
+                this.getId(),
+                this.getQuizName(),
+                this.getDescription(),
+                this.getNumberOfQuestions(),
+                this.getInitialQuestionScore(),
+                this.getPenaltyPerSecond(),
+                this.getWrongAnswerPenalty()
+        );
     }
 }
