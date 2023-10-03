@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities.leaderboard;
 
+import com.backend.WhoSaidIt.DTOs.leaderboard.SurvivalEntryDTO;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -21,5 +22,18 @@ public class SurvivalEntry extends LeaderboardEntry {
         super(quiz, playerName);
         this.streak = streak;
         this.skipsUsed = skipsUsed;
+    }
+
+    public Integer getStreak() { return streak; }
+
+    public Integer getSkipsUsed() { return skipsUsed; }
+
+    public SurvivalEntryDTO toDTO() {
+        return new SurvivalEntryDTO(
+                this.getId(),
+                this.getPlayerName(),
+                this.getStreak(),
+                this.getSkipsUsed()
+        );
     }
 }

@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities.quiz;
 
+import com.backend.WhoSaidIt.DTOs.quiz.QuizDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.leaderboard.LeaderboardEntry;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -51,4 +52,6 @@ public abstract class Quiz {
     public String getQuizName() { return quizName; }
 
     public String getDescription() { return description; }
+
+    public abstract QuizDTO toDTO();
 }

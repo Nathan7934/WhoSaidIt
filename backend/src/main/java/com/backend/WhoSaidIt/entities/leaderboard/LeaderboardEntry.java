@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities.leaderboard;
 
+import com.backend.WhoSaidIt.DTOs.leaderboard.LeaderboardEntryDTO;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -34,4 +35,10 @@ public abstract class LeaderboardEntry {
         this.quiz = quiz;
         this.playerName = playerName;
     }
+
+    public Long getId() { return id; }
+
+    public String getPlayerName() { return playerName; }
+
+    public abstract LeaderboardEntryDTO toDTO();
 }

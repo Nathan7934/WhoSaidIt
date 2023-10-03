@@ -41,4 +41,9 @@ public class QuizController {
             @RequestBody SurvivalQuizDTO quiz) {
         return ResponseEntity.ok(quizService.createSurvivalQuiz(groupChatId, quiz));
     }
+
+    @DeleteMapping("/quizzes/{quizId}")
+    public void deleteQuiz(@PathVariable long quizId) {
+        quizService.deleteQuiz(quizId);
+    }
 }

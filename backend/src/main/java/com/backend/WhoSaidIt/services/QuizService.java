@@ -28,35 +28,13 @@ public class QuizService {
 
     public List<QuizDTO> getAllQuizzes(long groupChatId) {
         List<Quiz> quizzes = quizRepository.findByGroupChatId(groupChatId);
-        List<QuizDTO> quizDTOs = new ArrayList<>();
-        for (Quiz quiz : quizzes) {
-            if (quiz instanceof TimeAttackQuiz) {
-                TimeAttackQuiz taQuiz = (TimeAttackQuiz) quiz;
-                quizDTOs.add(taQuiz.toDTO());
-            } else if (quiz instanceof SurvivalQuiz) {
-                SurvivalQuiz sQuiz = (SurvivalQuiz) quiz;
-                quizDTOs.add(sQuiz.toDTO());
-            } else {
-                throw new IllegalStateException("Quiz with id " + quiz.getId() + " has an invalid type.");
-            }
-        }
-        return quizDTOs;
+        return quizzes.stream().map(Quiz::toDTO).toList();
     }
 
     public QuizDTO getQuiz(long id) {
         Quiz quiz = quizRepository.findById(id)
                     .orElseThrow(() -> new DataNotFoundException("Quiz with id " + id + " not found."));
-
-        // Check the type of the retrieved quiz and map it to the appropriate DTO
-        if (quiz instanceof TimeAttackQuiz) {
-            TimeAttackQuiz taQuiz = (TimeAttackQuiz) quiz;
-            return taQuiz.toDTO();
-        } else if (quiz instanceof SurvivalQuiz) {
-            SurvivalQuiz sQuiz = (SurvivalQuiz) quiz;
-            return sQuiz.toDTO();
-        } else {
-            throw new IllegalStateException("Quiz with id " + id + " has an invalid type.");
-        }
+        return quiz.toDTO();
     }
 
     public TimeAttackQuizDTO createTimeAttackQuiz(long groupChatId, TimeAttackQuizDTO taQuiz) {
