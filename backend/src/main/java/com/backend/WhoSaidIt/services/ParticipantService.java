@@ -1,33 +1,50 @@
 package com.backend.WhoSaidIt.services;
 
+import com.backend.WhoSaidIt.DTOs.ParticipantDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.Participant;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.ParticipantRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class ParticipantService {
 
-    private final ParticipantRepository repository;
+    private final ParticipantRepository participantRepository;
 
-    public ParticipantService(ParticipantRepository repository) {
-        this.repository = repository;
+    public ParticipantService(ParticipantRepository participantRepository) {
+        this.participantRepository = participantRepository;
     }
 
-    public Participant get(Long id) {
-        return repository.findById(id).orElseThrow(
-                () -> new DataNotFoundException("Participant with id " + id + " not found.")
+    public ParticipantDTO getParticipant(long participantId) {
+        Participant participant = participantRepository.findById(participantId).orElseThrow(
+                () -> new DataNotFoundException("Participant with id " + participantId + " not found.")
         );
+        return participant.toDTO();
     }
 
-    public void remove(Long id) {
-        repository.deleteById(id);
+    public List<ParticipantDTO> getGroupChatParticipants(long groupChatId) {
+        return participantRepository.findByGroupChatId(groupChatId).stream().map(Participant::toDTO).toList();
+    }
+
+    @Transactional
+    public void updateParticipantName(long participantId, String name) {
+        Participant participant = participantRepository.findById(participantId).orElseThrow(
+                () -> new DataNotFoundException("Participant with id " + participantId + " not found.")
+        );
+        participant.setName(name);
     }
 
     public Participant save(GroupChat groupChat, String name) {
         Participant participant = new Participant(groupChat, name);
-        repository.save(participant);
+        participantRepository.save(participant);
         return participant;
+    }
+
+    public void deleteParticipant(long participantId) {
+        participantRepository.deleteById(participantId);
     }
 }

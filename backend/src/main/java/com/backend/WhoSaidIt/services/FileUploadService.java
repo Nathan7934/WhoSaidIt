@@ -3,6 +3,8 @@ package com.backend.WhoSaidIt.services;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.Participant;
 import com.backend.WhoSaidIt.entities.User;
+import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
+import com.backend.WhoSaidIt.repositories.UserRepository;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,17 +22,17 @@ import java.util.regex.Pattern;
 @Service
 public class FileUploadService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final GroupChatService groupChatService;
     private final ParticipantService participantService;
     private final MessageService messageService;
 
     public FileUploadService(
-            UserService userService,
+            UserRepository userRepository,
             GroupChatService groupChatService,
             ParticipantService participantService,
             MessageService messageService) {
-        this.userService = userService;
+        this.userRepository = userRepository;
         this.groupChatService = groupChatService;
         this.participantService = participantService;
         this.messageService = messageService;
@@ -39,13 +41,13 @@ public class FileUploadService {
     // This method is meant to filter out messages that are not noteworthy.
     // For now, we will only filter based on the length of the message.
     // Longer messages are more likely to be attributable to a specific person.
-    private static boolean passesFilter(String message) {
-        return message.length() > 100;
+    private static boolean passesFilter(String message, int minCharacters) {
+        return message.length() > minCharacters;
     }
 
     // Returns a string array of length 3
     // [0]: Date string, [1]: Sender name, [2]: Message content
-    private static String[] parseLine(String line) {
+    private static String[] parseLine(String line, int minCharacters) {
         // The following regex matches the format:
         // MM/DD/YY, HH:MM AM/PM - Sender Name: Message Content
         Pattern pattern = Pattern.compile("^\\d{1,2}/\\d{1,2}/\\d{1,2}, \\d{1,2}:\\d{1,2}[ \\u202F](AM|PM) - .*:.*$");
@@ -64,7 +66,7 @@ public class FileUploadService {
                 break;
             }
         }
-        return passesFilter(parsedLine[2]) ? parsedLine : null;
+        return passesFilter(parsedLine[2], minCharacters) ? parsedLine : null;
     }
 
     // Converts a date string of the form "MM/DD/YYYY, HH:MM AM/PM" to a LocalDateTime object
@@ -75,17 +77,18 @@ public class FileUploadService {
     }
 
     // Adds a group chat to the database from a file
-    public void persistGroupChatFromFile(Integer userId, String groupChatName, MultipartFile file) throws IOException {
-        User user = userService.get(Long.valueOf(userId));
-        if (user == null) {
-            throw new RuntimeException("User with id " + userId + " not found.");
-        }
-        GroupChat groupChat = groupChatService.save(user, groupChatName, file.getOriginalFilename());
+    public void persistGroupChatFromFile(
+            Integer userId, String groupChatName, MultipartFile file, Integer minCharacters
+    ) throws IOException {
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(
+                () -> new DataNotFoundException("User with id " + userId + " not found.")
+        );
+        GroupChat groupChat = groupChatService.createGroupChat(user, groupChatName, file.getOriginalFilename());
 
         HashMap<String, List<Pair<LocalDateTime, String>>> messages = new HashMap<String, List<Pair<LocalDateTime, String>>>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
         while (reader.ready()) {
-            String[] parsedLine = parseLine(reader.readLine());
+            String[] parsedLine = parseLine(reader.readLine(), minCharacters);
             if (parsedLine == null) { continue; }
 
             String senderName = parsedLine[1];

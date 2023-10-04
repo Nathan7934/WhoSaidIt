@@ -1,10 +1,13 @@
 package com.backend.WhoSaidIt.services;
 
+import com.backend.WhoSaidIt.DTOs.GroupChatDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.User;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.GroupChatRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class GroupChatService {
@@ -15,19 +18,25 @@ public class GroupChatService {
         this.repository = repository;
     }
 
-    public GroupChat get(Long id) {
-        return repository.findById(id).orElseThrow(
-                () -> new DataNotFoundException("GroupChat with id " + id + " not found.")
+    public List<GroupChatDTO> getUserGroupChats(long userId) {
+        return repository.findByUserId(userId).stream().map(GroupChat::toDTO).toList();
+    }
+
+    public GroupChatDTO getGroupChat(long groupChatId) {
+        GroupChat groupChat = repository.findById(groupChatId).orElseThrow(
+                () -> new DataNotFoundException("GroupChat with id " + groupChatId + " not found.")
         );
+        return groupChat.toDTO();
     }
 
-    public void remove(Long id) {
-        repository.deleteById(id);
-    }
-
-    public GroupChat save(User user, String groupChatName, String fileName) {
+    // We return a GroupChat object instead of its DTO because this method is only called in the FileUploadService
+    public GroupChat createGroupChat(User user, String groupChatName, String fileName) {
         GroupChat groupChat = new GroupChat(user, groupChatName, fileName);
         repository.save(groupChat);
         return groupChat;
+    }
+
+    public void deleteGroupChat(long groupChatId) {
+        repository.deleteById(groupChatId);
     }
 }

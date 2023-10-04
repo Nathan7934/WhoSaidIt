@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
+@RequestMapping("/api")
 public class FileUploadController {
 
     private final FileUploadService fileUploadService;
@@ -16,14 +17,15 @@ public class FileUploadController {
         this.fileUploadService = fileUploadService;
     }
 
-    @PostMapping("/upload/{userId}")
+    @PostMapping("/users/{userId}/groupChats/upload")
     public ResponseEntity<String> uploadGroupChat(
             @RequestPart("data") MultipartFile file,
             @PathVariable Integer userId,
-            @RequestParam String name
+            @RequestParam String name,
+            @RequestParam Integer minCharacters
     ) {
         try {
-            fileUploadService.persistGroupChatFromFile(userId, name, file);
+            fileUploadService.persistGroupChatFromFile(userId, name, file, minCharacters);
             return ResponseEntity.ok("File uploaded successfully");
         } catch (IOException e) {
             return ResponseEntity.badRequest().body("Error uploading file");

@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.entities;
 
+import com.backend.WhoSaidIt.DTOs.GroupChatDTO;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -55,30 +56,15 @@ public class GroupChat {
 
     public Long getId() { return id; }
 
-    public User getUser() { return user; }
-
-    public void setUser(User user) { this.user = user; }
-
-    public List<Participant> getParticipants() { return participants; }
-
-    public void setParticipants(List<Participant> participants) { this.participants = participants; }
-
-    public List<Message> getMessages() { return messages; }
-
-    public void setMessages(List<Message> messages) { this.messages = messages; }
-
     public String getGroupChatName() { return groupChatName; }
 
-    public void setGroupChatName(String groupChatName) { this.groupChatName = groupChatName; }
+    public String getFileName() { return fileName; }
 
-    @Override
-    public String toString() {
-        return "GroupChat{" +
-                "id=" + id +
-                ", user=" + user +
-                ", participants=" + participants +
-                ", messages=" + messages +
-                ", groupChatName='" + groupChatName + '\'' +
-                '}';
+    public GroupChatDTO toDTO() {
+        return new GroupChatDTO(
+                this.getId(),
+                this.getGroupChatName(),
+                this.getFileName()
+        );
     }
 }
