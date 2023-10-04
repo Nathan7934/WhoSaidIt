@@ -1,6 +1,7 @@
 package com.backend.WhoSaidIt.services;
 
 import com.backend.WhoSaidIt.DTOs.GroupChatDTO;
+import com.backend.WhoSaidIt.DTOs.UserDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.User;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
@@ -27,6 +28,13 @@ public class GroupChatService {
                 () -> new DataNotFoundException("GroupChat with id " + groupChatId + " not found.")
         );
         return groupChat.toDTO();
+    }
+
+    public UserDTO getGroupChatUser(long groupChatId) {
+        GroupChat groupChat = repository.findById(groupChatId).orElseThrow(
+                () -> new DataNotFoundException("GroupChat with id " + groupChatId + " not found.")
+        );
+        return groupChat.getUser().toDTO();
     }
 
     // We return a GroupChat object instead of its DTO because this method is only called in the FileUploadService

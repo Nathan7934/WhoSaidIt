@@ -1,6 +1,7 @@
 package com.backend.WhoSaidIt.controllers;
 
 import com.backend.WhoSaidIt.DTOs.UserDTO;
+import com.backend.WhoSaidIt.services.GroupChatService;
 import com.backend.WhoSaidIt.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final GroupChatService groupChatService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, GroupChatService groupChatService) {
         this.userService = userService;
+        this.groupChatService = groupChatService;
     }
 
     @GetMapping("/users/{userId}")
@@ -25,6 +28,6 @@ public class UserController {
 
     @GetMapping("/groupChats/{groupChatId}/user")
     public ResponseEntity<UserDTO> getGroupChatUser(@PathVariable long groupChatId) {
-        return ResponseEntity.ok(userService.getGroupChatUser(groupChatId));
+        return ResponseEntity.ok(groupChatService.getGroupChatUser(groupChatId));
     }
 }

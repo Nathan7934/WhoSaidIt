@@ -56,6 +56,8 @@ public class GroupChat {
 
     public Long getId() { return id; }
 
+    public User getUser() { return user; }
+
     public String getGroupChatName() { return groupChatName; }
 
     public String getFileName() { return fileName; }

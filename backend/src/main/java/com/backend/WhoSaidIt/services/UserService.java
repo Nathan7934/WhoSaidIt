@@ -21,12 +21,4 @@ public class UserService {
         );
         return user.toDTO();
     }
-
-    public UserDTO getGroupChatUser(long groupChatId) {
-        User user = userRepository.findByGroupChatId(groupChatId);
-        if (user == null) {
-            throw new DataNotFoundException("User with group chat id " + groupChatId + " not found.");
-        }
-        return user.toDTO();
-    }
 }
