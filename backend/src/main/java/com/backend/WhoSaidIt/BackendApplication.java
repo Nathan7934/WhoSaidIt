@@ -1,9 +1,6 @@
 package com.backend.WhoSaidIt;
 
-import com.backend.WhoSaidIt.entities.GroupChat;
-import com.backend.WhoSaidIt.entities.Message;
-import com.backend.WhoSaidIt.entities.Participant;
-import com.backend.WhoSaidIt.entities.User;
+import com.backend.WhoSaidIt.entities.*;
 import com.backend.WhoSaidIt.repositories.GroupChatRepository;
 import com.backend.WhoSaidIt.repositories.MessageRepository;
 import com.backend.WhoSaidIt.repositories.ParticipantRepository;
@@ -31,7 +28,7 @@ public class BackendApplication {
 			ParticipantRepository participantRepository,
 			MessageRepository messageRepository) {
 		return args -> {
-			User user = new User(1L, "test", "password");
+			User user = new User("test", "password", "test@email.com", Role.USER);
 			GroupChat groupChat = new GroupChat(user, "testChat", "test.txt");
 			Participant participant = new Participant(groupChat, "Nathan");
 			Message message1 = new Message(participant, groupChat, "Message 1", LocalDateTime.now());
