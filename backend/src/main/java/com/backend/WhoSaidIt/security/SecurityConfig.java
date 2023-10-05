@@ -31,7 +31,7 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/**").authenticated()
+                .requestMatchers("/api/users/**").permitAll() // TODO: Change this to authenticated() when we are ready to require authentication
                 .anyRequest().permitAll()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

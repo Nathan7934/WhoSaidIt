@@ -42,7 +42,11 @@ public class FileUploadService {
     // For now, we will only filter based on the length of the message.
     // Longer messages are more likely to be attributable to a specific person.
     private static boolean passesFilter(String message, int minCharacters) {
-        return message.length() > minCharacters;
+        if (message.length() < minCharacters)
+            return false;
+        // URL regex
+        Pattern p = Pattern.compile("\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+        return !p.matcher(message).matches();
     }
 
     // Returns a string array of length 3
@@ -50,8 +54,8 @@ public class FileUploadService {
     private static String[] parseLine(String line, int minCharacters) {
         // The following regex matches the format:
         // MM/DD/YY, HH:MM AM/PM - Sender Name: Message Content
-        Pattern pattern = Pattern.compile("^\\d{1,2}/\\d{1,2}/\\d{1,2}, \\d{1,2}:\\d{1,2}[ \\u202F](AM|PM) - .*:.*$");
-        if (!pattern.matcher(line).matches()) {
+        Pattern p = Pattern.compile("^\\d{1,2}/\\d{1,2}/\\d{1,2}, \\d{1,2}:\\d{1,2}[ \\u202F](AM|PM) - .*:.*$");
+        if (!p.matcher(line).matches()) {
             return null;
         }
         String[] parsedLine = new String[3];
