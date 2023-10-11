@@ -1,10 +1,14 @@
 package com.backend.WhoSaidIt.entities;
 
 import com.backend.WhoSaidIt.DTOs.MessageDTO;
+import com.backend.WhoSaidIt.entities.quiz.Quiz;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
@@ -30,6 +34,10 @@ public class Message {
     @JsonManagedReference
     private GroupChat groupChat;
 
+    @ManyToMany(mappedBy = "messagesInQuiz")
+    @JsonIgnore
+    private List<Quiz> quizzes = new ArrayList<>();
+
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
@@ -54,6 +62,8 @@ public class Message {
     public GroupChat getGroupChat() { return groupChat; }
 
     public void setGroupChat(GroupChat groupChat) { this.groupChat = groupChat; }
+
+    public List<Quiz> getQuizzes() { return quizzes; }
 
     public String getContent() { return content; }
 

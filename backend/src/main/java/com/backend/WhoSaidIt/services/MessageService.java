@@ -50,6 +50,11 @@ public class MessageService {
         return message.toDTO();
     }
 
+    public List<MessageDTO> getMessagesByQuizId(long quizId) {
+        List<Message> messages = messageRepository.findMessagesByQuizId(quizId);
+        return messages.stream().map(Message::toDTO).toList();
+    }
+
     public void remove(long id) {
         messageRepository.deleteById(id);
     }

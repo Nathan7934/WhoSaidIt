@@ -64,6 +64,11 @@ public class MessageController {
         return ResponseEntity.ok(messageService.get(messageId));
     }
 
+    @GetMapping("/quizzes/{quizId}/messages")
+    public ResponseEntity<List<MessageDTO>> getMessagesByQuizId(@PathVariable long quizId) {
+        return ResponseEntity.ok(messageService.getMessagesByQuizId(quizId));
+    }
+
     @DeleteMapping("/messages/{messageId}")
     public void deleteMessage(@PathVariable long messageId) {
         messageService.remove(messageId);

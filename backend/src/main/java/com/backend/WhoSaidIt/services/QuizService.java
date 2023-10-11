@@ -4,13 +4,16 @@ import com.backend.WhoSaidIt.DTOs.quiz.QuizDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.SurvivalQuizDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.TimeAttackQuizDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
+import com.backend.WhoSaidIt.entities.Message;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.entities.quiz.SurvivalQuiz;
 import com.backend.WhoSaidIt.entities.quiz.TimeAttackQuiz;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.GroupChatRepository;
+import com.backend.WhoSaidIt.repositories.MessageRepository;
 import com.backend.WhoSaidIt.repositories.QuizRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +23,16 @@ public class QuizService {
 
     private final QuizRepository quizRepository;
     private final GroupChatRepository groupChatRepository;
+    private final MessageRepository messageRepository;
 
-    public QuizService(QuizRepository quizRepository, GroupChatRepository groupChatRepository) {
+    public QuizService(
+            QuizRepository quizRepository,
+            GroupChatRepository groupChatRepository,
+            MessageRepository messageRepository
+    ) {
         this.quizRepository = quizRepository;
         this.groupChatRepository = groupChatRepository;
+        this.messageRepository = messageRepository;
     }
 
     public List<QuizDTO> getAllQuizzes(long groupChatId) {
@@ -52,6 +61,37 @@ public class QuizService {
                 .orElseThrow(() -> new DataNotFoundException("Group chat with id " + groupChatId + " not found."));
         SurvivalQuiz quiz = new SurvivalQuiz(groupChat, sQuiz.quizName(), sQuiz.description(), sQuiz.numberOfSkips());
         return quizRepository.save(quiz).toDTO();
+    }
+
+    @Transactional
+    public void addMessagesToQuiz(long quizId, List<Long> messageIds) {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
+        List<Message> messages = messageRepository.findAllById(messageIds);
+        if (messages.size() != messageIds.size()) {
+            throw new DataNotFoundException("One or more messages with the given ids were not found.");
+        }
+
+        // Since the method is transactional, the database will be synchronized when the method returns.
+        for (Message message : messages) {
+            quiz.getMessagesInQuiz().add(message);
+            message.getQuizzes().add(quiz);
+        }
+    }
+
+    @Transactional
+    public void removeMessagesFromQuiz(long quizId, List<Long> messageIds) {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
+
+        List<Message> quizMessages = quiz.getMessagesInQuiz();
+        int preSize = quizMessages.size();
+        quizMessages.removeIf(message -> messageIds.contains(message.getId()));
+
+        // Check if the amount of messages removed matches the number of messageIds given.
+        if (preSize - quizMessages.size() != messageIds.size()) {
+            throw new DataNotFoundException("One or more messages with the given ids were not found.");
+        }
     }
 
     public void deleteQuiz(long id) {

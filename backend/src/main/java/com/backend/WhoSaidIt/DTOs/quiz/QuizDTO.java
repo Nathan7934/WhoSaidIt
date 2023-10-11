@@ -12,4 +12,6 @@ public sealed interface QuizDTO permits TimeAttackQuizDTO, SurvivalQuizDTO {
     Long id();
     String quizName();
     String description();
+
+    Boolean hasSpecifiedMessages();
 }
