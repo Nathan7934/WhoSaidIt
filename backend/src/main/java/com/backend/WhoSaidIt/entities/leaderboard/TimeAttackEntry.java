@@ -10,19 +10,19 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("TIME_ATTACK")
 public class TimeAttackEntry extends LeaderboardEntry {
 
-    @Column(name = "score", columnDefinition = "INT", nullable = false)
+    @Column(name = "score", columnDefinition = "INT")
     private Integer score;
 
-    @Column(name = "timeTaken", columnDefinition = "INT", nullable = false)
-    private Integer timeTaken;
+    @Column(name = "timeTaken", columnDefinition = "DOUBLE PRECISION")
+    private Double timeTaken;
 
-    @Column(name = "averageTimePerQuestion", columnDefinition = "INT", nullable = false)
-    private Integer averageTimePerQuestion;
+    @Column(name = "averageTimePerQuestion", columnDefinition = "DOUBLE PRECISION")
+    private Double averageTimePerQuestion;
 
     public TimeAttackEntry() {}
 
     public TimeAttackEntry(Quiz quiz, String playerName, Integer score,
-                           Integer timeTaken, Integer averageTimePerQuestion) {
+                           Double timeTaken, Double averageTimePerQuestion) {
         super(quiz, playerName);
         this.score = score;
         this.timeTaken = timeTaken;
@@ -31,9 +31,9 @@ public class TimeAttackEntry extends LeaderboardEntry {
 
     public Integer getScore() { return score; }
 
-    public Integer getTimeTaken() { return timeTaken; }
+    public Double getTimeTaken() { return timeTaken; }
 
-    public Integer getAverageTimePerQuestion() { return averageTimePerQuestion; }
+    public Double getAverageTimePerQuestion() { return averageTimePerQuestion; }
 
     public TimeAttackEntryDTO toDTO() {
         return new TimeAttackEntryDTO(

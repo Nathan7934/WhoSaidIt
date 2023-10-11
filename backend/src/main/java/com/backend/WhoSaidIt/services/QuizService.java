@@ -3,6 +3,7 @@ package com.backend.WhoSaidIt.services;
 import com.backend.WhoSaidIt.DTOs.quiz.QuizDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.SurvivalQuizDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.TimeAttackQuizDTO;
+import com.backend.WhoSaidIt.controllers.QuizController;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.Message;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
@@ -15,7 +16,6 @@ import com.backend.WhoSaidIt.repositories.QuizRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,7 +46,7 @@ public class QuizService {
         return quiz.toDTO();
     }
 
-    public TimeAttackQuizDTO createTimeAttackQuiz(long groupChatId, TimeAttackQuizDTO taQuiz) {
+    public TimeAttackQuizDTO createTimeAttackQuiz(long groupChatId, QuizController.TimeAttackQuizPostRequest taQuiz) {
         GroupChat groupChat = groupChatRepository.findById(groupChatId)
                 .orElseThrow(() -> new DataNotFoundException("Group chat with id " + groupChatId + " not found."));
         TimeAttackQuiz quiz = new TimeAttackQuiz(
@@ -56,7 +56,7 @@ public class QuizService {
         return quizRepository.save(quiz).toDTO();
     }
 
-    public SurvivalQuizDTO createSurvivalQuiz(long groupChatId, SurvivalQuizDTO sQuiz) {
+    public SurvivalQuizDTO createSurvivalQuiz(long groupChatId, QuizController.SurvivalQuizPostRequest sQuiz) {
         GroupChat groupChat = groupChatRepository.findById(groupChatId)
                 .orElseThrow(() -> new DataNotFoundException("Group chat with id " + groupChatId + " not found."));
         SurvivalQuiz quiz = new SurvivalQuiz(groupChat, sQuiz.quizName(), sQuiz.description(), sQuiz.numberOfSkips());

@@ -33,14 +33,14 @@ public class QuizController {
     @PostMapping("/groupChats/{groupChatId}/quizzes/time-attack")
     public ResponseEntity<TimeAttackQuizDTO> createTimeAttackQuiz(
             @PathVariable long groupChatId,
-            @RequestBody TimeAttackQuizDTO quiz) {
+            @RequestBody TimeAttackQuizPostRequest quiz) {
         return ResponseEntity.ok(quizService.createTimeAttackQuiz(groupChatId, quiz));
     }
 
     @PostMapping("/groupChats/{groupChatId}/quizzes/survival")
     public ResponseEntity<SurvivalQuizDTO> createSurvivalQuiz(
             @PathVariable long groupChatId,
-            @RequestBody SurvivalQuizDTO quiz) {
+            @RequestBody SurvivalQuizPostRequest quiz) {
         return ResponseEntity.ok(quizService.createSurvivalQuiz(groupChatId, quiz));
     }
 
@@ -55,7 +55,6 @@ public class QuizController {
         } catch (DataNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 
     @PatchMapping("/quizzes/{quizId}/messages")
@@ -75,4 +74,21 @@ public class QuizController {
     public void deleteQuiz(@PathVariable long quizId) {
         quizService.deleteQuiz(quizId);
     }
+
+    // An HTTP request DTO for creating a time attack quiz
+    public record TimeAttackQuizPostRequest(
+            String quizName,
+            String description,
+            Integer numberOfQuestions,
+            Integer initialQuestionScore,
+            Integer penaltyPerSecond,
+            Integer wrongAnswerPenalty
+    ) {}
+
+    // An HTTP request DTO for creating a survival quiz
+    public record SurvivalQuizPostRequest(
+            String quizName,
+            String description,
+            Integer numberOfSkips
+    ) {}
 }

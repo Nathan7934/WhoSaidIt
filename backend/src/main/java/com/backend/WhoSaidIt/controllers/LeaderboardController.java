@@ -32,14 +32,14 @@ public class LeaderboardController {
     @PostMapping("/quizzes/{quizId}/leaderboard/time-attack")
     public ResponseEntity<TimeAttackEntryDTO> createTimeAttackEntry(
             @PathVariable long quizId,
-            @RequestBody TimeAttackEntryDTO taEntry) {
+            @RequestBody TimeAttackEntryPostRequest taEntry) {
         return ResponseEntity.ok(leaderboardService.createTimeAttackEntry(quizId, taEntry));
     }
 
     @PostMapping("/quizzes/{quizId}/leaderboard/survival")
     public ResponseEntity<SurvivalEntryDTO> createSurvivalEntry(
             @PathVariable long quizId,
-            @RequestBody SurvivalEntryDTO survivalEntry) {
+            @RequestBody SurvivalEntryPostRequest survivalEntry) {
         return ResponseEntity.ok(leaderboardService.createSurvivalEntry(quizId, survivalEntry));
     }
 
@@ -47,4 +47,17 @@ public class LeaderboardController {
     public void deleteLeaderboardEntry(@PathVariable long entryId) {
         leaderboardService.deleteLeaderboardEntry(entryId);
     }
+
+    public record TimeAttackEntryPostRequest(
+            String playerName,
+            Integer score,
+            Double timeTaken,
+            Double averageTimePerQuestion
+    ) {}
+
+    public record SurvivalEntryPostRequest(
+            String playerName,
+            Integer streak,
+            Integer skipsUsed
+    ) {}
 }

@@ -10,16 +10,16 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("TIME_ATTACK")
 public class TimeAttackQuiz extends Quiz{
 
-    @Column(name = "numberOfQuestions", columnDefinition = "INT", nullable = false)
+    @Column(name = "numberOfQuestions", columnDefinition = "INT")
     private Integer numberOfQuestions;
 
-    @Column(name = "initialQuestionScore", columnDefinition = "INT", nullable = false)
+    @Column(name = "initialQuestionScore", columnDefinition = "INT")
     private Integer initialQuestionScore;
 
-    @Column(name = "penaltyPerSecond", columnDefinition = "INT", nullable = false)
+    @Column(name = "penaltyPerSecond", columnDefinition = "INT")
     private Integer penaltyPerSecond;
 
-    @Column(name = "wrongAnswerPenalty", columnDefinition = "INT", nullable = false)
+    @Column(name = "wrongAnswerPenalty", columnDefinition = "INT")
     private Integer wrongAnswerPenalty;
 
     public TimeAttackQuiz() {}

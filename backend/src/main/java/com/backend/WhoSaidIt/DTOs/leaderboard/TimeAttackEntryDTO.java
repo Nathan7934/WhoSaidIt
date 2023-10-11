@@ -4,6 +4,6 @@ public record TimeAttackEntryDTO(
         Long id,
         String playerName,
         Integer score,
-        Integer timeTaken,
-        Integer averageTimePerQuestion
+        Double timeTaken,
+        Double averageTimePerQuestion
 ) implements LeaderboardEntryDTO {}

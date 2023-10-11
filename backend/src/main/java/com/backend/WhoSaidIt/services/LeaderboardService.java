@@ -3,6 +3,7 @@ package com.backend.WhoSaidIt.services;
 import com.backend.WhoSaidIt.DTOs.leaderboard.LeaderboardEntryDTO;
 import com.backend.WhoSaidIt.DTOs.leaderboard.SurvivalEntryDTO;
 import com.backend.WhoSaidIt.DTOs.leaderboard.TimeAttackEntryDTO;
+import com.backend.WhoSaidIt.controllers.LeaderboardController;
 import com.backend.WhoSaidIt.entities.leaderboard.LeaderboardEntry;
 import com.backend.WhoSaidIt.entities.leaderboard.SurvivalEntry;
 import com.backend.WhoSaidIt.entities.leaderboard.TimeAttackEntry;
@@ -53,7 +54,7 @@ public class LeaderboardService {
         return entry.toDTO();
     }
 
-    public TimeAttackEntryDTO createTimeAttackEntry(long quizId, TimeAttackEntryDTO taEntry) {
+    public TimeAttackEntryDTO createTimeAttackEntry(long quizId, LeaderboardController.TimeAttackEntryPostRequest taEntry) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
         TimeAttackEntry entry = new TimeAttackEntry(
@@ -62,7 +63,7 @@ public class LeaderboardService {
         return leaderboardEntryRepository.save(entry).toDTO();
     }
 
-    public SurvivalEntryDTO createSurvivalEntry(long quizId, SurvivalEntryDTO sEntry) {
+    public SurvivalEntryDTO createSurvivalEntry(long quizId, LeaderboardController.SurvivalEntryPostRequest sEntry) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
         SurvivalEntry entry = new SurvivalEntry(quiz, sEntry.playerName(), sEntry.streak(), sEntry.skipsUsed());

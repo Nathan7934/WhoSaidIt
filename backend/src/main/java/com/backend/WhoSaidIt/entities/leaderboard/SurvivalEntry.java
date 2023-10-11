@@ -10,10 +10,10 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("SURVIVAL")
 public class SurvivalEntry extends LeaderboardEntry {
 
-    @Column(name = "score", columnDefinition = "INT", nullable = false)
+    @Column(name = "streak", columnDefinition = "INT")
     private Integer streak;
 
-    @Column(name = "skipsUsed", columnDefinition = "INT", nullable = false)
+    @Column(name = "skipsUsed", columnDefinition = "INT")
     private Integer skipsUsed;
 
     public SurvivalEntry() {}

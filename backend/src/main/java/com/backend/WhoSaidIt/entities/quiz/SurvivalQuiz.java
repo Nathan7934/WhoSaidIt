@@ -10,7 +10,7 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("SURVIVAL")
 public class SurvivalQuiz extends Quiz{
 
-    @Column(name = "numberOfQuestions", columnDefinition = "INT", nullable = false)
+    @Column(name = "numberOfSkips", columnDefinition = "INT")
     private Integer numberOfSkips;
 
     public SurvivalQuiz() {}
