@@ -63,6 +63,8 @@ public abstract class Quiz {
 
     public Long getId() { return id; }
 
+    public GroupChat getGroupChat() { return groupChat; }
+
     public List<Message> getMessagesInQuiz() { return messagesInQuiz; }
 
     public String getQuizName() { return quizName; }

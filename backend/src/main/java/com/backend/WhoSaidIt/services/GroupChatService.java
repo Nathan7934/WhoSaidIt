@@ -47,4 +47,12 @@ public class GroupChatService {
     public void deleteGroupChat(long groupChatId) {
         repository.deleteById(groupChatId);
     }
+
+    // Used in the auth_managers to check the authenticated user's ownership rights
+    public boolean isOwnedBy(long groupChatId, long userId) {
+        GroupChat groupChat = repository.findById(groupChatId).orElseThrow(
+                () -> new DataNotFoundException("GroupChat with id " + groupChatId + " not found.")
+        );
+        return groupChat.getUser().getId() == userId;
+    }
 }

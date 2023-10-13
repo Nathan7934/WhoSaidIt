@@ -58,6 +58,8 @@ public class GroupChat {
 
     public User getUser() { return user; }
 
+    public List<Quiz> getQuizzes() { return quizzes; }
+
     public String getGroupChatName() { return groupChatName; }
 
     public String getFileName() { return fileName; }

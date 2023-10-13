@@ -1,5 +1,10 @@
 package com.backend.WhoSaidIt.security;
 
+import com.backend.WhoSaidIt.entities.quiz.Quiz;
+import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
+import com.backend.WhoSaidIt.repositories.QuizRepository;
+import com.backend.WhoSaidIt.security.tokens.QuizAuthenticationToken;
+import com.backend.WhoSaidIt.security.tokens.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,10 +27,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // We have provided a custom implementation of the UserDetailsService interface in the ApplicationConfig class.
     private final UserDetailsService userDetailsService;
+    private final QuizRepository quizRepository;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, QuizRepository quizRepository) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.quizRepository = quizRepository;
     }
 
     @Override
@@ -36,7 +43,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
-        final String username;
 
         // If the authorization header is null or doesn't start with "Bearer ", then the request is passed on to the
         // next filter in the filter chain.
@@ -45,24 +51,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwtToken = authHeader.substring(7); // Remove "Bearer " from the authorization header.
-        username = jwtService.extractUsername(jwtToken);
 
-        // If we have a user that is not authenticated, we check if their provided token is valid. If it is, we
-        // authenticate them by setting their authentication object in the SecurityContextHolder.
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtService.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
+        // Check if it is a quiz token or a user token.
+        TokenType tokenType = jwtService.extractTokenType(jwtToken);
+
+        if(TokenType.USER.equals(tokenType)) {
+            // If we have a user that is not authenticated, we check if their provided token is valid. If it is, we
+            // authenticate them by setting their authentication object in the SecurityContextHolder.
+            String username = jwtService.extractSubject(jwtToken);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtService.validateUserToken(jwtToken, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+        } else if (TokenType.QUIZ.equals(tokenType)) {
+            String quizId = jwtService.extractSubject(jwtToken);
+            if (quizId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                Quiz quiz = quizRepository.findById(Long.parseLong(quizId)).orElseThrow(
+                        () -> new DataNotFoundException("Quiz with id " + quizId + " not found")
                 );
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (jwtService.validateQuizToken(jwtToken, quiz)) {
+                    QuizAuthenticationToken authToken = new QuizAuthenticationToken(quizId);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

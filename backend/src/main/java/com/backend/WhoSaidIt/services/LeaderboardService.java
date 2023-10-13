@@ -73,4 +73,12 @@ public class LeaderboardService {
     public void deleteLeaderboardEntry(long id) {
         leaderboardEntryRepository.deleteById(id);
     }
+
+    // Used in the auth_managers to check the authenticated user's ownership rights
+    public boolean isOwnedBy(long entryId, long userId) {
+        LeaderboardEntry entry = leaderboardEntryRepository.findById(entryId).orElseThrow(
+                () -> new DataNotFoundException("LeaderboardEntry with id " + entryId + " not found.")
+        );
+        return entry.getQuiz().getGroupChat().getId() == userId;
+    }
 }

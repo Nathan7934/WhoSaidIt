@@ -47,4 +47,12 @@ public class ParticipantService {
     public void deleteParticipant(long participantId) {
         participantRepository.deleteById(participantId);
     }
+
+    // Used in the auth_managers to check the authenticated user's ownership rights
+    public boolean isOwnedBy(long participantId, long userId) {
+        Participant participant = participantRepository.findById(participantId).orElseThrow(
+                () -> new DataNotFoundException("Participant with id " + participantId + " not found.")
+        );
+        return participant.getGroupChat().getUser().getId() == userId;
+    }
 }

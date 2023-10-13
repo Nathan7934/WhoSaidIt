@@ -64,4 +64,12 @@ public class MessageService {
         messageRepository.save(message);
         return message;
     }
+
+    // Used in the auth_managers to check the authenticated user's ownership rights
+    public boolean isOwnedBy(long messageId, long userId) {
+        Message message = messageRepository.findById(messageId).orElseThrow(
+                () -> new DataNotFoundException("Message with id " + messageId + " not found.")
+        );
+        return message.getGroupChat().getUser().getId() == userId;
+    }
 }

@@ -40,5 +40,7 @@ public abstract class LeaderboardEntry {
 
     public String getPlayerName() { return playerName; }
 
+    public Quiz getQuiz() { return quiz; }
+
     public abstract LeaderboardEntryDTO toDTO();
 }

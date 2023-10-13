@@ -2,13 +2,10 @@ package com.backend.WhoSaidIt.security;
 
 import com.backend.WhoSaidIt.DTOs.AuthenticationResponseDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
@@ -17,7 +14,7 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<AuthenticationResponseDTO> register(
             @RequestBody RegisterRequest request
     ) {
@@ -26,7 +23,16 @@ public class AuthenticationController {
         );
     }
 
-    @PostMapping("/authenticate")
+    // This endpoint is used to generate a shareable quiz token.
+    // Requires the caller to be an authenticated user who owns the quiz with quizId.
+    @PostMapping("/quizzes/{quizId}/auth/generate-token")
+    public ResponseEntity<AuthenticationResponseDTO> generateQuizToken(
+            @PathVariable long quizId
+    ) {
+        return ResponseEntity.ok(authenticationService.generateQuizToken(quizId));
+    }
+
+    @PostMapping("/auth/authenticate")
     public ResponseEntity<AuthenticationResponseDTO> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
@@ -37,5 +43,3 @@ public class AuthenticationController {
 
     public record AuthenticationRequest(String username, String password) {}
 }
-
-

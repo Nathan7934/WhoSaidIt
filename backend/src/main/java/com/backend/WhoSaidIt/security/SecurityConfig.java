@@ -1,5 +1,7 @@
 package com.backend.WhoSaidIt.security;
 
+import com.backend.WhoSaidIt.security.authentication_managers.QuizAuthorizationManager;
+import com.backend.WhoSaidIt.security.authentication_managers.UserAuthorizationManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,20 +21,31 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, AuthenticationProvider authenticationProvider) {
+    private final QuizAuthorizationManager quizAuthorizationManager;
+    private final UserAuthorizationManager userAuthorizationManager;
+
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthFilter,
+            AuthenticationProvider authenticationProvider,
+            QuizAuthorizationManager quizAuthorizationManager,
+            UserAuthorizationManager userAuthorizationManager
+    ) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.authenticationProvider = authenticationProvider;
+        this.quizAuthorizationManager = quizAuthorizationManager;
+        this.userAuthorizationManager = userAuthorizationManager;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Currently, we are only requiring authentication for requests to /api/users/**.
-        // All other requests are permitted without authentication.
+        // Currently, all requests aside from authentication requests require a JWT token.
+
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/**").permitAll() // TODO: Change this to authenticated() when we are ready to require authentication
-                .anyRequest().permitAll()
+                .requestMatchers("/api/quizzes/**").access(quizAuthorizationManager)
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().access(userAuthorizationManager)
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider)

@@ -97,4 +97,12 @@ public class QuizService {
     public void deleteQuiz(long id) {
         quizRepository.deleteById(id);
     }
+
+    // Used in the auth_managers to check the authenticated user's ownership rights
+    public boolean isOwnedBy(long quizId, long userId) {
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(
+                () -> new DataNotFoundException("Quiz with id " + quizId + " not found.")
+        );
+        return quiz.getGroupChat().getUser().getId() == userId;
+    }
 }
