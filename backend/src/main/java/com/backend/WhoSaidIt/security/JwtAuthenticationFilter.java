@@ -53,9 +53,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwtToken = authHeader.substring(7); // Remove "Bearer " from the authorization header.
 
         // Check if it is a quiz token or a user token.
-        TokenType tokenType = jwtService.extractTokenType(jwtToken);
+        String tokenType = jwtService.extractTokenType(jwtToken);
 
-        if(TokenType.USER.equals(tokenType)) {
+        // Refresh tokens cannot be used to authenticate a user.
+        if(TokenType.REFRESH.name().equals(tokenType)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if(TokenType.USER.name().equals(tokenType)) {
             // If we have a user that is not authenticated, we check if their provided token is valid. If it is, we
             // authenticate them by setting their authentication object in the SecurityContextHolder.
             String username = jwtService.extractSubject(jwtToken);
@@ -73,7 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-        } else if (TokenType.QUIZ.equals(tokenType)) {
+        } else if (TokenType.QUIZ.name().equals(tokenType)) {
             String quizId = jwtService.extractSubject(jwtToken);
             if (quizId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 Quiz quiz = quizRepository.findById(Long.parseLong(quizId)).orElseThrow(

@@ -38,14 +38,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Currently, all requests aside from authentication requests require a JWT token.
+        // Currently, all API requests that access resources require authentication.
+        // This is done by requiring a valid JWT token in the Authorization header of the request.
+        // Quizzes use a separate authorization manager to account for shareable quiz tokens.
+        // Request to the /api/auth/** endpoints do not require authentication.
 
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/quizzes/**").access(quizAuthorizationManager)
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().access(userAuthorizationManager)
+                .requestMatchers("/api/users/**").access(userAuthorizationManager)
+                .requestMatchers("/api/messages/**").access(userAuthorizationManager)
+                .requestMatchers("/api/groupChats/**").access(userAuthorizationManager)
+                .requestMatchers("/api/participants/**").access(userAuthorizationManager)
+                .requestMatchers("/api/leaderboard/**").access(userAuthorizationManager)
+                .anyRequest().permitAll()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider)

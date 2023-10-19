@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -19,7 +20,8 @@ import java.util.function.Function;
 public class JwtService {
 
     private static final String SECRET_KEY = "9b46704cbe1d2143ef058c48e93dbb6db5e95329696cca78a3a43765b26127e1";
-    private static final int USER_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7; // 1 week
+    private static final int USER_ACCESS_EXPIRATION = 1000 * 60 * 30; // 30 minutes
+    private static final int USER_REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
 
     public String generateUserToken(UserDetails userDetails) {
         return generateUserToken(Map.of(), userDetails);
@@ -31,12 +33,32 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ) {
-        extraClaims.put("tokenType", TokenType.USER);
+        Map<String, Object> claims = new HashMap<>(extraClaims);
+        claims.put("tokenType", TokenType.USER.name());
         return Jwts.builder()
-                .setClaims(extraClaims)
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + USER_EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + USER_ACCESS_EXPIRATION))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateUserRefreshToken(UserDetails userDetails) {
+        return generateUserRefreshToken(Map.of(), userDetails);
+    }
+
+    public String generateUserRefreshToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails
+    ) {
+        Map<String, Object> claims = new HashMap<>(extraClaims);
+        claims.put("tokenType", TokenType.REFRESH.name());
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + USER_REFRESH_EXPIRATION))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -52,9 +74,10 @@ public class JwtService {
             Map<String, Object> extraClaims,
             Quiz quiz
     ) {
-        extraClaims.put("tokenType", TokenType.QUIZ);
+        Map<String, Object> claims = new HashMap<>(extraClaims);
+        claims.put("tokenType", TokenType.QUIZ.name());
         return Jwts.builder()
-                .setClaims(extraClaims)
+                .setClaims(claims)
                 .setSubject(quiz.getId().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -85,8 +108,8 @@ public class JwtService {
     }
 
     // Extracts the token type from a JWT token. As of now there are two: "USER" and "QUIZ".
-    public TokenType extractTokenType(String token) {
-        return extractClaim(token, claims -> claims.get("tokenType", TokenType.class));
+    public String extractTokenType(String token) {
+        return extractClaim(token, claims -> claims.get("tokenType", String.class));
     }
 
     private Date extractExpiration(String token) {

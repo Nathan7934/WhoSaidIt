@@ -73,9 +73,9 @@ public abstract class Quiz {
 
     public boolean getHasSpecifiedMessages() { return hasSpecifiedMessages; }
 
-    // Method is called before the entity is persisted or updated, keeping the hasSpecifiedMessages field up to date.
-    @PrePersist
-    @PreUpdate
+    // Method is called after the entity is persisted or updated, keeping the hasSpecifiedMessages field up to date.
+    @PostPersist
+    @PostUpdate
     public void updateHasSpecifiedMessages() {
         this.hasSpecifiedMessages = !messagesInQuiz.isEmpty();
     }

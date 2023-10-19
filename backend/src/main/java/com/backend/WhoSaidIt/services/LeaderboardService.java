@@ -79,6 +79,6 @@ public class LeaderboardService {
         LeaderboardEntry entry = leaderboardEntryRepository.findById(entryId).orElseThrow(
                 () -> new DataNotFoundException("LeaderboardEntry with id " + entryId + " not found.")
         );
-        return entry.getQuiz().getGroupChat().getId() == userId;
+        return entry.getQuiz().getGroupChat().getUser().getId() == userId;
     }
 }

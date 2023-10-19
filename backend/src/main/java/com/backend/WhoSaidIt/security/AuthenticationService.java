@@ -44,8 +44,9 @@ public class AuthenticationService {
                 Role.USER
         );
         userRepository.save(user);
-        String jwtToken = jwtService.generateUserToken(user);
-        return new AuthenticationResponseDTO(jwtToken);
+        String accessToken = jwtService.generateUserToken(user);
+        String refreshToken = jwtService.generateUserRefreshToken(user);
+        return new AuthenticationResponseDTO(accessToken, refreshToken);
     }
 
     public AuthenticationResponseDTO generateQuizToken(long quizId) {
@@ -53,7 +54,7 @@ public class AuthenticationService {
                 () -> new DataNotFoundException("Quiz with id " + quizId + " not found")
         );
         String jwtToken = jwtService.generateQuizToken(quiz);
-        return new AuthenticationResponseDTO(jwtToken);
+        return new AuthenticationResponseDTO(jwtToken, null);
     }
 
     public AuthenticationResponseDTO authenticate(String username, String password) {
@@ -63,7 +64,23 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new DataNotFoundException("User with username " + username + " not found")
         );
-        String jwtToken = jwtService.generateUserToken(user);
-        return new AuthenticationResponseDTO(jwtToken);
+        String accessToken = jwtService.generateUserToken(user);
+        String refreshToken = jwtService.generateUserRefreshToken(user);
+        return new AuthenticationResponseDTO(accessToken, refreshToken);
+    }
+
+    public AuthenticationResponseDTO refresh(String refreshToken) {
+        String username = jwtService.extractSubject(refreshToken);
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new DataNotFoundException("User with username " + username + " not found")
+        );
+        if (!jwtService.validateUserToken(refreshToken, user)) {
+            throw new IllegalArgumentException("Invalid refresh token. User must authenticate again.");
+        }
+        String accessToken = jwtService.generateUserToken(user);
+        String newRefreshToken = jwtService.generateUserRefreshToken(user);
+        return new AuthenticationResponseDTO(accessToken, newRefreshToken);
+
+        // TODO: Implement a way to invalidate refresh tokens once used.
     }
 }

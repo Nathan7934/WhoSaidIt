@@ -20,6 +20,9 @@ import java.util.regex.Pattern;
 public class QuizAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
     // This class is used to determine whether a user or shareable quiz token holder is authorized to access a quiz.
 
+    // TODO: Restrict the POST /api/quizzes/{id}/messages endpoint to only authenticated users who own the quiz, and
+    // TODO: only allow them to assign messages they own to their quiz.
+
     private final QuizService quizService;
 
     public QuizAuthorizationManager(QuizService quizService) {
