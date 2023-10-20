@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.security.authentication_managers;
 
+import com.backend.WhoSaidIt.entities.Message;
 import com.backend.WhoSaidIt.entities.User;
 import com.backend.WhoSaidIt.exceptions.InvalidTokenTypeException;
 import com.backend.WhoSaidIt.security.tokens.QuizAuthenticationToken;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,8 +53,8 @@ public class QuizAuthorizationManager implements AuthorizationManager<RequestAut
         }
         else if (auth instanceof QuizAuthenticationToken) { // If there is a shareable quiz token authenticated
 
-            // Only authenticated users who own the quiz can generate a shareable quiz token
-            if (isGenerateTokenRequest(request)) {
+            // Only authenticated users who own the quiz can generate a shareable quiz token or assign messages.
+            if (isGenerateTokenRequest(request) || isMessageAssignmentRequest(request)) {
                 return new AuthorizationDecision(false);
             }
 
@@ -85,5 +87,16 @@ public class QuizAuthorizationManager implements AuthorizationManager<RequestAut
     // Determines if the request is for a shareable quiz token generation endpoint.
     private static boolean isGenerateTokenRequest(HttpServletRequest request) {
         return request.getRequestURI().matches("^/api/quizzes/\\d+/auth/generate-token$");
+    }
+
+    private static boolean isMessageAssignmentRequest(HttpServletRequest request) {
+        boolean isProperEndpoint = request.getRequestURI().matches("^/api/quizzes/\\d+/messages$");
+        return isProperEndpoint && request.getMethod().equalsIgnoreCase("POST");
+    }
+
+    // Precondition: Request must be of type POST /api/quizzes/{id}/messages
+    private boolean userOwnsAllMessages(HttpServletRequest request) {
+        // TODO: Figure out how to get the message ids from the request body
+        return false;
     }
 }
