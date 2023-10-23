@@ -43,10 +43,10 @@ public class AuthenticationService {
                 email,
                 Role.USER
         );
-        userRepository.save(user);
+        user = userRepository.save(user);
         String accessToken = jwtService.generateUserToken(user);
         String refreshToken = jwtService.generateUserRefreshToken(user);
-        return new AuthenticationResponseDTO(accessToken, refreshToken);
+        return new AuthenticationResponseDTO(user.getId(), accessToken, refreshToken);
     }
 
     public AuthenticationResponseDTO generateQuizToken(long quizId) {
@@ -54,7 +54,7 @@ public class AuthenticationService {
                 () -> new DataNotFoundException("Quiz with id " + quizId + " not found")
         );
         String jwtToken = jwtService.generateQuizToken(quiz);
-        return new AuthenticationResponseDTO(jwtToken, null);
+        return new AuthenticationResponseDTO(null, jwtToken, null);
     }
 
     public AuthenticationResponseDTO authenticate(String username, String password) {
@@ -66,7 +66,7 @@ public class AuthenticationService {
         );
         String accessToken = jwtService.generateUserToken(user);
         String refreshToken = jwtService.generateUserRefreshToken(user);
-        return new AuthenticationResponseDTO(accessToken, refreshToken);
+        return new AuthenticationResponseDTO(user.getId(), accessToken, refreshToken);
     }
 
     public AuthenticationResponseDTO refresh(String refreshToken) {
@@ -79,7 +79,7 @@ public class AuthenticationService {
         }
         String accessToken = jwtService.generateUserToken(user);
         String newRefreshToken = jwtService.generateUserRefreshToken(user);
-        return new AuthenticationResponseDTO(accessToken, newRefreshToken);
+        return new AuthenticationResponseDTO(user.getId(), accessToken, newRefreshToken);
 
         // TODO: Implement a way to invalidate refresh tokens once used.
     }
