@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import useRequestLogin from "@/app/hooks/api-access/useRequestLogin";
 
 export default function Login() {
@@ -12,6 +13,9 @@ export default function Login() {
     // Login form fields state
     const [loginUsername, setLoginUsername] = useState<string>("");
     const [loginPassword, setLoginPassword] = useState<string>("");
+
+    // Login error message state
+    const [loginError, setLoginError] = useState<string>(""); // Empty string means no error
 
     // The onChange event handler for the login form fields
     const handleLoginChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -31,9 +35,9 @@ export default function Login() {
                 // If we successfully logged in, redirect to the dashboard
                 router.push("/dashboard");
             } else {
-                // If there was an error, log it to the console
-                // TODO: Display the error to the user
+                // If there was an error
                 console.error(error);
+                setLoginError(error);
             }
         });
     }
@@ -83,9 +87,20 @@ export default function Login() {
                     </div>
                     <div className="form-field">
                         <div className="form-control justify-center">
-                            <a className="link link-underline-hover link-primary text-sm">Don't have an account yet? Sign up.</a>
+                            <Link href="/register" className="link link-underline-hover link-primary text-sm">Don't have an account yet? Sign up.</Link>
                         </div>
                     </div>
+                    {/* Login error alert */}
+                    {loginError !== "" &&
+                    <div className="alert alert-info py-3">
+                        <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M24 4C12.96 4 4 12.96 4 24C4 35.04 12.96 44 24 44C35.04 44 44 35.04 44 24C44 12.96 35.04 4 24 4ZM24 34C22.9 34 22 33.1 22 32V24C22 22.9 22.9 22 24 22C25.1 22 26 22.9 26 24V32C26 33.1 25.1 34 24 34ZM26 18H22V14H26V18Z" fill="#0085FF" />
+                        </svg>
+                        <div className="flex flex-col">
+                            <span>{loginError}</span>
+                        </div>
+                    </div>
+                    }
                 </form>
             </div>
         </main>

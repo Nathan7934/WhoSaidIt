@@ -5,6 +5,7 @@ import com.backend.WhoSaidIt.entities.Role;
 import com.backend.WhoSaidIt.entities.User;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
+import com.backend.WhoSaidIt.exceptions.UserAlreadyExistsException;
 import com.backend.WhoSaidIt.repositories.QuizRepository;
 import com.backend.WhoSaidIt.repositories.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +38,9 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponseDTO register(String email, String username, String password) {
+        if (userRepository.existsByUsername(username)) {
+            throw new UserAlreadyExistsException("Username " + username + " is already taken");
+        }
         User user = new User(
                 username,
                 passwordEncoder.encode(password), // Passwords are stored in the database as hashes, not plaintext

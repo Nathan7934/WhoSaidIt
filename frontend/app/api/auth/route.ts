@@ -16,6 +16,7 @@ interface AuthRequest {
     password: string;
 }
 export async function POST(req: Request): Promise<NextResponse> {
+
     console.log("POST http proxy: /api/auth");
 
     const requestBody: AuthRequest = await req.json();

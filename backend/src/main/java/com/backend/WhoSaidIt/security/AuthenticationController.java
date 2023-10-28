@@ -1,6 +1,7 @@
 package com.backend.WhoSaidIt.security;
 
 import com.backend.WhoSaidIt.DTOs.AuthenticationResponseDTO;
+import com.backend.WhoSaidIt.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +20,13 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponseDTO> register(
             @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(
-                authenticationService.register(request.email(), request.username(), request.password())
-        );
+        AuthenticationResponseDTO newUserAuth;
+        try {
+            newUserAuth = authenticationService.register(request.email(), request.username(), request.password());
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+        return ResponseEntity.ok(newUserAuth);
     }
 
     @PostMapping("/auth/authenticate")

@@ -20,8 +20,8 @@ import java.util.function.Function;
 public class JwtService {
 
     private static final String SECRET_KEY = "9b46704cbe1d2143ef058c48e93dbb6db5e95329696cca78a3a43765b26127e1";
-    private static final int USER_ACCESS_EXPIRATION = 1000 * 60 * 30; // 30 minutes
-    private static final int USER_REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
+    private static final int USER_ACCESS_EXPIRATION = 1000 * 60 * 10; // 10 minutes
+    private static final int USER_REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 14; // 2 weeks
 
     public String generateUserToken(UserDetails userDetails) {
         return generateUserToken(Map.of(), userDetails);

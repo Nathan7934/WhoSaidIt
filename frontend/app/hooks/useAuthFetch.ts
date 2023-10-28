@@ -20,7 +20,7 @@ export default function useAuthFetch() {
                 Authorization: `Bearer ${token}`,
             },
         });
-        if (response.status === 403) {
+        if (response.status === 403 || response.status === 401) {
             const refreshResponse = await fetch(`${INTERNAL_API_ROOT}/refresh`);
             if (refreshResponse.ok) {
                 const { user_id, access_token } = await refreshResponse.json();

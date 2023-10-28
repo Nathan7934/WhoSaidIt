@@ -85,7 +85,8 @@ public class User implements UserDetails {
 	public UserDTO toDTO() {
 		return new UserDTO(
 				this.id,
-				this.username
+				this.username,
+				this.email
 		);
 	}
 }

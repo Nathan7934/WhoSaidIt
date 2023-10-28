@@ -22,8 +22,8 @@ export default function useRequestLogin() {
             });
             if (!response.ok) {
                 // TODO: Refine these error messages
-                if (response.status === 401) {
-                    return 'Username/password combination not found';
+                if (response.status === 403) {
+                    return 'Invalid username/password combination';
                 } else if (response.status >= 400 && response.status < 500) {
                     return 'Client failed request';
                 } else if (response.status >= 500) {
