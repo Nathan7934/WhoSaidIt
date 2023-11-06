@@ -27,6 +27,7 @@ public class SurvivalQuiz extends Quiz{
                 this.getId(),
                 this.getQuizName(),
                 this.getDescription(),
+                this.getCreatedDate(),
                 this.getHasSpecifiedMessages(),
                 this.getNumberOfSkips()
         );

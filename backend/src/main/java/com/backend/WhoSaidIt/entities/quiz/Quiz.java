@@ -8,7 +8,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +52,10 @@ public abstract class Quiz {
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    @CreationTimestamp
+    @Column(name = "createdDate", columnDefinition = "TIMESTAMP WITHOUT TIME ZONE", nullable = false)
+    private LocalDateTime createdDate;
+
     @Column(name = "hasSpecifiedMessages", columnDefinition = "BOOLEAN", nullable = false)
     private boolean hasSpecifiedMessages = false;
 
@@ -70,6 +76,8 @@ public abstract class Quiz {
     public String getQuizName() { return quizName; }
 
     public String getDescription() { return description; }
+
+    public LocalDateTime getCreatedDate() { return createdDate; }
 
     public boolean getHasSpecifiedMessages() { return hasSpecifiedMessages; }
 
