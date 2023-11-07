@@ -1,7 +1,6 @@
 package com.backend.WhoSaidIt.security.authentication_managers;
 
 import com.backend.WhoSaidIt.entities.User;
-import com.backend.WhoSaidIt.exceptions.InvalidTokenTypeException;
 import com.backend.WhoSaidIt.security.tokens.QuizAuthenticationToken;
 import com.backend.WhoSaidIt.services.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,7 +65,7 @@ public class UserAuthorizationManager implements AuthorizationManager<RequestAut
         } else if (auth instanceof UsernamePasswordAuthenticationToken) {
             token = (UsernamePasswordAuthenticationToken) auth;
         } else {
-            throw new InvalidTokenTypeException("Invalid token type: " + auth.getClass().getName());
+            return new AuthorizationDecision(false);
         }
 
         // Determine which type of entity the request is for, then call the appropriate handler method to determine if

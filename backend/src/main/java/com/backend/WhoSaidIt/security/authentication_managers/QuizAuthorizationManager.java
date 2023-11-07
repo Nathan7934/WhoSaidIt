@@ -1,8 +1,6 @@
 package com.backend.WhoSaidIt.security.authentication_managers;
 
-import com.backend.WhoSaidIt.entities.Message;
 import com.backend.WhoSaidIt.entities.User;
-import com.backend.WhoSaidIt.exceptions.InvalidTokenTypeException;
 import com.backend.WhoSaidIt.security.tokens.QuizAuthenticationToken;
 import com.backend.WhoSaidIt.services.QuizService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +46,6 @@ public class QuizAuthorizationManager implements AuthorizationManager<RequestAut
             if (quizService.isOwnedBy(requestedQuizId, user.getId())) {
                 return new AuthorizationDecision(true);
             }
-            return new AuthorizationDecision(false);
         }
         else if (auth instanceof QuizAuthenticationToken) { // If there is a shareable quiz token authenticated
 
@@ -65,11 +61,8 @@ public class QuizAuthorizationManager implements AuthorizationManager<RequestAut
             if (tokenQuizId.equals(requestedQuizId)) {
                 return new AuthorizationDecision(true);
             }
-            return new AuthorizationDecision(false);
         }
-        else {
-            throw new InvalidTokenTypeException("Invalid token type: " + auth.getClass().getName());
-        }
+        return new AuthorizationDecision(false);
     }
 
     // Extracts the quiz ID from the request path.

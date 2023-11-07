@@ -5,6 +5,8 @@ import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.QuizRepository;
 import com.backend.WhoSaidIt.security.tokens.QuizAuthenticationToken;
 import com.backend.WhoSaidIt.security.tokens.TokenType;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,7 +55,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwtToken = authHeader.substring(7); // Remove "Bearer " from the authorization header.
 
         // Check if it is a quiz token or a user token.
-        String tokenType = jwtService.extractTokenType(jwtToken);
+        String tokenType;
+        try {
+            tokenType = jwtService.extractTokenType(jwtToken);
+        } catch (JwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 status code
+            if (e instanceof ExpiredJwtException)
+                response.getWriter().write("Token has expired");
+            else
+                response.getWriter().write("Invalid token");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // Refresh tokens cannot be used to authenticate a user.
         if(TokenType.REFRESH.name().equals(tokenType)) {
