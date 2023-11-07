@@ -1,7 +1,13 @@
+export interface User {
+    id: number;
+    username: string;
+    email: string;
+}
+
 export interface Quiz {
     id: number;
     type: string;
-    name: string;
+    quizName: string;
     createdDate: Date;
     description: string;
     hasSpecifiedMessages: boolean;
@@ -20,9 +26,9 @@ export interface TimeAttackQuiz extends Quiz {
 
 export interface GroupChatInfo {
     id: number;
-    name: string;
+    groupChatName: string;
     uploadDate: Date;
     numParticipants: number;
     numMessages: number;
-    quizzes: Array<Quiz>;
+    quizzes: Array<SurvivalQuiz | TimeAttackQuiz>;
 }

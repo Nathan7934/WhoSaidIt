@@ -1,42 +1,82 @@
 "use client";
 
-import useAuth from "@/app/hooks/useAuth";
-import { GroupChatInfo, Quiz } from "@/app/interfaces";
+import useRequestActiveUser from "@/app/hooks/api-access/useRequestActiveUser";
+import useRequestGroupChatsInfo from "@/app/hooks/api-access/useRequestGroupChatsInfo";
+import { GroupChatInfo, SurvivalQuiz, TimeAttackQuiz, User } from "@/app/interfaces";
 import { demoGroupChats } from "@/app/utilities/demoData";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { group } from "console";
 
 export default function Dashboard() {
 
-    const { userId } = useAuth();
+    const router = useRouter();
+    const requestActiveUser = useRequestActiveUser();
+    const requestGroupChatsInfo = useRequestGroupChatsInfo();
 
+    const [activeUsername, setActiveUsername] = useState<string>("");
+    // TODO: Remove demo data in production
     const [groupChats, setGroupChats] = useState<Array<GroupChatInfo>>(demoGroupChats);
-    const [latestGroupChat, setLatestGroupChat] = useState<GroupChatInfo>(groupChats[0]);
+
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const getPageData = async () => {
+            const activeUser: User | null = await requestActiveUser();
+            const groupChatsInfo: Array<GroupChatInfo> | null = await requestGroupChatsInfo();
+
+            if (activeUser && groupChatsInfo) {
+                setActiveUsername(activeUser.username);
+                setGroupChats(sortGroupChatsByDate(groupChatsInfo));
+                setLoading(false);
+            } else {
+                console.log("Error fetching user data, redirecting to root");
+                router.push("/");
+            }
+        }
+        getPageData();
+    }, []);
+
+    // =============== RENDER FUNCTIONS ===============
 
     const renderLatestGroupChat = () => {
-        const latestGC: GroupChatInfo = groupChats[0]; // TODO: Determine latest group chat by date
+
+        if (loading) return (<div className="skeleton h-[495px] w-full mt-8 py-7 px-5 rounded-xl border border-gray-7 opacity-25" />);
+
+        // In the case where the user hasn't uploaded any group chats yet
+        if (groupChats.length === 0) {
+            return (
+                <div className="w-full mt-8 bg-zinc-950 py-24 px-5 rounded-xl border border-gray-7 text-center">
+                    <div className="text-2xl font-light text-gray-10">You haven't uploaded any group chats yet</div>
+                    <div className="mt-6">Click "Upload New Group Chat" to get started!</div>
+                </div>
+            );
+        }
+
+        const latestGC: GroupChatInfo = groupChats[0]; // The latest group chat is the first element in the array
 
         return (
             <div className="w-full grid grid-cols-1 md:grid-cols-3 mt-8 bg-zinc-950 py-7 px-5 rounded-xl border border-gray-7">
                 <div className="flex flex-col col-span-2 relative">
                     <div className="text-center sm:text-left text-3xl font-medium ml-1">
-                        {latestGC.name} <span className="text-gray-7 font-light ml-2 hidden sm:inline-block">(Latest)</span>
+                        {latestGC.groupChatName} <span className="text-gray-7 font-light ml-2 hidden sm:inline-block">(Latest)</span>
                     </div>
                     <div className="mt-2">
                         <div className="badge badge-outline mx-1 mt-1 block sm:inline-block">
-                            <span className="font-normal mr-2">Uploaded:</span> {latestGC.uploadDate.toDateString()}
+                            <span className="font-normal mr-2">Uploaded:</span> {formatDate(latestGC.uploadDate)}
                         </div>
                         <div className="flex justify-center sm:inline-block">
-                            <div className="badge badge-outline mx-1 mt-1 grow flex justify-center sm:inline-block">
+                            <div className="badge badge-outline mx-1 mt-2 sm:mt-1 grow flex justify-center sm:inline-block">
                                 <span className="font-normal mr-2">Participants:</span> {latestGC.numParticipants}
                             </div>
-                            <div className="badge badge-outline mx-1 mt-1 grow flex justify-center sm:inline-block">
+                            <div className="badge badge-outline mx-1 mt-2 sm:mt-1 grow flex justify-center sm:inline-block">
                                 <span className="font-normal mr-2">Messages:</span> {latestGC.numMessages}
                             </div>
                         </div>
                     </div>
-                    <div className="mt-5 sm:mt-8 text-lg underline decoration-1 underline-offset-2 text-gray-9 font-light">
+                    <div className="mt-5 sm:mt-8 text-lg text-gray-9 font-light">
                         Quizzes for this chat:
                     </div>
                     <div className="w-full mt-4 mb-6 md:pr-8">
@@ -69,18 +109,22 @@ export default function Dashboard() {
     }
 
     const renderOlderGroupChats = () => {
+        if (loading) return (<div className="skeleton h-48 w-full mt-8 py-7 px-5 rounded-xl border border-gray-7 opacity-25" />);
+
+        if (groupChats.length < 2) return (<div className="text-center text-gray-7 font-light text-sm">Nothing here</div>);
+
         let groupChatRows: Array<JSX.Element> = [];
-        let startIdx: number = latestGroupChat.quizzes.length;
+        let startIdx: number = groupChats[0].quizzes.length;
         groupChats.forEach((groupChat, index) => {
-            if (groupChat === latestGroupChat) return;
+            if (index === 0) return;
             groupChatRows.push(
                 <div className="accordion" key={index}>
                     <input type="checkbox" id={`toggle-${index}`} className="accordion-toggle" />
                     <label htmlFor={`toggle-${index}`} className="accordion-title bg-zinc-950">
-                        <span className="font-light text-lg sm:text-xl">{groupChat.name}</span>
+                        <span className="font-light text-lg sm:text-xl">{groupChat.groupChatName}</span>
                         <div className="mt-1">
                             <span className="badge badge-outline mr-2">
-                                <span className="font-normal mr-2">Uploaded:</span> {groupChat.uploadDate.toDateString()}
+                                <span className="font-normal mr-2">Uploaded:</span> {formatDate(groupChat.uploadDate)}
                             </span>
                             <span className="badge badge-outline mr-2">
                                 <span className="font-normal mr-2">Participants:</span> {groupChat.numParticipants}
@@ -122,7 +166,7 @@ export default function Dashboard() {
     }
 
     const renderQuizRows = (groupChat: GroupChatInfo, startIdx:number = 0) => {
-        const quizzes: Array<Quiz> = groupChat.quizzes;
+        const quizzes: Array<TimeAttackQuiz | SurvivalQuiz> = groupChat.quizzes;
 
         const renderTypeBadge = (type: string) => {
             if (type === "TIME_ATTACK") {
@@ -137,30 +181,32 @@ export default function Dashboard() {
             {/* =============== DESKTOP LAYOUT =============== */}
             <div className="hidden sm:grid grid-cols-3 grid-rows-2 gap-1">
                 <div className="col-span-2">
-                    <span className="text-xl font-semibold mr-3">{quiz.name}</span><wbr />
+                    <span className="text-xl text-white font-semibold mr-3">{quiz.quizName}</span><wbr />
                     {renderTypeBadge(quiz.type)}
                 </div>
                 <div className="row-span-2 justify-self-end self-center flex items-center">
                     <button className="btn btn-outline btn-sm mr-2 whitespace-nowrap hidden sm:block">Copy Link</button>
                     {/* Options dropdown */}
-                    <div className="dropdown">
-                        <label tabIndex={0} className="hover:cursor-pointer"><Image src="menu.svg" alt="Menu" width={44} height={44} /></label>
+                    <details className="dropdown">
+                        <summary tabIndex={0} className="hover:cursor-pointer list-none"><Image src="menu.svg" alt="Menu" width={44} height={44} /></summary>
                         <div className="dropdown-menu dropdown-menu-left shadow-md">
                             <a className="dropdown-item text-sm">Quiz Leaderboard</a>
                             <a tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</a>
                             <a tabIndex={-1} className="dropdown-item text-sm text-red-9">Delete Quiz</a>
                         </div>
-                    </div>
+                    </details>
                 </div>
-                <div className="col-span-2 text-sm text-gray-9 self-center">
-                    Created: {quiz.createdDate.toDateString()}
-                </div>
+                <span className="tooltip tooltip-right w-min" data-tooltip="date created">
+                    <label className="col-span-2 text-sm text-gray-9 self-center whitespace-nowrap mr-1">
+                        {formatDate(quiz.createdDate)}
+                    </label>
+                </span>
             </div>
             {/* =============== MOBILE LAYOUT =============== */}
             <div className="flex sm:hidden">
                 <div className="block">
-                    <div className="text-lg font-semibold">{quiz.name}</div>
-                    <div className="text-xs text-gray-9">Created: {quiz.createdDate.toDateString()}</div>
+                    <div className="text-lg font-semibold">{quiz.quizName}</div>
+                    <div className="text-xs text-gray-9">Created: {formatDate(quiz.createdDate)}</div>
                     <div className="mt-1">{renderTypeBadge(quiz.type)}</div>
                 </div>
                 {/* Options modal */}
@@ -176,7 +222,7 @@ export default function Dashboard() {
                             </div>
                             <div className="divider my-0 mx-3 relative bottom-2"></div>
                             <div className="px-4 text-center mb-3">
-                                <h2 className="text-xl text-white">{quiz.name}</h2>
+                                <h2 className="text-xl text-white">{quiz.quizName}</h2>
                                 <div className=" mb-4">{renderTypeBadge(quiz.type)}</div>
                             </div>
                             {/* <div className="divider my-0 mx-3 relative bottom-1 mb-2"></div> */}
@@ -194,11 +240,38 @@ export default function Dashboard() {
         </div>));
     }
 
+    // =============== HELPER FUNCTIONS ===============
+
+    const sortGroupChatsByDate = (groupChats: Array<GroupChatInfo>) => {
+        return groupChats.sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
+    }
+
+    const formatDate = (date: Date): string => {
+
+        const getOrdinalSuffix = (day: number) => {
+            if (day > 3 && day < 21) return 'th';
+            switch (day % 10) {
+                case 1:  return "st";
+                case 2:  return "nd";
+                case 3:  return "rd";
+                default: return "th";
+            }
+        }
+        const month: string = date.toLocaleString('default', { month: 'long' });
+        const day: string = date.getDate().toString();
+        const year: string = date.getFullYear().toString();
+        const ordinalSuffix = getOrdinalSuffix(date.getDate());
+        return `${month} ${day}${ordinalSuffix}, ${year}`;
+    }
+
     return (
         <main className="flex min-h-screen flex-col items-center justify-between">
             <div className="relative w-[95%] lg:w-[90%] xl:w-[70%] 2xl:w-[60%] mt-12 sm:mt-24">
                 <div className="text-4xl text-center sm:text-left sm:text-5xl font-bold">
-                    Welcome,<br className="sm:hidden" /> Nathan7934!
+                    <span className="sm:mr-4">Welcome,</span>
+                    <br className="sm:hidden" /> 
+                    {!loading ? activeUsername : 
+                    <div className="skeleton h-11 w-60 rounded-md inline-block mt-1 sm:mt-0 opacity-25" />}
                 </div>
                 <div className="mt-8 flex flex-col sm:flex-row items-center">
                     <div className="btn-group btn-group-scrollable">

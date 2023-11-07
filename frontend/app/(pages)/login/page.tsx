@@ -17,6 +17,9 @@ export default function Login() {
     // Login error message state
     const [loginError, setLoginError] = useState<string>(""); // Empty string means no error
 
+    // Login loading state
+    const [loginLoading, setLoginLoading] = useState<boolean>(false);
+
     // The onChange event handler for the login form fields
     const handleLoginChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = event.target;
@@ -29,6 +32,7 @@ export default function Login() {
 
     const loginSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+        setLoginLoading(true);
         requestLogin(loginUsername, loginPassword)
         .then((error: string | null) => {
             if (!error) {
@@ -38,6 +42,7 @@ export default function Login() {
                 // If there was an error
                 console.error(error);
                 setLoginError(error);
+                setLoginLoading(false);
             }
         });
     }
@@ -80,8 +85,13 @@ export default function Login() {
                     </div>
                     <div className="form-field pt-5">
                         <div className="form-control justify-between">
-                            <button type="submit" className="btn btn-primary w-full">
-                                Sign in
+                            <button type="submit" className={"btn w-full" + (loginLoading ? " btn-outline-primary" : " btn-primary")}>
+                                {loginLoading ? 
+                                    <div className="spinner-dot-pulse">
+                                        <div className="spinner-pulse-dot"></div>
+                                    </div> 
+                                    : "Sign In"
+                                }
                             </button>
                         </div>
                     </div>

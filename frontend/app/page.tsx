@@ -1,33 +1,23 @@
 "use client";
 
-import { INTERNAL_API_ROOT } from "./constants";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import useAuth from "./hooks/useAuth";
+
+import useRefreshToken from "./hooks/useRefreshToken";
 
 export default function App() {
 
     const router = useRouter();
-    const { setUserId, setAuth } = useAuth();
+    const refreshToken = useRefreshToken();
 
     useEffect(() => {
         const authRefresh = async () => {
-            try {
-                const response = await fetch(`${INTERNAL_API_ROOT}/refresh`);
-                const {user_id, access_token} = await response.json();
-                
-                if (access_token && user_id) {
-                    // If we successfully refreshed (i.e. user has a stored refresh cookie), redirect to the dashboard
-                    setUserId(user_id);
-                    setAuth(access_token);
-                    router.push("/dashboard");
-                } else {
-                    // If no token was returned or there was an error, redirect to the login page
-                    console.log("No token returned or there was an error");
-                    router.push("/login");
-                }
-            } catch (error) {
-                console.error(error);
+            if (await refreshToken()) {
+                // If we successfully refreshed (i.e. user has a stored refresh cookie), redirect to the dashboard
+                router.push("/dashboard");
+            } else {
+                // If no token was returned or there was an error, redirect to the login page
+                console.log("No token returned or there was an error");
                 router.push("/login");
             }
         }

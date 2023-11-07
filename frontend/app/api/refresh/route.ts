@@ -36,6 +36,7 @@ export async function GET(req: Request): Promise<NextResponse> {
         }
 
         const parsedJson = await response.json();
+        // Http-Only cookie is attached to the response by the buildAuthResponse function
         return buildAuthReponse(parsedJson);
 
     } catch (error) {

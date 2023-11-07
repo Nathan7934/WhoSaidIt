@@ -25,3 +25,9 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* Hiding the <summary> / <details> arrow */
+details > summary.list-none::-webkit-details-marker,
+details > summary.list-none::marker {
+  display: none;
+}
