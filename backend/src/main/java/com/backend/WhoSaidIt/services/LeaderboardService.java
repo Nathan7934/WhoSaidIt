@@ -11,9 +11,11 @@ import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.entities.quiz.SurvivalQuiz;
 import com.backend.WhoSaidIt.entities.quiz.TimeAttackQuiz;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
+import com.backend.WhoSaidIt.repositories.GroupChatRepository;
 import com.backend.WhoSaidIt.repositories.LeaderboardEntryRepository;
 import com.backend.WhoSaidIt.repositories.QuizRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,19 +36,21 @@ public class LeaderboardService {
                 .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
 
         // We want to sort the leaderboard entries differently depending on the type of quiz
-        Sort sort;
         List<LeaderboardEntry> entries;
         if (quiz instanceof TimeAttackQuiz) {
-            sort = Sort.by(Sort.Order.desc("score"), Sort.Order.asc("timeTaken"));
-            entries = leaderboardEntryRepository.findByQuizId(quizId, sort);
+            entries = leaderboardEntryRepository.findTimeAttackEntriesByQuizId(quizId);
         } else if (quiz instanceof SurvivalQuiz) {
-            sort = Sort.by(Sort.Order.desc("streak"), Sort.Order.asc("skipsUsed"));
-            entries = leaderboardEntryRepository.findByQuizId(quizId, sort);
+            entries = leaderboardEntryRepository.findSurvivalEntriesByQuizId(quizId);
         } else {
             throw new IllegalStateException("Quiz with id " + quizId + " has an invalid type.");
         }
 
         return entries.stream().map(LeaderboardEntry::toDTO).toList();
+    }
+
+    public List<Pair<Long, List<LeaderboardEntryDTO>>> getGroupChatLeaderboards(long groupChatId) {
+        List<Quiz> quizzes = quizRepository.findByGroupChatId(groupChatId);
+        return quizzes.stream().map(quiz -> Pair.of(quiz.getId(), getLeaderboard(quiz.getId()))).toList();
     }
 
     public LeaderboardEntryDTO getLeaderboardEntry(long entryId) {
@@ -57,8 +61,12 @@ public class LeaderboardService {
     public TimeAttackEntryDTO createTimeAttackEntry(long quizId, LeaderboardController.TimeAttackEntryPostRequest taEntry) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
+        if (!(quiz instanceof TimeAttackQuiz taQuiz)) {
+            throw new IllegalStateException("Quiz with id " + quizId + " has an invalid type.");
+        }
+        double avgTimePerQuestion = taEntry.timeTaken() / (double) taQuiz.getNumberOfQuestions();
         TimeAttackEntry entry = new TimeAttackEntry(
-                quiz, taEntry.playerName(), taEntry.score(), taEntry.timeTaken(), taEntry.averageTimePerQuestion()
+                quiz, taEntry.playerName(), taEntry.score(), taEntry.timeTaken(), avgTimePerQuestion
         );
         return leaderboardEntryRepository.save(entry).toDTO();
     }

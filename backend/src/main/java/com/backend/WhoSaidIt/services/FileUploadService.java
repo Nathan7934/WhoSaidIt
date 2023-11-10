@@ -82,9 +82,9 @@ public class FileUploadService {
 
     // Adds a group chat to the database from a file
     public void persistGroupChatFromFile(
-            Integer userId, String groupChatName, MultipartFile file, Integer minCharacters
+            long userId, String groupChatName, MultipartFile file, Integer minCharacters
     ) throws IOException {
-        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(
+        User user = userRepository.findById(userId).orElseThrow(
                 () -> new DataNotFoundException("User with id " + userId + " not found.")
         );
         GroupChat groupChat = groupChatService.createGroupChat(user, groupChatName, file.getOriginalFilename());

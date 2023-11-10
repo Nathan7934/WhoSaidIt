@@ -4,6 +4,7 @@ import com.backend.WhoSaidIt.DTOs.leaderboard.LeaderboardEntryDTO;
 import com.backend.WhoSaidIt.DTOs.leaderboard.SurvivalEntryDTO;
 import com.backend.WhoSaidIt.DTOs.leaderboard.TimeAttackEntryDTO;
 import com.backend.WhoSaidIt.services.LeaderboardService;
+import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,13 @@ public class LeaderboardController {
         return ResponseEntity.ok(leaderboardService.getLeaderboard(quizId));
     }
 
+    @GetMapping("/groupChats/{groupChatId}/leaderboard")
+    public ResponseEntity<List<Pair<Long, List<LeaderboardEntryDTO>>>> getGroupChatLeaderboards(
+            @PathVariable long groupChatId
+    ) {
+        return ResponseEntity.ok(leaderboardService.getGroupChatLeaderboards(groupChatId));
+    }
+
     @PostMapping("/quizzes/{quizId}/leaderboard/time-attack")
     public ResponseEntity<TimeAttackEntryDTO> createTimeAttackEntry(
             @PathVariable long quizId,
@@ -51,8 +59,7 @@ public class LeaderboardController {
     public record TimeAttackEntryPostRequest(
             String playerName,
             Integer score,
-            Double timeTaken,
-            Double averageTimePerQuestion
+            Double timeTaken
     ) {}
 
     public record SurvivalEntryPostRequest(

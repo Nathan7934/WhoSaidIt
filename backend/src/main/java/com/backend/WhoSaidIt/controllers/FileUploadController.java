@@ -20,7 +20,7 @@ public class FileUploadController {
     @PostMapping("/users/{userId}/groupChats/upload")
     public ResponseEntity<String> uploadGroupChat(
             @RequestPart("data") MultipartFile file,
-            @PathVariable Integer userId,
+            @PathVariable Long userId,
             @RequestParam String name,
             @RequestParam Integer minCharacters
     ) {

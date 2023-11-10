@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### demo data ###
+/src/main/java/com/backend/WhoSaidIt/resources/demoGroupChat.txt
