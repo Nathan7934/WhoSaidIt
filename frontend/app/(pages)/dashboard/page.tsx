@@ -8,19 +8,22 @@ import { demoGroupChats } from "@/app/utilities/demoData";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { group } from "console";
 
 export default function Dashboard() {
 
+    // ----------- Hooks ------------------
     const router = useRouter();
     const requestActiveUser = useRequestActiveUser();
     const requestGroupChatsInfo = useRequestGroupChatsInfo();
 
+    // ----------- State (Data) -----------
     const [activeUsername, setActiveUsername] = useState<string>("");
-    // TODO: Remove demo data in production
-    const [groupChats, setGroupChats] = useState<Array<GroupChatInfo>>(demoGroupChats);
+    const [groupChats, setGroupChats] = useState<Array<GroupChatInfo>>([]);
 
+    // ----------- State (UI) -------------
     const [loading, setLoading] = useState<boolean>(true);
+    const [lNavLeftAnim, setLNavLeftAnim] = useState<boolean>(false);
+    const [lNavRightAnim, setLNavRightAnim] = useState<boolean>(false);
 
     useEffect(() => {
         const getPageData = async () => {
@@ -100,12 +103,38 @@ export default function Dashboard() {
                             <Image src="/sparkles.png" alt="~" fill style={{ objectFit: "contain"}} />
                         </div>
                     </div>
-                    <div className="w-full min-h-[400px] h-max bg-gray-1 border border-border rounded-lg shadow-md">
-                        {/* Implement leaderboard preview component here */}
-                    </div>
+                    {renderLeaderboardPreview()}
                 </div>
             </div>
         );
+    }
+
+    const renderLeaderboardPreview = () => {
+        return (<>
+            <div className="w-full">
+                <div className="flex rounded-t-lg border-x border-t border-gray-6 shadow-sm bg-gray-1">
+                    <button onClick={() => {setLNavLeftAnim(true)}} className="grow pt-1 hover:bg-gray-2 active:bg-gray-3 
+                    active:duration-75 duration-200 active:ease-out ease-in rounded-tl-lg">
+                        <span onAnimationEnd={() => {setLNavLeftAnim(false)}}
+                        className={"inline-block duration-200 ease-in" + (lNavLeftAnim && " animate-leaderboardNavArrowLeft")}>
+                            <Image className="rotate-180 mx-auto" src="nav-arrow.svg" alt="Prev" width={16} height={16} />
+                        </span>
+                    </button>
+                    <button onClick={() => {setLNavRightAnim(true)}} className="grow pt-1 border-l border-gray-6 hover:bg-gray-2 
+                    active:bg-gray-3 active:duration-75 duration-200 active:ease-out ease-in rounded-tr-lg">
+                        <span onAnimationEnd={() => {setLNavRightAnim(false)}} 
+                        className={"inline-block duration-200 ease-in" + (lNavRightAnim && " animate-leaderboardNavArrowRight")}>
+                            <Image className="mx-auto" src="nav-arrow.svg" alt="Next" width={16} height={16} />
+                        </span>
+                    </button>
+                </div>
+                <div className="w-full min-h-[400px] h-max border border-border rounded-b-lg shadow-md bg-black">
+                    <div className="w-full text-xl text-center py-3 mb-2 font-extralight border-b border-gray-6">
+                        Quiz title here
+                    </div>
+                </div>
+            </div>
+        </>);
     }
 
     const renderOlderGroupChats = () => {
@@ -168,24 +197,15 @@ export default function Dashboard() {
     const renderQuizRows = (groupChat: GroupChatInfo, startIdx:number = 0) => {
         const quizzes: Array<TimeAttackQuiz | SurvivalQuiz> = groupChat.quizzes;
 
-        const renderTypeBadge = (type: string) => {
-            if (type === "TIME_ATTACK") {
-                return (<span className="py-[2px] px-2 bg-blue-4 rounded-lg text-blue-12 text-sm
-                    font-semibold relative bottom-[1px] whitespace-nowrap">Time Attack</span>);
-            }
-            return (<span className="py-[2px] px-2 bg-red-4 rounded-lg text-red-12 text-sm
-                font-semibold relative bottom-[1px] whitespace-nowrap">Survival</span>);
-        }
-
         return quizzes.map((quiz, index) => (<div key={index}>
-            {/* =============== DESKTOP LAYOUT =============== */}
+            {/* --------------- DESKTOP LAYOUT --------------- */}
             <div className="hidden sm:grid grid-cols-3 grid-rows-2 gap-1">
                 <div className="col-span-2">
                     <span className="text-xl text-white font-semibold mr-3">{quiz.quizName}</span><wbr />
-                    {renderTypeBadge(quiz.type)}
+                    {renderQuizTypeBadge(quiz.type)}
                 </div>
                 <div className="row-span-2 justify-self-end self-center flex items-center">
-                    <button className="btn btn-outline btn-sm mr-2 whitespace-nowrap hidden sm:block">Copy Link</button>
+                    <button className="btn btn-solid btn-sm mr-2 whitespace-nowrap hidden sm:block">Copy Link</button>
                     {/* Options dropdown */}
                     <details className="dropdown">
                         <summary tabIndex={0} className="hover:cursor-pointer list-none"><Image src="menu.svg" alt="Menu" width={44} height={44} /></summary>
@@ -202,12 +222,12 @@ export default function Dashboard() {
                     </label>
                 </span>
             </div>
-            {/* =============== MOBILE LAYOUT =============== */}
+            {/* --------------- MOBILE LAYOUT --------------- */}
             <div className="flex sm:hidden">
                 <div className="block">
                     <div className="text-lg font-semibold">{quiz.quizName}</div>
                     <div className="text-xs text-gray-9">Created: {formatDate(quiz.createdDate)}</div>
-                    <div className="mt-1">{renderTypeBadge(quiz.type)}</div>
+                    <div className="mt-1">{renderQuizTypeBadge(quiz.type)}</div>
                 </div>
                 {/* Options modal */}
                 <div className="ml-auto mr-1 self-center">
@@ -223,7 +243,7 @@ export default function Dashboard() {
                             <div className="divider my-0 mx-3 relative bottom-2"></div>
                             <div className="px-4 text-center mb-3">
                                 <h2 className="text-xl text-white">{quiz.quizName}</h2>
-                                <div className=" mb-4">{renderTypeBadge(quiz.type)}</div>
+                                <div className=" mb-4">{renderQuizTypeBadge(quiz.type)}</div>
                             </div>
                             {/* <div className="divider my-0 mx-3 relative bottom-1 mb-2"></div> */}
                             <div className="px-4 mb-4">
@@ -241,6 +261,15 @@ export default function Dashboard() {
     }
 
     // =============== HELPER FUNCTIONS ===============
+
+    const renderQuizTypeBadge = (type: string) => {
+        if (type === "TIME_ATTACK") {
+            return (<span className="py-[2px] px-2 bg-blue-4 rounded-lg text-blue-12 text-sm
+                font-semibold relative bottom-[1px] whitespace-nowrap">Time Attack</span>);
+        }
+        return (<span className="py-[2px] px-2 bg-red-4 rounded-lg text-red-12 text-sm
+            font-semibold relative bottom-[1px] whitespace-nowrap">Survival</span>);
+    }
 
     const sortGroupChatsByDate = (groupChats: Array<GroupChatInfo>) => {
         return groupChats.sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
@@ -263,6 +292,8 @@ export default function Dashboard() {
         const ordinalSuffix = getOrdinalSuffix(date.getDate());
         return `${month} ${day}${ordinalSuffix}, ${year}`;
     }
+
+    // =============== MAIN RENDER ===============
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between">
