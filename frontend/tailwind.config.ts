@@ -9,6 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       keyframes: {
+        // DASHBOARD (Leaderboard preview): Navigation arrows keyframes
         leaderboardNavArrowLeft: {
             '0%, 100%': { transform: 'translateX(0)' },
             '50%': { transform: 'translateX(-4px)' },
@@ -17,10 +18,35 @@ const config: Config = {
             '0%, 100%': { transform: 'translateX(0)' },
             '50%': { transform: 'translateX(4px)' },
         },
+        
+        // GLOBAL: Keyframes for cycling elements left and right
+        slideInFromRight: {
+            from: { transform: 'translateX(100%)' },
+            to: { transform: 'translateX(0)' },
+        },
+        slideOutToLeft: {
+            from: { transform: 'translateX(0)' },
+            to: { transform: 'translateX(-100%)' },
+        },
+        slideInFromLeft: {
+            from: { transform: 'translateX(-100%)' },
+            to: { transform: 'translateX(0)' },
+        },
+        slideOutToRight: {
+            from: { transform: 'translateX(0)' },
+            to: { transform: 'translateX(100%)' },
+        },
       },
       animation: {
-        leaderboardNavArrowLeft: 'leaderboardNavArrowLeft 0.3s ease-out 1',
+        // DASHBOARD (Leaderboard preview): Navigation arrows animations
+        leaderboardNavArrowLeft: 'leaderboardNavArrowLeft 0.3s ease-in-out 1',
         leaderboardNavArrowRight: 'leaderboardNavArrowRight 0.3s ease-in-out 1',
+        
+        // DASHBOARD (Leaderboard preview): Leaderboard cycling animations
+        leaderboardEntering: 'slideInFromRight 0.3s ease-in-out 0s 1 forwards',
+        leaderboardExiting: 'slideOutToLeft 0.3s ease-in-out 0s 1 forwards',
+        leaderboardEnteringPrev: 'slideInFromLeft 0.3s ease-in-out 0s 1 forwards',
+        leaderboardExitingPrev: 'slideOutToRight 0.3s ease-in-out 0s 1 forwards',
       },
     },
   },

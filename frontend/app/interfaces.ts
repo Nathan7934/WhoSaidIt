@@ -4,6 +4,15 @@ export interface User {
     email: string;
 }
 
+export interface GroupChatInfo {
+    id: number;
+    groupChatName: string;
+    uploadDate: Date;
+    numParticipants: number;
+    numMessages: number;
+    quizzes: Array<SurvivalQuiz | TimeAttackQuiz>;
+}
+
 export interface Quiz {
     id: number;
     type: string;
@@ -24,11 +33,24 @@ export interface TimeAttackQuiz extends Quiz {
     wrongAnswerPenalty: number;
 }
 
-export interface GroupChatInfo {
+export interface LeaderboardEntry {
     id: number;
-    groupChatName: string;
-    uploadDate: Date;
-    numParticipants: number;
-    numMessages: number;
-    quizzes: Array<SurvivalQuiz | TimeAttackQuiz>;
+    type: string;
+    playerName: string;
+}
+
+export interface TimeAttackEntry extends LeaderboardEntry {
+    score: number;
+    timeTaken: number;
+    averageTimePerQuestion: number;
+}
+
+export interface SurvivalEntry extends LeaderboardEntry {
+    streak: number;
+    skipsUsed: number;
+}
+
+export interface QuizLeaderboardInfo {
+    quizId: number;
+    leaderboard: Array<TimeAttackEntry | SurvivalEntry>;
 }

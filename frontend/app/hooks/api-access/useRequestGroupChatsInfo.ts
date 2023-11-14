@@ -1,4 +1,4 @@
-import { EXTERNAL_API_ROOT, INTERNAL_API_ROOT } from "@/app/constants";
+import { EXTERNAL_API_ROOT } from "@/app/constants";
 
 import useAuth from "../useAuth";
 import useAuthFetch from "../useAuthFetch";

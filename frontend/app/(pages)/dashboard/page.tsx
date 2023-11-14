@@ -2,12 +2,23 @@
 
 import useRequestActiveUser from "@/app/hooks/api-access/useRequestActiveUser";
 import useRequestGroupChatsInfo from "@/app/hooks/api-access/useRequestGroupChatsInfo";
-import { GroupChatInfo, SurvivalQuiz, TimeAttackQuiz, User } from "@/app/interfaces";
-import { demoGroupChats } from "@/app/utilities/demoData";
+import useRequestGroupChatLeaderboards from "@/app/hooks/api-access/useRequestGroupChatLeaderboards";
+import { User, GroupChatInfo, SurvivalQuiz, TimeAttackQuiz, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { group } from "console";
+
+interface NamedQuizLeaderboardInfo {
+    quizName: string;
+    leaderboard: Array<TimeAttackEntry | SurvivalEntry>;
+}
+interface LeaderboardAnimationStatus {
+    entering: number;
+    exiting: number;
+    isPrev: boolean;
+}
 
 export default function Dashboard() {
 
@@ -15,24 +26,40 @@ export default function Dashboard() {
     const router = useRouter();
     const requestActiveUser = useRequestActiveUser();
     const requestGroupChatsInfo = useRequestGroupChatsInfo();
+    const requestGroupChatLeaderboards = useRequestGroupChatLeaderboards();
 
     // ----------- State (Data) -----------
     const [activeUsername, setActiveUsername] = useState<string>("");
     const [groupChats, setGroupChats] = useState<Array<GroupChatInfo>>([]);
+    const [previewLeaderboards, setPreviewLeaderboards] = useState<Array<NamedQuizLeaderboardInfo>>([]);
 
     // ----------- State (UI) -------------
     const [loading, setLoading] = useState<boolean>(true);
     const [lNavLeftAnim, setLNavLeftAnim] = useState<boolean>(false);
     const [lNavRightAnim, setLNavRightAnim] = useState<boolean>(false);
+    const [selectedLeaderboardIndex, setSelectedLeaderboardIndex] = useState<number>(0); // [0, previewLeaderboards.length)
+    const [leaderboardAnimationStatus, setLeaderboardAnimationStatus] = useState<LeaderboardAnimationStatus | null>(null);
 
+    // ----------- Data Retrieval ---------
     useEffect(() => {
         const getPageData = async () => {
             const activeUser: User | null = await requestActiveUser();
-            const groupChatsInfo: Array<GroupChatInfo> | null = await requestGroupChatsInfo();
+            let groupChatsInfo: Array<GroupChatInfo> | null = await requestGroupChatsInfo();
 
             if (activeUser && groupChatsInfo) {
                 setActiveUsername(activeUser.username);
-                setGroupChats(sortGroupChatsByDate(groupChatsInfo));
+                groupChatsInfo = sortGroupChatsByDate(groupChatsInfo);
+                setGroupChats(groupChatsInfo);
+
+                if (groupChatsInfo.length > 0) {
+                    const leaderboards: Array<QuizLeaderboardInfo> | null = await requestGroupChatLeaderboards(groupChatsInfo[0].id);
+                    if (leaderboards) {
+                        setPreviewLeaderboards(convertToNamedQuizLeaderboardInfo(groupChatsInfo[0], leaderboards));
+                    } else {
+                        console.log("Error fetching leaderboards");
+                    }
+                }
+                
                 setLoading(false);
             } else {
                 console.log("Error fetching user data, redirecting to root");
@@ -109,18 +136,34 @@ export default function Dashboard() {
         );
     }
 
+    const lNavLeftButtonClicked = () => {
+        setLNavLeftAnim(true);
+        if (selectedLeaderboardIndex > 0) {
+            setLeaderboardAnimationStatus({entering: selectedLeaderboardIndex - 1, exiting: selectedLeaderboardIndex, isPrev: true});
+            setSelectedLeaderboardIndex(selectedLeaderboardIndex - 1);
+        }
+    }
+
+    const lNavRightButtonClicked = () => {
+        setLNavRightAnim(true);
+        if (selectedLeaderboardIndex < previewLeaderboards.length - 1) {
+            setLeaderboardAnimationStatus({entering: selectedLeaderboardIndex + 1, exiting: selectedLeaderboardIndex, isPrev: false});
+            setSelectedLeaderboardIndex(selectedLeaderboardIndex + 1);
+        }
+    }
+
     const renderLeaderboardPreview = () => {
         return (<>
             <div className="w-full">
                 <div className="flex rounded-t-lg border-x border-t border-gray-6 shadow-sm bg-gray-1">
-                    <button onClick={() => {setLNavLeftAnim(true)}} className="grow pt-1 hover:bg-gray-2 active:bg-gray-3 
+                    <button onClick={lNavLeftButtonClicked} className="grow pt-1 hover:bg-gray-2 active:bg-gray-3 
                     active:duration-75 duration-200 active:ease-out ease-in rounded-tl-lg">
                         <span onAnimationEnd={() => {setLNavLeftAnim(false)}}
                         className={"inline-block duration-200 ease-in" + (lNavLeftAnim && " animate-leaderboardNavArrowLeft")}>
                             <Image className="rotate-180 mx-auto" src="nav-arrow.svg" alt="Prev" width={16} height={16} />
                         </span>
                     </button>
-                    <button onClick={() => {setLNavRightAnim(true)}} className="grow pt-1 border-l border-gray-6 hover:bg-gray-2 
+                    <button onClick={lNavRightButtonClicked} className="grow pt-1 border-l border-gray-6 hover:bg-gray-2 
                     active:bg-gray-3 active:duration-75 duration-200 active:ease-out ease-in rounded-tr-lg">
                         <span onAnimationEnd={() => {setLNavRightAnim(false)}} 
                         className={"inline-block duration-200 ease-in" + (lNavRightAnim && " animate-leaderboardNavArrowRight")}>
@@ -128,12 +171,72 @@ export default function Dashboard() {
                         </span>
                     </button>
                 </div>
-                <div className="w-full min-h-[400px] h-max border border-border rounded-b-lg shadow-md bg-black">
-                    <div className="w-full text-xl text-center py-3 mb-2 font-extralight border-b border-gray-6">
-                        Quiz title here
-                    </div>
+                <div className="relative w-full min-h-[400px] h-max border border-border rounded-b-lg shadow-md bg-black overflow-x-hidden">
+                    {renderLeaderboards()}
                 </div>
             </div>
+        </>);
+    }
+
+    const renderLeaderboards = () => {
+        if (previewLeaderboards.length === 0) {
+            return (<div className="w-full h-full flex flex-col items-center justify-center">
+                <div className="text-2xl text-gray-9 font-light">No quizzes yet</div>
+            </div>);
+        }
+        
+        let leaderboardElements: Array<JSX.Element> = [];
+        previewLeaderboards.forEach((leaderboardInfo, index) => {
+            leaderboardElements.push(
+                <div key={index} className={"absolute inset-0 w-full" + determineLeaderboardAnimationClassName(index)}>
+                    <div className="w-full text-2xl text-center mt-4 mb-2 font-light">
+                        {leaderboardInfo.quizName}
+                    </div>
+                    {renderLeaderboardEntries(leaderboardInfo.leaderboard)}
+                </div>
+            );
+        });
+        return leaderboardElements;
+    }
+
+    const renderLeaderboardEntries = (leaderboard: Array<TimeAttackEntry | SurvivalEntry>) => {
+        if (leaderboard.length === 0) {
+            return (<div className="w-full h-full flex flex-col items-center justify-center">
+                <div className="text-2xl text-gray-9 font-light">No entries yet</div>
+            </div>);
+        }
+        
+        let leaderboardEntries: Array<JSX.Element> = [];
+        leaderboard.forEach((entry, index) => {
+            const rank: number = index + 1;
+            leaderboardEntries.push(
+                <div key={index} className="flex justify-between px-4 py-1">
+                    <div className="flex items-center">
+                        <div className="text-lg text-gray-8 font-light mr-4 w-5 text-right">
+                            {rank}.
+                        </div>
+                        <div className="text-lg text-gray-12 font-light">{entry.playerName}</div>
+                    </div>
+                    <div className="text-lg text-gray-11">
+                        {isTimeAttackEntry(entry) ? entry.score : isSurvivalEntry(entry) ? entry.streak : ""}
+                    </div>
+                </div>
+            );
+        });
+        const isTimeAttack: boolean = isTimeAttackEntry(leaderboard[0]);
+        return (<>
+            <div className="flex justify-between px-4 py-1 border-b border-gray-6 mb-2">
+                <div className="flex items-center">
+                    <div className="text-gray-8 mr-4 pr-1 w-5 text-right">
+                        #
+                    </div>
+                    <div className="text-gray-9 font-light">Player</div>
+                </div>
+                <div className="font-light text-gray-9">
+                    {isTimeAttack ? "Score" : "Streak"}
+                </div>
+            </div>
+            {leaderboardEntries}
         </>);
     }
 
@@ -276,21 +379,60 @@ export default function Dashboard() {
     }
 
     const formatDate = (date: Date): string => {
-
-        const getOrdinalSuffix = (day: number) => {
-            if (day > 3 && day < 21) return 'th';
-            switch (day % 10) {
-                case 1:  return "st";
-                case 2:  return "nd";
-                case 3:  return "rd";
-                default: return "th";
-            }
-        }
         const month: string = date.toLocaleString('default', { month: 'long' });
         const day: string = date.getDate().toString();
         const year: string = date.getFullYear().toString();
         const ordinalSuffix = getOrdinalSuffix(date.getDate());
         return `${month} ${day}${ordinalSuffix}, ${year}`;
+    }
+
+    const getOrdinalSuffix = (number: number) => {
+        if (number > 3 && number < 21) return 'th';
+        switch (number % 10) {
+            case 1:  return "st";
+            case 2:  return "nd";
+            case 3:  return "rd";
+            default: return "th";
+        }
+    }
+
+    // The API returns an array of leaderboards, each with a quizId. This function converts the quizId to a quizName
+    const convertToNamedQuizLeaderboardInfo = (groupChat: GroupChatInfo, leaderboards: Array<QuizLeaderboardInfo>): Array<NamedQuizLeaderboardInfo> => {
+
+        const getQuizNameById = (groupChat: GroupChatInfo, quizId: number): string | undefined => {
+            const quiz = groupChat.quizzes.find(q => q.id === quizId);
+            return quiz?.quizName;
+        }
+
+        return leaderboards.map((leaderboard: QuizLeaderboardInfo) => {
+            const quizName: string | undefined = getQuizNameById(groupChat, leaderboard.quizId);
+            if (!quizName) throw new Error("Leaderboards returned from API do not match quizzes in group chat"); // Should never happen
+            return { quizName, leaderboard: leaderboard.leaderboard };
+        })
+    }
+
+    const determineLeaderboardAnimationClassName = (index: number): string => {
+        if (leaderboardAnimationStatus) {
+            const {entering, exiting, isPrev} = leaderboardAnimationStatus;
+            if (index === entering && !isPrev) return " animate-leaderboardEntering";
+            if (index === entering && isPrev) return " animate-leaderboardEnteringPrev";
+            if (index === exiting && !isPrev) return " animate-leaderboardExiting";
+            if (index === exiting && isPrev) return " animate-leaderboardExitingPrev";
+        }
+        
+        // If the leaderboard is not currently animating, determine where it should be offscreen
+        if (index > selectedLeaderboardIndex) return " translate-x-[100%]";
+        if (index < selectedLeaderboardIndex) return " translate-x-[-100%]";
+        
+        return "";
+    }
+
+    // Custom type guards
+    const isTimeAttackEntry = (entry: TimeAttackEntry | SurvivalEntry): entry is TimeAttackEntry => {
+        return entry.type === "TIME_ATTACK";
+    }
+    const isSurvivalEntry = (entry: TimeAttackEntry | SurvivalEntry): entry is SurvivalEntry => {
+        return entry.type === "SURVIVAL";
     }
 
     // =============== MAIN RENDER ===============
