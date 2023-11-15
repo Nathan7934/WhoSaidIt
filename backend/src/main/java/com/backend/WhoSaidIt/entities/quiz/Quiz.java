@@ -33,7 +33,7 @@ public abstract class Quiz {
     @JsonManagedReference
     private GroupChat groupChat;
 
-    @OneToMany(mappedBy = "quiz")
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<LeaderboardEntry> leaderboardEntries = new ArrayList<>();
 

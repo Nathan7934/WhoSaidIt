@@ -2,7 +2,7 @@ package com.backend.WhoSaidIt.controllers;
 
 import com.backend.WhoSaidIt.DTOs.MessageDTO;
 import com.backend.WhoSaidIt.DTOs.MessagePageDTO;
-import com.backend.WhoSaidIt.entities.Message;
+import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.services.MessageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +28,7 @@ public class MessageController {
 
     // The request parameter excludedMessageIds is a comma separated list of message ids that should be excluded from
     // the random selection. This is to prevent the same message from being selected twice in a session.
-    @GetMapping("/groupChats/{groupChatId}/messages/random")
+    @GetMapping("/group-chats/{groupChatId}/messages/random")
     public ResponseEntity<MessageDTO> getRandomMessage(
             @PathVariable long groupChatId,
             @RequestParam(required = false) String excludedMessageIds
@@ -38,30 +38,57 @@ public class MessageController {
             ids = Arrays.stream(excludedMessageIds.split(","))
                     .map(Long::valueOf).collect(Collectors.toList());
         }
-        return ResponseEntity.ok(messageService.getRandom(groupChatId, ids));
+        return ResponseEntity.ok(messageService.getRandomMessage(groupChatId, ids));
     }
 
-    @GetMapping("/groupChats/{groupChatId}/messages/paginated")
-    public ResponseEntity<MessagePageDTO> getPaginatedMessages(
+    @GetMapping("/group-chats/{groupChatId}/messages/paginated")
+    public ResponseEntity<MessagePageDTO> getPaginatedGroupChatMessages(
             @PathVariable long groupChatId,
             @RequestParam int pageNumber,
-            @RequestParam int pageSize
+            @RequestParam int pageSize,
+            @RequestParam boolean ascending,
+            @RequestParam(required = false) Long participantId
     ) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("timestamp").ascending());
-        Page<MessageDTO> messages = messageService.getPaginatedMessages(groupChatId, pageable);
-        return ResponseEntity.ok(new MessagePageDTO(
-                messages.getNumber(),
-                messages.getTotalPages(),
-                messages.getTotalElements(),
-                messages.hasNext(),
-                messages.hasPrevious(),
-                messages.getContent()
-        ));
+        Pageable pageable = PageRequest.of(
+                pageNumber,
+                pageSize,
+                ascending ? Sort.by("timestamp").ascending() : Sort.by("timestamp").descending()
+        );
+        Page<MessageDTO> messages;
+        if (participantId != null) {
+            messages = messageService.getPaginatedGroupChatMessages(groupChatId, participantId, pageable);
+        } else {
+            messages = messageService.getPaginatedGroupChatMessages(groupChatId, pageable);
+        }
+        return ResponseEntity.ok(toMessagePageDTO(messages));
+    }
+
+    // TODO: There may be a way to combine the code for these endpoints into one method
+    @GetMapping("/quizzes/{quizId}/messages/paginated")
+    public ResponseEntity<MessagePageDTO> getPaginatedQuizMessages(
+            @PathVariable long quizId,
+            @RequestParam int pageNumber,
+            @RequestParam int pageSize,
+            @RequestParam boolean ascending,
+            @RequestParam(required = false) Long participantId
+    ) {
+        Pageable pageable = PageRequest.of(
+                pageNumber,
+                pageSize,
+                ascending ? Sort.by("m.timestamp").ascending() : Sort.by("m.timestamp").descending()
+        );
+        Page<MessageDTO> messages;
+        if (participantId != null) {
+            messages = messageService.getPaginatedQuizMessages(quizId, participantId, pageable);
+        } else {
+            messages = messageService.getPaginatedQuizMessages(quizId, pageable);
+        }
+        return ResponseEntity.ok(toMessagePageDTO(messages));
     }
 
     @GetMapping("/messages/{messageId}")
     public ResponseEntity<MessageDTO> getMessage(@PathVariable long messageId) {
-        return ResponseEntity.ok(messageService.get(messageId));
+        return ResponseEntity.ok(messageService.getMessage(messageId));
     }
 
     @GetMapping("/quizzes/{quizId}/messages")
@@ -70,7 +97,23 @@ public class MessageController {
     }
 
     @DeleteMapping("/messages/{messageId}")
-    public void deleteMessage(@PathVariable long messageId) {
-        messageService.remove(messageId);
+    public ResponseEntity<String> deleteMessage(@PathVariable long messageId) {
+        try {
+            messageService.deleteMessage(messageId);
+            return ResponseEntity.ok("Message with id " + messageId + " deleted.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    private static MessagePageDTO toMessagePageDTO(Page<MessageDTO> messages) {
+        return new MessagePageDTO(
+                messages.getNumber(),
+                messages.getTotalPages(),
+                messages.getTotalElements(),
+                messages.hasNext(),
+                messages.hasPrevious(),
+                messages.getContent()
+        );
     }
 }

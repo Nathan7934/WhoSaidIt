@@ -30,7 +30,7 @@ public class LeaderboardController {
         return ResponseEntity.ok(leaderboardService.getLeaderboard(quizId));
     }
 
-    @GetMapping("/groupChats/{groupChatId}/leaderboard")
+    @GetMapping("/group-chats/{groupChatId}/leaderboard")
     public ResponseEntity<List<Pair<Long, List<LeaderboardEntryDTO>>>> getGroupChatLeaderboards(
             @PathVariable long groupChatId
     ) {
@@ -52,8 +52,9 @@ public class LeaderboardController {
     }
 
     @DeleteMapping("/leaderboard/{entryId}")
-    public void deleteLeaderboardEntry(@PathVariable long entryId) {
+    public ResponseEntity<String> deleteLeaderboardEntry(@PathVariable long entryId) {
         leaderboardService.deleteLeaderboardEntry(entryId);
+        return ResponseEntity.ok("Leaderboard entry with id " + entryId + " deleted.");
     }
 
     public record TimeAttackEntryPostRequest(

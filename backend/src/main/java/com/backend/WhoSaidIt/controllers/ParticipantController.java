@@ -23,7 +23,7 @@ public class ParticipantController {
         return ResponseEntity.ok(participantService.getParticipant(participantId));
     }
 
-    @GetMapping("groupChats/{groupChatId}/participants")
+    @GetMapping("group-chats/{groupChatId}/participants")
     public ResponseEntity<List<ParticipantDTO>> getGroupChatParticipants(@PathVariable long groupChatId) {
         return ResponseEntity.ok(participantService.getGroupChatParticipants(groupChatId));
     }
@@ -36,6 +36,16 @@ public class ParticipantController {
         try {
             participantService.updateParticipantName(participantId, request.name());
             return ResponseEntity.ok("Participant name updated to " + request.name());
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("participants/{participantId}")
+    public ResponseEntity<String> deleteParticipant(@PathVariable long participantId) {
+        try {
+            participantService.deleteParticipant(participantId);
+            return ResponseEntity.ok("Participant with id " + participantId + " deleted.");
         } catch (DataNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

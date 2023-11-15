@@ -1,13 +1,11 @@
 package com.backend.WhoSaidIt.controllers;
 
 import com.backend.WhoSaidIt.DTOs.UserDTO;
+import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.services.GroupChatService;
 import com.backend.WhoSaidIt.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -26,8 +24,18 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(userId));
     }
 
-    @GetMapping("/groupChats/{groupChatId}/user")
+    @GetMapping("/group-chats/{groupChatId}/user")
     public ResponseEntity<UserDTO> getGroupChatUser(@PathVariable long groupChatId) {
         return ResponseEntity.ok(groupChatService.getGroupChatUser(groupChatId));
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable long userId) {
+        try {
+            userService.deleteUser(userId);
+            return ResponseEntity.ok("User with id " + userId + " deleted.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

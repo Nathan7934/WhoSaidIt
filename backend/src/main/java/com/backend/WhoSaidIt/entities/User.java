@@ -62,6 +62,8 @@ public class User implements UserDetails {
 	@Override
 	public String getPassword() { return password; }
 
+	public List<GroupChat> getGroupChats() { return groupChats; }
+
 	// The below methods are required implementations for the UserDetails interface
 	// ============================================================================
 	@Override

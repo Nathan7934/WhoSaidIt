@@ -25,19 +25,19 @@ public class QuizController {
         return ResponseEntity.ok(quizService.getQuiz(quizId));
     }
 
-    @GetMapping("/groupChats/{groupChatId}/quizzes")
+    @GetMapping("/group-chats/{groupChatId}/quizzes")
     public ResponseEntity<List<QuizDTO>> getAllQuizzes(@PathVariable long groupChatId) {
         return ResponseEntity.ok(quizService.getAllQuizzes(groupChatId));
     }
 
-    @PostMapping("/groupChats/{groupChatId}/quizzes/time-attack")
+    @PostMapping("/group-chats/{groupChatId}/quizzes/time-attack")
     public ResponseEntity<TimeAttackQuizDTO> createTimeAttackQuiz(
             @PathVariable long groupChatId,
             @RequestBody TimeAttackQuizPostRequest quiz) {
         return ResponseEntity.ok(quizService.createTimeAttackQuiz(groupChatId, quiz));
     }
 
-    @PostMapping("/groupChats/{groupChatId}/quizzes/survival")
+    @PostMapping("/group-chats/{groupChatId}/quizzes/survival")
     public ResponseEntity<SurvivalQuizDTO> createSurvivalQuiz(
             @PathVariable long groupChatId,
             @RequestBody SurvivalQuizPostRequest quiz) {
@@ -71,8 +71,13 @@ public class QuizController {
     }
 
     @DeleteMapping("/quizzes/{quizId}")
-    public void deleteQuiz(@PathVariable long quizId) {
-        quizService.deleteQuiz(quizId);
+    public ResponseEntity<String> deleteQuiz(@PathVariable long quizId) {
+        try {
+            quizService.deleteQuiz(quizId);
+            return ResponseEntity.ok("Quiz deleted with id " + quizId + " deleted.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // An HTTP request DTO for creating a time attack quiz

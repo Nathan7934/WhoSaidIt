@@ -106,9 +106,9 @@ public class FileUploadService {
         }
 
         for (String senderName : messages.keySet()) {
-            Participant participant = participantService.save(groupChat, senderName);
+            Participant participant = participantService.saveParticipant(groupChat, senderName);
             for (Pair<LocalDateTime, String> message : messages.get(senderName)) {
-                messageService.save(participant, groupChat, message.b, message.a);
+                messageService.saveMessage(participant, groupChat, message.b, message.a);
             }
         }
     }

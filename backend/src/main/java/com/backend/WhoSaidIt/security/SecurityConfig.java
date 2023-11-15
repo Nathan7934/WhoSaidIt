@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/quizzes/**").access(quizAuthorizationManager)
                 .requestMatchers("/api/users/**").access(userAuthorizationManager)
                 .requestMatchers("/api/messages/**").access(userAuthorizationManager)
-                .requestMatchers("/api/groupChats/**").access(userAuthorizationManager)
+                .requestMatchers("/api/group-chats/**").access(userAuthorizationManager)
                 .requestMatchers("/api/participants/**").access(userAuthorizationManager)
                 .requestMatchers("/api/leaderboard/**").access(userAuthorizationManager)
                 .anyRequest().permitAll()

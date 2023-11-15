@@ -32,7 +32,7 @@ public class GroupChat {
     @JsonManagedReference
     private User user;
 
-    @OneToMany(mappedBy = "groupChat")
+    @OneToMany(mappedBy = "groupChat", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Participant> participants = new ArrayList<>();
 

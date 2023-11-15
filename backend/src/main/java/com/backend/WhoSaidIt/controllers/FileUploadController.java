@@ -17,7 +17,7 @@ public class FileUploadController {
         this.fileUploadService = fileUploadService;
     }
 
-    @PostMapping("/users/{userId}/groupChats/upload")
+    @PostMapping("/users/{userId}/group-chats/upload")
     public ResponseEntity<String> uploadGroupChat(
             @RequestPart("data") MultipartFile file,
             @PathVariable Long userId,

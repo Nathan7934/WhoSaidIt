@@ -45,6 +45,8 @@ public class Participant {
 
     public GroupChat getGroupChat() { return groupChat; }
 
+    public List<Message> getMessages() { return messages; }
+
     public void setGroupChat(GroupChat groupChat) { this.groupChat = groupChat; }
 
     public String getName() { return name; }

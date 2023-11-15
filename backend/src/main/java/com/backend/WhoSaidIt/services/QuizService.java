@@ -94,7 +94,16 @@ public class QuizService {
         }
     }
 
+    @Transactional
     public void deleteQuiz(long id) {
+        Quiz quiz = quizRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Quiz with id " + id + " not found."));
+
+        // We remove the quiz association from any messages that may be used in it to preserve referential integrity
+        for (Message message : quiz.getMessagesInQuiz()) {
+            message.getQuizzes().remove(quiz);
+        }
+
         quizRepository.deleteById(id);
     }
 

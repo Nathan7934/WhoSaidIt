@@ -54,7 +54,8 @@ public class LeaderboardService {
     }
 
     public LeaderboardEntryDTO getLeaderboardEntry(long entryId) {
-        LeaderboardEntry entry = leaderboardEntryRepository.findById(entryId).orElseThrow();
+        LeaderboardEntry entry = leaderboardEntryRepository.findById(entryId).orElseThrow(() ->
+                new DataNotFoundException("LeaderboardEntry with id " + entryId + " not found."));
         return entry.toDTO();
     }
 

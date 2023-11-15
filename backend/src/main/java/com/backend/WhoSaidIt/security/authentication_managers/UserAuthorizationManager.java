@@ -47,7 +47,7 @@ public class UserAuthorizationManager implements AuthorizationManager<RequestAut
         // Each pattern is mapped to a handler method that determines whether the authenticated user owns the entity.
         entityPatterns = new LinkedHashMap<>();
         entityPatterns.put(Pattern.compile("^/api/users" + COMMON_PATTERN_SUFFIX), this::handleUsers);
-        entityPatterns.put(Pattern.compile("^/api/groupChats" + COMMON_PATTERN_SUFFIX), this::handleGroupChats);
+        entityPatterns.put(Pattern.compile("^/api/group-chats" + COMMON_PATTERN_SUFFIX), this::handleGroupChats);
         entityPatterns.put(Pattern.compile("^/api/messages" + COMMON_PATTERN_SUFFIX), this::handleMessages);
         entityPatterns.put(Pattern.compile("^/api/participants" + COMMON_PATTERN_SUFFIX), this::handleParticipants);
         entityPatterns.put(Pattern.compile("^/api/leaderboard" + COMMON_PATTERN_SUFFIX), this::handleLeaderboards);
