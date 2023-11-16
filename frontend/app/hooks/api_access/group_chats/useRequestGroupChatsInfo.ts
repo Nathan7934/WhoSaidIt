@@ -1,17 +1,17 @@
-import { EXTERNAL_API_ROOT, INTERNAL_API_ROOT } from "@/app/constants";
+import { EXTERNAL_API_ROOT } from "@/app/constants";
 
-import useAuth from "../useAuth";
-import useAuthFetch from "../useAuthFetch";
-import useRefreshToken from "../useRefreshToken";
-import { User } from "@/app/interfaces";
+import useAuth from "../../useAuth";
+import useAuthFetch from "../../useAuthFetch";
+import useRefreshToken from "../../useRefreshToken";
+import { GroupChatInfo, TimeAttackQuiz, SurvivalQuiz } from "@/app/interfaces";
 
-export default function useRequestActiveUser() {
-
+export default function useRequestGroupChatsInfo() {
+    
     const { userId } = useAuth();
     const authFetch = useAuthFetch();
     const refreshToken = useRefreshToken();
 
-    const requestActiveUser = async (): Promise<User | null> => {
+    const requestGroupChatsInfo = async (): Promise<Array<GroupChatInfo> | null> => {
         let currentUserId = userId;
 
         // If there is no userId stored in the context, attempt to retrieve one using the refresh token:
@@ -24,7 +24,7 @@ export default function useRequestActiveUser() {
             currentUserId = refreshResponse.user_id;
         }
 
-        const requestUrl: string = `${EXTERNAL_API_ROOT}/users/${currentUserId}`;
+        const requestUrl: string = `${EXTERNAL_API_ROOT}/users/${currentUserId}/group-chats/info`;
 
         try {
             const response: Response = await authFetch(requestUrl);
@@ -37,15 +37,25 @@ export default function useRequestActiveUser() {
                     return null;
                 }
             }
+            const parsedJson = await response.json();
 
-            const parsedJson: User = await response.json();
-            return parsedJson;
-            
+            // Converting the deserialized LocalDateTime objects to Date objects
+            const groupChatsInfo: Array<GroupChatInfo> = parsedJson.map((groupChat: GroupChatInfo) => ({
+                ...groupChat,
+                uploadDate: new Date(groupChat.uploadDate),
+                quizzes: groupChat.quizzes.map((quiz: TimeAttackQuiz | SurvivalQuiz) => ({
+                    ...quiz,
+                    createdDate: new Date(quiz.createdDate)
+                }))
+            }));
+
+            return groupChatsInfo;
+
         } catch (error) {
             console.error(error);
             return null;
         }
     }
 
-    return requestActiveUser;
+    return requestGroupChatsInfo;
 }

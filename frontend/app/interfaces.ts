@@ -4,6 +4,15 @@ export interface User {
     email: string;
 }
 
+// ======= GROUP CHATS =======
+export interface GroupChat {
+    id: number;
+    groupChatName: string;
+    uploadDate: Date;
+    fileName: string;
+}
+
+// This interface contains more information for the dashboard to reduce fetch calls
 export interface GroupChatInfo {
     id: number;
     groupChatName: string;
@@ -13,6 +22,7 @@ export interface GroupChatInfo {
     quizzes: Array<SurvivalQuiz | TimeAttackQuiz>;
 }
 
+// ======= QUIZZES =======
 export interface Quiz {
     id: number;
     type: string;
@@ -33,6 +43,7 @@ export interface TimeAttackQuiz extends Quiz {
     wrongAnswerPenalty: number;
 }
 
+// ======= LEADERBOARDS =======
 export interface LeaderboardEntry {
     id: number;
     type: string;
@@ -53,4 +64,32 @@ export interface SurvivalEntry extends LeaderboardEntry {
 export interface QuizLeaderboardInfo {
     quizId: number;
     leaderboard: Array<TimeAttackEntry | SurvivalEntry>;
+}
+
+// ======= MESSAGES =======
+export interface Participant {
+    id: number;
+    name: string;
+}
+
+export interface Message {
+    id: number;
+    sender: Participant;
+    content: string;
+    timestamp: Date;
+}
+
+export interface MessagePage {
+    pageNumber: number;
+    totalPages: number;
+    totalMessages: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    messages: Array<Message>;
+}
+
+export interface PaginationConfig {
+    pageNumber: number;
+    pageSize: number;
+    ascending: boolean;
 }

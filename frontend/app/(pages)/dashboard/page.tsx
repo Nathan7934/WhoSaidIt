@@ -1,14 +1,14 @@
 "use client";
 
-import useRequestActiveUser from "@/app/hooks/api-access/useRequestActiveUser";
-import useRequestGroupChatsInfo from "@/app/hooks/api-access/useRequestGroupChatsInfo";
-import useRequestGroupChatLeaderboards from "@/app/hooks/api-access/useRequestGroupChatLeaderboards";
+import useRequestActiveUser from "@/app/hooks/api_access/user/useRequestActiveUser";
+import useRequestGroupChatsInfo from "@/app/hooks/api_access/group_chats/useRequestGroupChatsInfo";
+import useRequestGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useRequestGroupChatLeaderboards";
 import { User, GroupChatInfo, SurvivalQuiz, TimeAttackQuiz, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { group } from "console";
+import Link from "next/link";
 
 interface NamedQuizLeaderboardInfo {
     quizName: string;
@@ -62,7 +62,7 @@ export default function Dashboard() {
                 
                 setLoading(false);
             } else {
-                console.log("Error fetching user data, redirecting to root");
+                console.error("Error fetching user data, redirecting to root");
                 router.push("/");
             }
         }
@@ -88,12 +88,12 @@ export default function Dashboard() {
         const latestGC: GroupChatInfo = groupChats[0]; // The latest group chat is the first element in the array
 
         return (
-            <div className="w-full grid grid-cols-1 md:grid-cols-3 mt-8 bg-zinc-950 py-7 px-5 rounded-xl border border-gray-7">
+            <div className="w-full grid grid-cols-1 lg:grid-cols-3 mt-8 bg-zinc-950 py-7 px-5 rounded-xl border border-gray-7">
                 <div className="flex flex-col col-span-2 relative">
                     <div className="text-center sm:text-left text-3xl font-medium ml-1">
                         {latestGC.groupChatName} <span className="text-gray-7 font-light ml-2 hidden sm:inline-block">(Latest)</span>
                     </div>
-                    <div className="mt-2">
+                    <div className="mt-2 hidden sm:block">
                         <div className="badge badge-outline mx-1 mt-1 block sm:inline-block">
                             <span className="font-normal mr-2">Uploaded:</span> {formatDate(latestGC.uploadDate)}
                         </div>
@@ -115,12 +115,14 @@ export default function Dashboard() {
                     <div className="sm:flex sm:flex-grow sm:items-end">
                         <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Generate New Quiz</button>
                         <div className="flex">
-                            <button className="btn mr-2 btn-sm mt-2 sm:mt-0 grow">View Messages</button>
+                            <Link href={`/messages/${latestGC.id}`} className="grow sm:flex-none mr-2">
+                                <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
+                            </Link>
                             <button className="btn btn-sm mt-2 sm:mt-0">Manage Participants</button>
                         </div>
                     </div>
                 </div>
-                <div className="mt-6 md:mt-0">
+                <div className="mt-6 lg:mt-0 md:max-lg:w-[75%] md:max-lg:flex-col md:max-lg:mx-auto">
                     <div className="w-full text-xl mb-2 font-medium flex justify-center">
                         <div className="relative w-[20px] h-[20px] mr-3 top-[3px]">
                             <Image src="/sparkles.png" alt="~" fill style={{ objectFit: "contain"}} className="scale-x-[-1]"/>
@@ -156,14 +158,14 @@ export default function Dashboard() {
         return (<>
             <div className="w-full">
                 <div className="flex rounded-t-lg border-x border-t border-gray-6 shadow-sm bg-gray-1">
-                    <button onClick={lNavLeftButtonClicked} className="grow pt-1 hover:bg-gray-2 active:bg-gray-3 
+                    <button onClick={lNavLeftButtonClicked} className="grow pt-1 sm:hover:bg-gray-2 active:bg-gray-3 
                     active:duration-75 duration-200 active:ease-out ease-in rounded-tl-lg">
                         <span onAnimationEnd={() => {setLNavLeftAnim(false)}}
                         className={"inline-block duration-200 ease-in" + (lNavLeftAnim && " animate-leaderboardNavArrowLeft")}>
                             <Image className="rotate-180 mx-auto" src="nav-arrow.svg" alt="Prev" width={16} height={16} />
                         </span>
                     </button>
-                    <button onClick={lNavRightButtonClicked} className="grow pt-1 border-l border-gray-6 hover:bg-gray-2 
+                    <button onClick={lNavRightButtonClicked} className="grow pt-1 border-l border-gray-6 sm:hover:bg-gray-2 
                     active:bg-gray-3 active:duration-75 duration-200 active:ease-out ease-in rounded-tr-lg">
                         <span onAnimationEnd={() => {setLNavRightAnim(false)}} 
                         className={"inline-block duration-200 ease-in" + (lNavRightAnim && " animate-leaderboardNavArrowRight")}>
@@ -210,7 +212,7 @@ export default function Dashboard() {
         leaderboard.forEach((entry, index) => {
             const rank: number = index + 1;
             leaderboardEntries.push(
-                <div key={index} className="flex justify-between px-4 py-1">
+                <div key={index} className="flex justify-between px-4 md:max-lg:px-10 py-1">
                     <div className="flex items-center">
                         <div className="text-lg text-gray-8 font-light mr-4 w-5 text-right">
                             {rank}.
@@ -225,7 +227,7 @@ export default function Dashboard() {
         });
         const isTimeAttack: boolean = isTimeAttackEntry(leaderboard[0]);
         return (<>
-            <div className="flex justify-between px-4 py-1 border-b border-gray-6 mb-2">
+            <div className="flex justify-between px-4 md:max-lg:px-10 py-1 border-b border-gray-6 mb-2">
                 <div className="flex items-center">
                     <div className="text-gray-8 mr-4 pr-1 w-5 text-right">
                         #
@@ -277,10 +279,12 @@ export default function Dashboard() {
                                 Quizzes for this chat:
                             </div>
                             {renderQuizRows(groupChat, startIdx)}
-                            <div className="sm:flex sm:flex-grow sm:items-end mt-8">
+                            <div className="sm:flex sm:flex-grow sm:items-end mt-6 sm:mt-3">
                                 <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Generate New Quiz</button>
                                 <div className="flex">
-                                    <button className="btn mr-2 btn-sm mt-2 sm:mt-0 grow">View Messages</button>
+                                    <Link href={`/messages/${groupChat.id}`} className="grow sm:flex-none mr-2">
+                                        <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
+                                    </Link>
                                     <button className="btn btn-sm mt-2 sm:mt-0">Manage Participants</button>
                                 </div>
                             </div>
@@ -314,7 +318,7 @@ export default function Dashboard() {
                         <summary tabIndex={0} className="hover:cursor-pointer list-none"><Image src="menu.svg" alt="Menu" width={44} height={44} /></summary>
                         <div className="dropdown-menu dropdown-menu-left shadow-md">
                             <a className="dropdown-item text-sm">Quiz Leaderboard</a>
-                            <a tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</a>
+                            <Link href={`/messages/${groupChat.id}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
                             <a tabIndex={-1} className="dropdown-item text-sm text-red-9">Delete Quiz</a>
                         </div>
                     </details>
@@ -352,7 +356,9 @@ export default function Dashboard() {
                             <div className="px-4 mb-4">
                                 <button className="btn w-full text-lg">Copy Shareable Link</button>
                                 <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
-                                <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
+                                <Link href={`/messages/${groupChat.id}/${quiz.id}`}>
+                                    <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
+                                </Link>
                                 <button className="btn btn-sm w-full mt-2 text-red-8 font-bold">Delete Quiz</button>
                             </div>
                         </div>
@@ -439,7 +445,7 @@ export default function Dashboard() {
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between">
-            <div className="relative w-[95%] lg:w-[90%] xl:w-[70%] 2xl:w-[60%] mt-12 sm:mt-24">
+            <div className="relative w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-12 sm:mt-24">
                 <div className="text-4xl text-center sm:text-left sm:text-5xl font-bold">
                     <span className="sm:mr-4">Welcome,</span>
                     <br className="sm:hidden" /> 

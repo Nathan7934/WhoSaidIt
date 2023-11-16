@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import useRequestRegistration from "@/app/hooks/api-access/useRequestRegistration";
+import useRequestRegistration from "@/app/hooks/api_access/authentication/useRequestRegistration";
 
 export default function Register() {
 

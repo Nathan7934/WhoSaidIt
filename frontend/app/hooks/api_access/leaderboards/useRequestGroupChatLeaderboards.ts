@@ -1,7 +1,7 @@
 import { EXTERNAL_API_ROOT } from "@/app/constants";
 import { TimeAttackEntry, SurvivalEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 
-import useAuthFetch from "../useAuthFetch";
+import useAuthFetch from "../../useAuthFetch";
 
 interface ResponseInfo {
     first: number;
@@ -14,7 +14,7 @@ export default function useRequestGroupChatLeaderboards() {
     // Main hook function
     const requestGroupChatLeaderboards = async (groupChatId: number): Promise<Array<QuizLeaderboardInfo> | null> => {
 
-        const requestUrl: string = `${EXTERNAL_API_ROOT}/groupChats/${groupChatId}/leaderboard`;
+        const requestUrl: string = `${EXTERNAL_API_ROOT}/group-chats/${groupChatId}/leaderboard`;
 
         try {
             const response: Response = await authFetch(requestUrl);
