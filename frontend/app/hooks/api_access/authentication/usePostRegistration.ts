@@ -1,11 +1,11 @@
 import { INTERNAL_API_ROOT, EXTERNAL_API_ROOT } from "@/app/constants";
 import useAuth from "../../useAuth";
 
-export default function useRequestRegistration() {
+export default function usePostRegistration() {
 
     const {setUserId, setAuth} = useAuth();
 
-    const requestRegistration = async (username: string, password: string, email: string): Promise<string | null> => {
+    const postRegistration = async (username: string, password: string, email: string): Promise<string | null> => {
         const requestBody = {
             username: username,
             password: password,
@@ -63,5 +63,5 @@ export default function useRequestRegistration() {
         }
     }
 
-    return requestRegistration;
+    return postRegistration;
 }

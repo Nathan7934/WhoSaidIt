@@ -1,11 +1,11 @@
 import { INTERNAL_API_ROOT } from "@/app/constants";
 import useAuth from "../../useAuth";
 
-export default function useRequestLogin() {
+export default function usePostLogin() {
 
     const {setUserId, setAuth} = useAuth();
 
-    const requestLogin = async (username: string, password: string): Promise<string | null> => {
+    const postLogin = async (username: string, password: string): Promise<string | null> => {
         const requestBody = {
             username: username,
             password: password
@@ -43,5 +43,5 @@ export default function useRequestLogin() {
         }
     }
 
-    return requestLogin;
+    return postLogin;
 }

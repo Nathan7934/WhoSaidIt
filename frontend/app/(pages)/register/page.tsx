@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import useRequestRegistration from "@/app/hooks/api_access/authentication/useRequestRegistration";
+import usePostRegistration from "@/app/hooks/api_access/authentication/usePostRegistration";
 
 export default function Register() {
 
-    const requestRegistration = useRequestRegistration();
+    const postRegistration = usePostRegistration();
     const router = useRouter();
 
     // Register form fields states
@@ -52,7 +52,7 @@ export default function Register() {
             return;
         }
         setRegisterLoading(true);
-        requestRegistration(registerUsername, registerPassword, registerEmail)
+        postRegistration(registerUsername, registerPassword, registerEmail)
         .then((error: string | null) => {
             if (!error) {
                 // If we successfully registered, redirect to the dashboard

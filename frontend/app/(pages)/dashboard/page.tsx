@@ -1,8 +1,8 @@
 "use client";
 
-import useRequestActiveUser from "@/app/hooks/api_access/user/useRequestActiveUser";
-import useRequestGroupChatsInfo from "@/app/hooks/api_access/group_chats/useRequestGroupChatsInfo";
-import useRequestGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useRequestGroupChatLeaderboards";
+import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
+import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
+import useGetGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useGetGroupChatLeaderboards";
 import { User, GroupChatInfo, SurvivalQuiz, TimeAttackQuiz, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 
 import Image from "next/image";
@@ -24,9 +24,9 @@ export default function Dashboard() {
 
     // ----------- Hooks ------------------
     const router = useRouter();
-    const requestActiveUser = useRequestActiveUser();
-    const requestGroupChatsInfo = useRequestGroupChatsInfo();
-    const requestGroupChatLeaderboards = useRequestGroupChatLeaderboards();
+    const getActiveUser = useGetActiveUser();
+    const getGroupChatsInfo = useGetGroupChatsInfo();
+    const getGroupChatLeaderboards = useGetGroupChatLeaderboards();
 
     // ----------- State (Data) -----------
     const [activeUsername, setActiveUsername] = useState<string>("");
@@ -43,8 +43,8 @@ export default function Dashboard() {
     // ----------- Data Retrieval ---------
     useEffect(() => {
         const getPageData = async () => {
-            const activeUser: User | null = await requestActiveUser();
-            let groupChatsInfo: Array<GroupChatInfo> | null = await requestGroupChatsInfo();
+            const activeUser: User | null = await getActiveUser();
+            let groupChatsInfo: Array<GroupChatInfo> | null = await getGroupChatsInfo();
 
             if (activeUser && groupChatsInfo) {
                 setActiveUsername(activeUser.username);
@@ -52,7 +52,7 @@ export default function Dashboard() {
                 setGroupChats(groupChatsInfo);
 
                 if (groupChatsInfo.length > 0) {
-                    const leaderboards: Array<QuizLeaderboardInfo> | null = await requestGroupChatLeaderboards(groupChatsInfo[0].id);
+                    const leaderboards: Array<QuizLeaderboardInfo> | null = await getGroupChatLeaderboards(groupChatsInfo[0].id);
                     if (leaderboards) {
                         setPreviewLeaderboards(convertToNamedQuizLeaderboardInfo(groupChatsInfo[0], leaderboards));
                     } else {

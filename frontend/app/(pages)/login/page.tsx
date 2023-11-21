@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import useRequestLogin from "@/app/hooks/api_access/authentication/useRequestLogin";
+import usePostLogin from "@/app/hooks/api_access/authentication/usePostLogin";
 
 export default function Login() {
 
-    const requestLogin = useRequestLogin();
+    const postLogin = usePostLogin();
     const router = useRouter();
 
     // Login form fields state
@@ -33,7 +33,7 @@ export default function Login() {
     const loginSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         setLoginLoading(true);
-        requestLogin(loginUsername, loginPassword)
+        postLogin(loginUsername, loginPassword)
         .then((error: string | null) => {
             if (!error) {
                 // If we successfully logged in, redirect to the dashboard

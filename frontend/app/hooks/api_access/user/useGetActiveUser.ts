@@ -1,17 +1,17 @@
-import { EXTERNAL_API_ROOT } from "@/app/constants";
+import { EXTERNAL_API_ROOT, INTERNAL_API_ROOT } from "@/app/constants";
 
 import useAuth from "../../useAuth";
 import useAuthFetch from "../../useAuthFetch";
 import useRefreshToken from "../../useRefreshToken";
-import { GroupChatInfo, TimeAttackQuiz, SurvivalQuiz } from "@/app/interfaces";
+import { User } from "@/app/interfaces";
 
-export default function useRequestGroupChatsInfo() {
-    
+export default function useGetActiveUser() {
+
     const { userId } = useAuth();
     const authFetch = useAuthFetch();
     const refreshToken = useRefreshToken();
 
-    const requestGroupChatsInfo = async (): Promise<Array<GroupChatInfo> | null> => {
+    const getActiveUser = async (): Promise<User | null> => {
         let currentUserId = userId;
 
         // If there is no userId stored in the context, attempt to retrieve one using the refresh token:
@@ -24,7 +24,7 @@ export default function useRequestGroupChatsInfo() {
             currentUserId = refreshResponse.user_id;
         }
 
-        const requestUrl: string = `${EXTERNAL_API_ROOT}/users/${currentUserId}/group-chats/info`;
+        const requestUrl: string = `${EXTERNAL_API_ROOT}/users/${currentUserId}`;
 
         try {
             const response: Response = await authFetch(requestUrl);
@@ -37,25 +37,15 @@ export default function useRequestGroupChatsInfo() {
                     return null;
                 }
             }
-            const parsedJson = await response.json();
 
-            // Converting the deserialized LocalDateTime objects to Date objects
-            const groupChatsInfo: Array<GroupChatInfo> = parsedJson.map((groupChat: GroupChatInfo) => ({
-                ...groupChat,
-                uploadDate: new Date(groupChat.uploadDate),
-                quizzes: groupChat.quizzes.map((quiz: TimeAttackQuiz | SurvivalQuiz) => ({
-                    ...quiz,
-                    createdDate: new Date(quiz.createdDate)
-                }))
-            }));
-
-            return groupChatsInfo;
-
+            const parsedJson: User = await response.json();
+            return parsedJson;
+            
         } catch (error) {
             console.error(error);
             return null;
         }
     }
 
-    return requestGroupChatsInfo;
+    return getActiveUser;
 }

@@ -7,12 +7,12 @@ interface ResponseInfo {
     first: number;
     second: Array<TimeAttackEntry | SurvivalEntry>;
 }
-export default function useRequestGroupChatLeaderboards() {
+export default function useGetGroupChatLeaderboards() {
 
     const authFetch = useAuthFetch();
 
     // Main hook function
-    const requestGroupChatLeaderboards = async (groupChatId: number): Promise<Array<QuizLeaderboardInfo> | null> => {
+    const getGroupChatLeaderboards = async (groupChatId: number): Promise<Array<QuizLeaderboardInfo> | null> => {
 
         const requestUrl: string = `${EXTERNAL_API_ROOT}/group-chats/${groupChatId}/leaderboard`;
 
@@ -46,5 +46,5 @@ export default function useRequestGroupChatLeaderboards() {
         }
     }
 
-    return requestGroupChatLeaderboards;
+    return getGroupChatLeaderboards;
 }

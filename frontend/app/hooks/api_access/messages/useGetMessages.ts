@@ -3,21 +3,33 @@ import { EXTERNAL_API_ROOT } from "@/app/constants";
 import useAuthFetch from "../../useAuthFetch";
 import { Message, MessagePage, PaginationConfig } from "@/app/interfaces";
 
-export default function useRequestMessages() {
+export default function useGetMessages() {
 
     const authFetch = useAuthFetch();
 
-    const requestMessages = async (groupChatId: number, paginationConfig: PaginationConfig): Promise<MessagePage | null> => {
+    const getMessages = async (
+        groupChatId: number, 
+        paginationConfig: PaginationConfig,
+        quizId: number | null = null, 
+        participantId: number | null = null
+    ): Promise<MessagePage | null> => {
 
         const { pageNumber, pageSize, ascending } = paginationConfig;
-        const requestUrl: string = `${EXTERNAL_API_ROOT}/group-chats/${groupChatId}/messages/paginated?`;
+        const requestUrl: string = quizId ? 
+            `${EXTERNAL_API_ROOT}/quizzes/${quizId}/messages/paginated?` :
+            `${EXTERNAL_API_ROOT}/group-chats/${groupChatId}/messages/paginated?`;
+
+        let searchParams = new URLSearchParams({
+            pageNumber: `${pageNumber}`,
+            pageSize: `${pageSize}`,
+            ascending: `${ascending}`
+        });
+        if (participantId) {
+            searchParams.set('participantId', `${participantId}`);
+        }
 
         try {
-            const response: Response = await authFetch(requestUrl + new URLSearchParams({
-                pageNumber: `${pageNumber}`,
-                pageSize: `${pageSize}`,
-                ascending: `${ascending}`
-            }));
+            const response: Response = await authFetch(requestUrl + searchParams);
             if (!response.ok) {
                 if (response.status >= 400 && response.status < 500) {
                     console.error(`Client failed request: ${response.status}`);
@@ -46,5 +58,5 @@ export default function useRequestMessages() {
         }
     }
 
-    return requestMessages;
+    return getMessages;
 }

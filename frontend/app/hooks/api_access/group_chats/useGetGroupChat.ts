@@ -3,11 +3,11 @@ import { GroupChat } from "@/app/interfaces";
 
 import useAuthFetch from "../../useAuthFetch";
 
-export default function useRequestGroupChat() {
+export default function useGetGroupChat() {
 
     const authFetch = useAuthFetch();
 
-    const requestGroupChat = async (groupChatId: number): Promise<GroupChat | null> => {
+    const getGroupChat = async (groupChatId: number): Promise<GroupChat | null> => {
 
         const requestUrl: string = `${EXTERNAL_API_ROOT}/group-chats/${groupChatId}`;
 
@@ -37,5 +37,5 @@ export default function useRequestGroupChat() {
         }
     }
 
-    return requestGroupChat;
+    return getGroupChat;
 }
