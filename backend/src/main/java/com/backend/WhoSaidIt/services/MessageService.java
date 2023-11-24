@@ -74,6 +74,13 @@ public class MessageService {
     }
 
     @Transactional
+    public void deleteMessages(List<Long> messageIds) {
+        for (long id : messageIds) {
+            deleteMessage(id);
+        }
+    }
+
+    @Transactional
     public void deleteMessage(long id) {
         Message message = messageRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Message with id " + id + " not found.")

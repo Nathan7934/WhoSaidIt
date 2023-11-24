@@ -96,11 +96,17 @@ public class MessageController {
         return ResponseEntity.ok(messageService.getMessagesByQuizId(quizId));
     }
 
-    @DeleteMapping("/messages/{messageId}")
-    public ResponseEntity<String> deleteMessage(@PathVariable long messageId) {
+    @DeleteMapping("/group-chats/{groupChatId}/messages")
+    public ResponseEntity<String> deleteMessages(
+            @PathVariable long groupChatId,
+            @RequestBody List<Long> messageIds
+    ) {
         try {
-            messageService.deleteMessage(messageId);
-            return ResponseEntity.ok("Message with id " + messageId + " deleted.");
+            // The groupChatId isn't used here, but it's included in the path to satisfy security requirements
+            messageService.deleteMessages(messageIds);
+            return ResponseEntity.ok(
+                    "Messages with ids " + messageIds + " deleted from group chat with id " + groupChatId + "."
+            );
         } catch (DataNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

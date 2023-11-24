@@ -74,8 +74,11 @@ public class QuizService {
 
         // Since the method is transactional, the database will be synchronized when the method returns.
         for (Message message : messages) {
-            quiz.getMessagesInQuiz().add(message);
-            message.getQuizzes().add(quiz);
+            List<Message> messagesInQuiz = quiz.getMessagesInQuiz();
+            if (!messagesInQuiz.contains(message)) {
+                messagesInQuiz.add(message);
+                message.getQuizzes().add(quiz);
+            }
         }
     }
 
@@ -90,7 +93,9 @@ public class QuizService {
 
         // Check if the amount of messages removed matches the number of messageIds given.
         if (preSize - quizMessages.size() != messageIds.size()) {
-            throw new DataNotFoundException("One or more messages with the given ids were not found.");
+            throw new DataNotFoundException("To delete: " + messageIds + "\n" +
+                    "Removed: " + (preSize - quizMessages.size()) + "\n" +
+                    "Expected num removed: " + messageIds.size() + "\n");
         }
     }
 
