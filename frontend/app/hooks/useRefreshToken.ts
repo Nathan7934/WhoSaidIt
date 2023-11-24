@@ -13,6 +13,7 @@ export default function useRefreshToken() {
     const { setUserId, setAuth } = useAuth();
 
     const refreshToken = async (): Promise<RefreshResponse | null> => {
+        console.log("Refreshing token...");
         try {
             const refreshResponse = await fetch(`${INTERNAL_API_ROOT}/refresh`);
             const {user_id, access_token} = await refreshResponse.json();

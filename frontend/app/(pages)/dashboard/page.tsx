@@ -3,6 +3,7 @@
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
 import useGetGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useGetGroupChatLeaderboards";
+import renderQuizTypeBadge from "@/app/utilities/quizTypeBadge";
 import { User, GroupChatInfo, SurvivalQuiz, TimeAttackQuiz, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 
 import Image from "next/image";
@@ -352,7 +353,6 @@ export default function Dashboard() {
                                 <h2 className="text-xl text-white">{quiz.quizName}</h2>
                                 <div className=" mb-4">{renderQuizTypeBadge(quiz.type)}</div>
                             </div>
-                            {/* <div className="divider my-0 mx-3 relative bottom-1 mb-2"></div> */}
                             <div className="px-4 mb-4">
                                 <button className="btn w-full text-lg">Copy Shareable Link</button>
                                 <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
@@ -370,15 +370,6 @@ export default function Dashboard() {
     }
 
     // =============== HELPER FUNCTIONS ===============
-
-    const renderQuizTypeBadge = (type: string) => {
-        if (type === "TIME_ATTACK") {
-            return (<span className="py-[2px] px-2 bg-blue-4 rounded-lg text-blue-12 text-sm
-                font-semibold relative bottom-[1px] whitespace-nowrap">Time Attack</span>);
-        }
-        return (<span className="py-[2px] px-2 bg-red-4 rounded-lg text-red-12 text-sm
-            font-semibold relative bottom-[1px] whitespace-nowrap">Survival</span>);
-    }
 
     const sortGroupChatsByDate = (groupChats: Array<GroupChatInfo>) => {
         return groupChats.sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());

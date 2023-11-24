@@ -39,6 +39,30 @@ const config: Config = {
                 from: { transform: 'translateX(0)' },
                 to: { transform: 'translateX(100%)' },
             },
+
+            // MESSAGES: Keyframes for response status alerts
+            alertEntering: {
+                '0%': {
+                    width: '52px',
+                    opacity: '0',
+                },
+                '25%': { opacity: '1' },
+                '50%': { width: '52px' },
+                '100%': { width: '310px' },
+            },
+            alertExiting: {
+                '0%': { 
+                    width: '310px',
+                    opacity: '1',
+                },
+                '50%': { width: '52px' },
+                '75%': { opacity: '1' },
+                '100%': { 
+                    opacity: '0',
+                    width: '52px',
+                },
+            },
+
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -50,6 +74,10 @@ const config: Config = {
                 leaderboardExiting: 'slideOutToLeft 0.3s ease-in-out 0s 1 forwards',
                 leaderboardEnteringPrev: 'slideInFromLeft 0.3s ease-in-out 0s 1 forwards',
                 leaderboardExitingPrev: 'slideOutToRight 0.3s ease-in-out 0s 1 forwards',
+
+                // MESSAGES: Response status alerts animations
+                alertEntering: 'alertEntering 1s ease-in-out 0s 1 forwards',
+                alertExiting: 'alertExiting 1s ease-in-out 0s 1 forwards',
             },
         },
     },
