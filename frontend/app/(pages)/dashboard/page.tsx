@@ -276,7 +276,7 @@ export default function Dashboard() {
                     </span>
                     <div className="accordion-content text-content2 bg-[#09090bb9]">
                         <div className="min-h-0">
-                            <div className="mb-4 text-lg underline decoration-1 underline-offset-2 text-gray-9 font-light">
+                            <div className="mb-4 text-lg text-gray-9 font-light">
                                 Quizzes for this chat:
                             </div>
                             {renderQuizRows(groupChat, startIdx)}

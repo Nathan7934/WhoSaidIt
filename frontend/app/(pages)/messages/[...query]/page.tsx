@@ -6,11 +6,10 @@ import useGetQuizzes from "@/app/hooks/api_access/quizzes/useGetQuizzes";
 import useGetParticipants from "@/app/hooks/api_access/participants/useGetParticipants";
 import usePostMessagesInQuiz from "@/app/hooks/api_access/quizzes/usePostMessagesInQuiz";
 import useDeleteMessages from "@/app/hooks/api_access/messages/useDeleteMessages";
+
 import renderQuizTypeBadge from "@/app/utilities/quizTypeBadge";
 import { GroupChat, Message, MessagePage, PaginationConfig, SurvivalQuiz, TimeAttackQuiz, Participant } from "@/app/interfaces";
-
-import AnimateHeight from "react-animate-height";
-import { Height } from "react-animate-height";
+import MessageRow from "@/app/components/MessageRow";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -67,7 +66,9 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     const [filterParticipantId, setFilterParticipantId] = useState<number | null>(null);
     const [filterChangeCounter, setFilterChangeCounter] = useState<number>(0); // Used to trigger useEffect when filters change
 
-    // ----------- State (UI) ------------- (TODO: Maybe change to useReducer?)
+    // ----------- State (UI) -------------
+    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 1024);
+
     const [stableDataLoading, setStableDataLoading] = useState<boolean>(true); // Stable data = group chat, quizzes, participants
     const [messagesLoading, setMessagesLoading] = useState<boolean>(true);
     const [alteringMessages, setAlteringMessages] = useState<boolean>(false); // Used for the "Add to Quiz" modal
@@ -104,12 +105,12 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         const getMessageData = async () => {
             setMessagesLoading(true);
             let messagePage: MessagePage | null;
-            if (filterQuizId) {
+            if (filterQuizId && filterParticipantId) {
+                messagePage = await getMessages(groupChatId, paginationConfig, filterQuizId, filterParticipantId);
+            } else if (filterQuizId) {
                 messagePage = await getMessages(groupChatId, paginationConfig, filterQuizId);
             } else if (filterParticipantId) {
                 messagePage = await getMessages(groupChatId, paginationConfig, null, filterParticipantId);
-            } else if (filterQuizId && filterParticipantId) {
-                messagePage = await getMessages(groupChatId, paginationConfig, filterQuizId, filterParticipantId);
             } else {
                 messagePage = await getMessages(groupChatId, paginationConfig);
             }
@@ -143,7 +144,9 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         setSelectedMessageIds([]);
     }, [filterQuizId]);
 
-    // Clear the request status message after 5 seconds
+    // ----------- UI effects ---------
+
+    // Clear the request status message after 4 seconds
     useEffect(() => {
         if (responseStatus.message !== "") {
             const timeout = setTimeout(() => {
@@ -152,10 +155,25 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                     success: responseStatus.success, 
                     doAnimate: true 
                 });
-            }, 5000);
+            }, 4000);
             return () => clearTimeout(timeout);
         }
     }, [responseStatus]);
+
+    // DOM event handlers
+    useEffect(() => {
+        // If the viewport width is less than 1024px (TailwindCSS 'lg' breakpoint), we switch to the mobile layouts determined by isMobile
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 1024);
+        }
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
+    }, []);
 
     // ----------- Data helper functions ---------
     
@@ -191,7 +209,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         setAlteringMessages(true);
         const singular = selectedMessageIds.length === 1;
 
-        const error = await deleteMessages(selectedMessageIds);
+        const error = await deleteMessages(groupChatId, selectedMessageIds);
         if (!error) {
             setSelectedMessageIds([]);
             setResponseStatus({
@@ -212,92 +230,15 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         setAlteringMessages(false);
     }
 
-    // =============== COMPONENTS AND RENDER FUNCTIONS =================
-
-    const MessageCell = ({ message }: { message: Message }) => {
-        const ref = useRef<HTMLSpanElement>(null);
-        const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
-
-        const [height, setHeight] = useState<Height>(0);
-        const [contentWrapped, setContentWrapped] = useState<boolean>(false);
-        const [hasOverflow, setHasOverflow] = useState<boolean>(false);
-
-        // Close the message cell if the user clicks outside of it
-        // Also determine if the message content is overflowing
-        useEffect(() => {
-            const handleClickOutside = (event: MouseEvent) => {
-                if (ref.current && !(ref.current.contains(event.target as Node))) {
-                    setHeight(0);
-                }
-            };
-            document.addEventListener('mousedown', handleClickOutside);
-
-            determineOverflow();
-            const handleResize = () => {
-                if (resizeTimeout.current) {
-                    clearTimeout(resizeTimeout.current);
-                }
-                resizeTimeout.current = setTimeout(() => {
-                    determineOverflow();
-                }, 100)
-            }
-            window.addEventListener('resize', handleResize);
-
-            // Cleanup
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-                window.removeEventListener('resize', handleResize);
-                if (resizeTimeout.current) {
-                    clearTimeout(resizeTimeout.current);
-                }
-            };
-        }, []);
-
-        const determineOverflow = () => {
-            setHasOverflow(ref.current ? ref.current.scrollWidth > ref.current.clientWidth : false);
-        }
-
-        return (
-            <div className={`grow relative overflow-hidden ${hasOverflow ? "cursor-pointer" : "cursor-default"}`}
-            onClick={() => setHeight(height === 0 ? 'auto' : 0)}>
-                <span ref={ref} className={`absolute max-w-full overflow-hidden text-ellipsis ${contentWrapped ? "" : "whitespace-nowrap"}`}>
-                    {message.content}
-                </span>
-                <AnimateHeight height={height} duration={300} className="invisible"
-                onHeightAnimationStart={() => setContentWrapped(true)} onHeightAnimationEnd={() => setContentWrapped(height !== 0)}>
-                    {message.content} {/* This is a hack to get the height of the message cell to expand properly. */}
-                </AnimateHeight>
-            </div>
-        );
-    };
+    // =============== RENDER FUNCTIONS =================
 
     const renderMessagesTable = () => {
         if (stableDataLoading && messages.length === 0) return (<div className="skeleton w-full h-[862px] rounded-md" />)
 
-        const messageSelectionChanged = (messageId: number, checked: boolean) => {
-            if (checked) {
-                setSelectedMessageIds([...selectedMessageIds, messageId]);
-            } else {
-                setSelectedMessageIds(selectedMessageIds.filter(id => id !== messageId));
-            }
-        }
-
         const messageRows = messages.map((message: Message, index: number) => {
             return (
-                <div key={message.id} className="flex py-2 border-b border-gray-6">
-                    <div className="flex-none w-[35px]">
-                        <input type="checkbox" className="checkbox ml-1 relative top-[2px]"
-                        onChange={(e) => messageSelectionChanged(message.id, e.target.checked)}
-                        checked={selectedMessageIds.includes(message.id)}/>
-                    </div>
-                    <div className="flex-none w-[150px] pr-2 whitespace-nowrap overflow-x-hidden text-ellipsis text-gray-11">
-                        {message.sender.name}
-                    </div>
-                    <MessageCell message={message}/>
-                    <div className="flex-none w-[140px] ml-5 text-gray-9">
-                        {formatDate(message.timestamp)}
-                    </div>
-                </div>
+                <MessageRow key={message.id} message={message} isMobile={isMobile} selectedMessageIds={selectedMessageIds} 
+                setSelectedMessageIds={setSelectedMessageIds}/>
             );
         });
 
@@ -305,10 +246,10 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             <div className="w-full">
                 {/* Table header */}
                 <div className="flex py-2 bg-gray-3 rounded-md border border-gray-6">
-                    <div className="flex-none w-[35px]"></div>
-                    <div className="flex-none w-[150px]">Sender</div>
-                    <div className="grow">Message</div>
-                    <div className="flex-none w-[140px]">Timestamp</div>
+                    <div className="flex-none hidden lg:inline-block w-[35px]"></div>
+                    <div className="flex-none hidden lg:inline-block w-[150px]">Sender</div>
+                    <div className="grow text-center lg:text-left">Message<span className="lg:hidden">s</span></div>
+                    <div className="flex-none hidden lg:inline-block w-[140px]">Timestamp</div>
                 </div>
                 {/* Table rows */}
                 {messages.length > 0 ? 
@@ -327,7 +268,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         );
     }
 
-    const renderPaginationControls = (isMobile: boolean) => {
+    const renderPaginationControls = () => {
 
         const handlePageChange = (pageNumber: number) => {
             if (!pageInfo || pageNumber < 1 || pageNumber > pageInfo.totalPages) {
@@ -588,17 +529,6 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
     // ---------- Rendering Helper Functions --------
 
-    // Formats a date object into a string of type "MM/DD/YY h:mm am/pm"
-    const formatDate = (date: Date) => {
-        const hours = date.getHours();
-        const ampm = hours >= 12 ? 'pm' : 'am';
-        const formattedHours = hours % 12 || 12; // If hours % 12 is 0, use 12
-        const formattedMinutes = `0${date.getMinutes()}`.slice(-2); // Ensure two digits
-        const shortYear = date.getFullYear().toString().slice(-2); // Last two digits of year
-    
-        return `${date.getMonth() + 1}/${date.getDate()}/${shortYear} ${formattedHours}:${formattedMinutes} ${ampm}`;
-    }
-
     // This is a workaround for triggering the Ripple-UI hidden modal checkboxes to change state using a button
     const toggleModal = (modalId: string) => {
         const modalCheckbox = document.getElementById(modalId) as HTMLInputElement;
@@ -624,7 +554,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     return (
         <main className="flex min-h-screen flex-col items-center justify-between">
             <div className="relative w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-12 sm:mt-24">
-                <div className="w-full p-8 bg-zinc-950 rounded-xl border border-gray-7 overflow-x-hidden">
+                <div className="w-full p-2 mb-3 lg:p-8 bg-zinc-950 rounded-xl border border-gray-7 overflow-x-hidden">
                     <div className="flex mb-2">
                         <div className="text-3xl mb-5">
                             Messages for {stableDataLoading ? "..." : `"${groupChatName}"`}
@@ -670,7 +600,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                         </fieldset>
                     </div>
                     {renderMessagesTable()}
-                    {renderPaginationControls(false)}
+                    {renderPaginationControls()}
                 </div>
             </div>
             {/* MODAL - ADD/REMOVE MESSAGES TO QUIZ */}

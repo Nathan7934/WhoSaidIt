@@ -6,9 +6,9 @@ export default function useDeleteMessages() {
 
     const authFetch = useAuthFetch();
 
-    const deleteMessages = async (messageIds: Array<number>): Promise<string | null> => {
+    const deleteMessages = async (groupChatId: number, messageIds: Array<number>): Promise<string | null> => {
 
-        const requestUrl: string = `${EXTERNAL_API_ROOT}/messages`;
+        const requestUrl: string = `${EXTERNAL_API_ROOT}/group-chats/${groupChatId}/messages`;
 
         try {
             const response: Response = await authFetch(requestUrl, {

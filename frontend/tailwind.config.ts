@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import { MOBILE_HOLD_DURATION } from './app/constants';
 
 const config: Config = {
     content: [
@@ -63,6 +64,20 @@ const config: Config = {
                 },
             },
 
+            // MESSAGES: Mobile message select hold wave keyframes
+            holdWave: {
+                '0%': {
+                    width: '0%',
+                    opacity: '0.1',
+                },
+                '50%': {opacity: '0.3'},
+                '99%': {opacity: '0.3'},
+                '100%': {
+                    width: '200%',
+                    opacity: '0',
+                },
+            },
+
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -78,6 +93,9 @@ const config: Config = {
                 // MESSAGES: Response status alerts animations
                 alertEntering: 'alertEntering 1s ease-in-out 0s 1 forwards',
                 alertExiting: 'alertExiting 1s ease-in-out 0s 1 forwards',
+
+                // MESSAGES: Mobile message select click wave animation
+                holdWave: `holdWave ${MOBILE_HOLD_DURATION - 100}ms cubic-bezier(.8,0,.65,1) 0.2s 1 forwards`,
             },
         },
     },
