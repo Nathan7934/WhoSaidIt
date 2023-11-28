@@ -66,7 +66,6 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
 
                     // This timeout function only executes after the hold duration, if user lifts their finger before then, it is cleared
                     holdTimeout.current = setTimeout(() => {
-                        console.log('Hold event triggered');
                         messageSelectionChanged(!selectedRef.current);
                         holdTimeout.current = null;
                     }, MOBILE_HOLD_DURATION);
@@ -180,10 +179,8 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
     const messageSelectionChanged = (checked: boolean) => {
         const oldIds = selectedMessageIdsRef.current;
         if (checked) {
-            console.log('Message selected');
             setSelectedMessageIds([...oldIds, message.id]);
         } else {
-            console.log('Message deselected');
             setSelectedMessageIds(oldIds.filter(id => id !== message.id));
         }
     }
@@ -218,7 +215,7 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
 
     if (isMobile) { // Mobile layout
         return (
-            <div ref={mobileDOMref} className={`flex flex-col relative px-1 py-2 border-b border-gray-6 overflow-hidden 
+            <div ref={mobileDOMref} className={`flex flex-col relative px-1 py-2 overflow-hidden 
             transition-colors duration-100 ${selectedMessageIds.includes(message.id) ? "bg-blue-6/40" : ""}`}>
                 {/* div for hold wave effect */}
                 <div ref={holdWaveDOMref} className="absolute w-[0%] translate-x-[-50%] translate-y-[-50%] 

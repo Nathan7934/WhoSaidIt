@@ -3,7 +3,8 @@
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
 import useGetGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useGetGroupChatLeaderboards";
-import renderQuizTypeBadge from "@/app/utilities/quizTypeBadge";
+import { renderQuizTypeBadge } from "@/app/utilities/miscFunctions";
+import Modal from "@/app/components/Modal";
 import { User, GroupChatInfo, SurvivalQuiz, TimeAttackQuiz, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 
 import Image from "next/image";
@@ -340,7 +341,21 @@ export default function Dashboard() {
                 {/* Options modal */}
                 <div className="ml-auto mr-1 self-center">
                     <label htmlFor={`modal-${startIdx + index}`}><Image src="menu.svg" alt="Menu" width={36} height={36} /></label>
-                    <input className="modal-state" id={`modal-${startIdx + index}`} type="checkbox" />
+                    <Modal domId={`modal-${startIdx + index}`} title="Quiz Actions">
+                        <div className="px-4 text-center mb-3">
+                            <h2 className="text-xl text-white">{quiz.quizName}</h2>
+                            <div className=" mb-4">{renderQuizTypeBadge(quiz.type)}</div>
+                        </div>
+                        <div className="px-4 mb-4">
+                            <button className="btn w-full text-lg">Copy Shareable Link</button>
+                            <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
+                            <Link href={`/messages/${groupChat.id}/${quiz.id}`}>
+                                <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
+                            </Link>
+                            <button className="btn btn-sm w-full mt-2 text-red-8 font-bold">Delete Quiz</button>
+                        </div>
+                    </Modal>
+                    {/* <input className="modal-state" id={`modal-${startIdx + index}`} type="checkbox" />
                     <div className="modal w-screen">
                         <label className="modal-overlay" htmlFor={`modal-${startIdx + index}`}></label>
                         <div className="modal-content flex flex-col w-full mx-6 p-0 bg-zinc-950 border-[1px] border-gray-3">
@@ -362,7 +377,7 @@ export default function Dashboard() {
                                 <button className="btn btn-sm w-full mt-2 text-red-8 font-bold">Delete Quiz</button>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
             {index !== quizzes.length - 1 && <div className="divider my-0"></div>}

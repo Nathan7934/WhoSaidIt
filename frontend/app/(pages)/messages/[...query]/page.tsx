@@ -7,13 +7,14 @@ import useGetParticipants from "@/app/hooks/api_access/participants/useGetPartic
 import usePostMessagesInQuiz from "@/app/hooks/api_access/quizzes/usePostMessagesInQuiz";
 import useDeleteMessages from "@/app/hooks/api_access/messages/useDeleteMessages";
 
-import renderQuizTypeBadge from "@/app/utilities/quizTypeBadge";
+import { renderQuizTypeBadge, toggleModal, isModalOpen } from "@/app/utilities/miscFunctions";
 import { GroupChat, Message, MessagePage, PaginationConfig, SurvivalQuiz, TimeAttackQuiz, Participant } from "@/app/interfaces";
 import MessageRow from "@/app/components/MessageRow";
+import Modal from "@/app/components/Modal";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 interface PageInfo {
     totalPages: number;
@@ -69,11 +70,14 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     // ----------- State (UI) -------------
     const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 1024);
 
+    const [doAnimateSelectionMenu, setDoAnimateSelectionMenu] = useState<boolean>(false); // For the mobile selection menu animation
+
+    // Loading states
     const [stableDataLoading, setStableDataLoading] = useState<boolean>(true); // Stable data = group chat, quizzes, participants
     const [messagesLoading, setMessagesLoading] = useState<boolean>(true);
     const [alteringMessages, setAlteringMessages] = useState<boolean>(false); // Used for the "Add to Quiz" modal
 
-    // Request errors for adding/removing messages to/from quizzes, and deleting messages
+    // HTTP Request errors for adding/removing messages to/from quizzes, and deleting messages
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
 
     // ----------- Data Retrieval ---------
@@ -123,6 +127,9 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                     hasNext: messagePage.hasNext,
                     hasPrevious: messagePage.hasPrevious
                 });
+
+                if (isModalOpen("participant-modal")) toggleModal("participant-modal");
+                if (isModalOpen("quiz-modal")) toggleModal("quiz-modal");
                 setMessagesLoading(false);
             } else {
                 console.error("Error fetching message data, redirecting to root");
@@ -159,6 +166,13 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             return () => clearTimeout(timeout);
         }
     }, [responseStatus]);
+
+    // This avoids triggering the selection menu exit animation when the page first loads
+    useEffect(() => {
+        if (!doAnimateSelectionMenu && selectedMessageIds.length > 0) {
+            setDoAnimateSelectionMenu(true);
+        }
+    }, [selectedMessageIds])
 
     // DOM event handlers
     useEffect(() => {
@@ -237,8 +251,10 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
         const messageRows = messages.map((message: Message, index: number) => {
             return (
-                <MessageRow key={message.id} message={message} isMobile={isMobile} selectedMessageIds={selectedMessageIds} 
-                setSelectedMessageIds={setSelectedMessageIds}/>
+                <div key={message.id} className="border-gray-6 border-b">
+                    <MessageRow message={message} isMobile={isMobile} selectedMessageIds={selectedMessageIds} 
+                    setSelectedMessageIds={setSelectedMessageIds}/>
+                </div>
             );
         });
 
@@ -264,6 +280,9 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                         }
                     </div>
                 }
+                <div className="mt-4 mb-2">
+                    {renderPaginationControls()}
+                </div>
             </div>
         );
     }
@@ -282,7 +301,8 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
         if (!pageInfo) return null;
         const pageNumber = paginationConfig.pageNumber + 1; // API is 0-indexed, while UI is 1-indexed
-        const { totalPages } = pageInfo;
+        const pageSize = paginationConfig.pageSize;
+        const { totalPages, totalMessages } = pageInfo;
         // if (totalPages <= 1) return renderStaticPaginationControls(); // Don't render pagination controls if there's only one or zero pages
     
         const coreButtons = isMobile ? 3 : 5; // Total core page buttons
@@ -320,9 +340,14 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 </button>
             );
         }
+
+        // Generate page info text
+        const startNumber = (pageNumber - 1) * paginationConfig.pageSize + 1;
+        const endNumber = Math.min(startNumber + pageSize - 1, totalMessages);
+        const pageInfoText = `${startNumber}-${endNumber} of ${totalMessages}`;
     
-        return (
-            <div className="flex mt-4">
+        return (<>
+            <div className="flex">
                 <div className="pagination pagination-compact mx-auto relative">
                     <button className="btn" onClick={() => handlePageChange(pageNumber - 1)} disabled={pageNumber === 1}>
                         <Image className="" src="/chevron-left.svg" alt="<" width={18} height={18} />
@@ -345,11 +370,31 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                     <button className="btn" onClick={() => handlePageChange(pageNumber + 1)} disabled={pageNumber >= totalPages}>
                         <Image className="rotate-180" src="/chevron-left.svg" alt=">" width={18} height={18} />
                     </button>
-                    {messagesLoading && <div className="spinner-circle absolute w-7 h-7 right-[-38px] top-[50%] translate-y-[-50%]" />}
+                    {messagesLoading && <div className="spinner-circle absolute w-5 h-5 lg:w-7 lg:h-7 
+                    right-[-28px] lg:right-[-38px] top-[50%] translate-y-[-50%]" />}
                 </div>
+                
             </div>
-        );
+            <div className="w-full mt-2 text-center text-xs text-gray-7 font-extralight noselect">
+                {pageInfoText}
+            </div>
+        </>);
     };
+
+    const renderQueryFilterControls = () => {
+        return (
+            <fieldset className="px-[6px] lg:px-3 pb-3 pt-1 border border-gray-3 w-full rounded-lg lg:w-auto">
+                <legend className="text-gray-11">Query Filters</legend>
+                <div className="flex mx">
+                    {renderParticipantFilterDropdown()}
+                    <div className="self-center mx-[6px] lg:mx-2 text-lg text-gray-8">
+                        in
+                    </div>
+                    {renderQuizFilterDropdown()}
+                </div>
+            </fieldset>
+        );
+    }
 
     const renderParticipantFilterDropdown = () => {
         const selectionChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -357,10 +402,24 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             setFilterParticipantId(selectedValue === "" ? null : Number(selectedValue));
         }
 
-        if (stableDataLoading) return <div className="skeleton w-48 h-10 rounded-xl" />;
+        if (stableDataLoading) return <div className="skeleton w-[150px] lg:w-48 h-10 rounded-xl" />;
+        
+        if (isMobile) {
+            const getSelectedParticipantName = () => {
+                if (filterParticipantId === null) return "All Messages";
+                const participant = participants.find(p => p.id === filterParticipantId);
+                return participant ? participant.name : "All Messages";
+            }
 
+            return (
+                <select className="select relative pr-7 text-ellipsis overflow-hidden text-sm"
+                onMouseDown={(e) => {e.preventDefault()}} onClick={() => toggleModal('participant-modal')}>
+                    <option>{getSelectedParticipantName()}</option>
+                </select>                
+            );
+        }
         return (
-            <select className="select w-48 pr-7 text-ellipsis transition duration-300 ease-in-out hover:border-gray-8" 
+            <select className="select sm:w-48 pr-7 text-ellipsis transition duration-300 ease-in-out hover:border-gray-8" 
             onChange={selectionChanged} >
                 <option value={""}>All Messages</option>
                 {participants.map((participant: Participant) => {
@@ -380,10 +439,24 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             setFilterQuizId(selectedValue === "" ? null : Number(selectedValue));
         };
 
-        if (stableDataLoading) return <div className="skeleton w-48 h-10 rounded-xl" />;
+        if (stableDataLoading) return <div className="skeleton w-[150px] lg:w-48 h-10 rounded-xl" />;
 
+        if (isMobile) {
+            const getSelectedQuizName = () => {
+                if (filterQuizId === null) return "Group Chat";
+                const quiz = quizzes.find(q => q.id === filterQuizId);
+                return quiz ? quiz.quizName : "Group Chat";
+            }
+
+            return (
+                <select className="select relative pr-7 text-ellipsis overflow-hidden text-sm"
+                onMouseDown={(e) => {e.preventDefault()}} onClick={() => toggleModal('quiz-modal')}>
+                    <option>{getSelectedQuizName()}</option>
+                </select>
+            );
+        }
         return (
-            <select className="select w-48 pr-7 text-ellipsis transition duration-300 ease-in-out hover:border-gray-8" 
+            <select className="select sm:w-48 pr-7 text-ellipsis transition duration-300 ease-in-out hover:border-gray-8" 
             onChange={selectionChanged} defaultValue={quizId ? quizId : ""}>
                 <option value={""}>Group Chat</option>
                 {quizzes.map((quiz: TimeAttackQuiz | SurvivalQuiz) => {
@@ -397,9 +470,50 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         );
     };
 
+    const renderSelectionActionsMobile = () => {
+        const active = selectedMessageIds.length > 0;
+        const doAnimate = doAnimateSelectionMenu;
+
+        const determineAnimationClass = () => {
+            if (doAnimate) {
+                if (active) {
+                    return " animate-selectionActionsEntering";
+                } else {
+                    return " animate-selectionActionsExiting";
+                }
+            }
+            return "";
+        }
+
+        return(
+            <div className={`fixed flex top-0 left-0 right-0 translate-y-[-100%] bg-zinc-950/90 border-b border-gray-3 z-50
+            ${determineAnimationClass()}`}>
+                <div className="self-center ml-4 text-lg font-semibold">
+                    {selectedMessageIds.length} Selected
+                </div>
+                <div className="ml-auto mr-2 py-4">
+                    {!filterQuizId &&
+                        <button className="btn btn-solid mr-1" onClick={() => toggleModal('delete-modal')}>
+                            Delete
+                        </button>
+                    }
+                    <button className="btn btn-primary" onClick={() => toggleModal('add-remove-modal')}>
+                        {filterQuizId ? "Remove from Quiz" : "Add to Quiz"}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // =============== MODALS =================
+
     const renderAddRemoveQuizMessagesModal = () => {
         const singular = selectedMessageIds.length === 1;
 
+        const modalTitle: string = isMobile
+            ? `${filterQuizId ? "Removing" : "Adding"} ${selectedMessageIds.length} Message${singular ? "" : "s"}`
+            : `${filterQuizId ? "Remove" : "Add"} ${selectedMessageIds.length} Message${singular ? "" : "s"} 
+               ${filterQuizId ? " from" : " to"} Quiz`;
         let modalContent: JSX.Element;
         if (alteringMessages) {
             modalContent = (<>
@@ -425,31 +539,22 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 </div>
             </>);
         } else {
-            modalContent = (<>{renderQuizModalButtons()}</>);
+            modalContent = (<>
+                <div className="mx-6 mb-4 max-h-[500px] px-2 overflow-y-scroll">
+                    <div className="flex flex-col gap-2 py-1">
+                        {renderQuizModalButtons(false)}
+                    </div>
+                </div>
+            </>);
         }
 
-        return (<>
-            <input className="modal-state" id="add-remove-modal" type="checkbox" />
-            <div className="modal">
-                <label className="modal-overlay" htmlFor="add-remove-modal"></label>
-                <div className="modal-content flex flex-col w-full max-w-[375px] mx-6 p-0 bg-zinc-950 border-[1px] border-gray-3">
-                    <div className="flex w-full mt-1">
-                        <div className="relative bottom-[2px] self-center text-xl font-light ml-4 mr-3">
-                            {filterQuizId ? "Remove" : "Add"} {selectedMessageIds.length} Message{singular ? "" : "s"} 
-                            {filterQuizId ? " from" : " to"} Quiz
-                        </div>
-                        <label htmlFor="add-remove-modal" className="btn btn-sm btn-circle btn-ghost text-lg ml-auto mr-1">✕</label>
-                    </div>
-                    <div className="divider mt-1 mb-0 mx-3 relative bottom-2"></div>
-                    {modalContent}
-                </div>
-            </div>
-        </>);
+        return (<Modal domId="add-remove-modal" title={modalTitle}>{modalContent}</Modal>);
     }
 
     const renderDeleteMessagesModal = () => {
         const singular: boolean = selectedMessageIds.length === 1;
 
+        const modalTitle: string = `Delete ${selectedMessageIds.length} Message${singular ? "" : "s"}`;
         const modalContent: JSX.Element = alteringMessages 
             ? (<>
                 <div className="mx-auto mb-4 text-lg text-gray-11">
@@ -464,7 +569,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                     <div className="mb-2 text-2xl text-gray-11">
                         Are you sure?
                     </div>
-                    <div className="mb-2 px-2 max-w-[300px] text-sm text-gray-9 font-light">
+                    <div className="mb-2 px-4 max-w-[300px] text-sm text-gray-9 font-light">
                         Deleting {singular ? "a message" : "messages"} from the group chat will also remove 
                         {singular ? " it" : " them"} from all quizzes.
                     </div>
@@ -482,25 +587,68 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 </div>
             </>);
 
-        return (<>
-            <input className="modal-state" id="delete-modal" type="checkbox" />
-            <div className="modal">
-                <label className="modal-overlay" htmlFor="delete-modal"></label>
-                <div className="modal-content flex flex-col w-full max-w-[375px] mx-6 p-0 bg-zinc-950 border-[1px] border-gray-3">
-                    <div className="flex w-full mt-1">
-                        <div className="relative bottom-[2px] self-center text-xl font-light ml-4 mr-3">
-                            Delete {selectedMessageIds.length} Message{singular ? "" : "s"}
-                        </div>
-                        <label htmlFor="delete-modal" className="btn btn-sm btn-circle btn-ghost text-lg ml-auto mr-1">✕</label>
-                    </div>
-                    <div className="divider mt-1 mb-0 mx-3 relative bottom-2"></div>
-                    {modalContent}
+        return (<Modal domId="delete-modal" title={modalTitle}>{modalContent}</Modal>);
+    }
+
+    const renderMobileParticipantFilterModal = () => {
+        const modalTitle: string = "Messages to Display";
+        const modalContent: JSX.Element = messagesLoading
+        ? (<>
+            <div className="mx-auto mb-4 text-lg text-gray-11">
+                    Applying Filter...
+            </div>
+            <div className="flex justify-center mb-6">
+                <div className="spinner-circle w-10 h-10" />
+            </div>
+        </>)
+        : (<>
+            <button className="btn btn-primary mx-6 mb-2"
+            onClick={() => setFilterParticipantId(null)}>
+                All Messages
+            </button>
+            <div className="w-full text-center text-sm text-gray-9 mb-2">
+                Or select a participant:
+            </div>
+            <div className="mx-6 mb-4 max-h-[350px] px-5 overflow-y-scroll">
+                <div className="flex flex-col gap-2">
+                    {renderParticipantModalButtons()}
                 </div>
             </div>
         </>);
+
+        return (<Modal domId="participant-modal" title={modalTitle}>{modalContent}</Modal>);
     }
 
-    const renderQuizModalButtons = () => {
+    const renderMobileQuizFilterModal = () => {
+        const modalTitle: string = "Messages to Display";
+        const modalContent: JSX.Element = messagesLoading
+        ? (<>
+            <div className="mx-auto mb-4 text-lg text-gray-11">
+                    Applying Filter...
+            </div>
+            <div className="flex justify-center mb-6">
+                <div className="spinner-circle w-10 h-10" />
+            </div>
+        </>)
+        : (<>
+            <button className="btn btn-primary mx-6 mb-2"
+            onClick={() => setFilterQuizId(null)}>
+                Group Chat
+            </button>
+            <div className="w-full text-center text-sm text-gray-9 mb-2">
+                Or view quiz messages:
+            </div>
+            <div className="mx-6 mb-4 max-h-[350px] px-2 overflow-y-scroll">
+                <div className="flex flex-col gap-2 py-1">
+                    {renderQuizModalButtons(true)}
+                </div>
+            </div>
+        </>);
+
+        return (<Modal domId="quiz-modal" title={modalTitle}>{modalContent}</Modal>);
+    }
+
+    const renderQuizModalButtons = (filterModal: boolean) => {
         if (quizzes.length === 0) {
             return (
                 <div className="w-64 mb-4 py-6 mx-auto border-dashed border-2 border-gray-5 rounded-xl text-gray-9 text-center">
@@ -511,11 +659,17 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
         return quizzes.map((quiz: TimeAttackQuiz | SurvivalQuiz, index: number) => {
             return (
-                <button key={quiz.id} className={`bg-gray-1 py-2 rounded-2xl mx-8 transition duration-300 ease-in-out hover:bg-gray-3
-                 ${index < quizzes.length - 1 ? "mb-[10px]" : "mb-4"}`}
-                onClick={() => updateMessagesInQuiz(quiz.id)}>
+                <button key={quiz.id} className="bg-black py-2 rounded-2xl border border-gray-3 
+                drop-shadow-[0_0px_1px_rgba(255,255,255,0.85)] transition duration-300 ease-in-out lg:hover:bg-gray-3"
+                onClick={() => {
+                    if (filterModal) {
+                        setFilterQuizId(quiz.id);
+                    } else {
+                        updateMessagesInQuiz(quiz.id);
+                    }
+                }}>
                     <div className="flex-col">
-                        <div className="text-xl">
+                        <div className="lg:text-xl">
                             {quiz.quizName}
                         </div>
                         <div className="mt-[4px]">
@@ -527,15 +681,37 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         });
     }
 
-    // ---------- Rendering Helper Functions --------
-
-    // This is a workaround for triggering the Ripple-UI hidden modal checkboxes to change state using a button
-    const toggleModal = (modalId: string) => {
-        const modalCheckbox = document.getElementById(modalId) as HTMLInputElement;
-        if (modalCheckbox) {
-            modalCheckbox.checked = !modalCheckbox.checked;
-        }
+    const renderParticipantModalButtons = () => {
+        return participants.map((participant: Participant) => {
+            return (
+                <button key={participant.id} className="btn btn-sm"
+                onClick={() => setFilterParticipantId(participant.id)}>
+                    {participant.name}
+                </button>
+            );
+        });
     }
+
+    const renderResponseAlert = () => {
+        const alertStyle: string = isMobile
+            ? "fixed bottom-4 left-[50%] translate-x-[-50%] flex z-50 p-2 rounded-2xl overflow-hidden"
+            : "flex ml-auto self-center p-2 rounded-2xl overflow-hidden"
+
+        const success: boolean = responseStatus.success;
+        return (
+            <div className={`${alertStyle} ${determineAlertAnimationClassName()}`}>
+                {success
+                    ? <Image src="/success.svg" alt="Success" width={36} height={36} />
+                    : <Image src="/alert.svg" alt="Alert" width={36} height={36} />
+                }
+                <div className={`self-center mx-2 whitespace-nowrap ${success ? "text-green-100" : "text-red-100"}`}>
+                    {responseStatus.message}
+                </div>
+            </div>
+        );
+    }
+
+    // ---------- Rendering Helper Functions --------
 
     const determineAlertAnimationClassName = () => {
         const color = responseStatus.success ? " bg-green-2" : " bg-blue-2";
@@ -546,66 +722,57 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 return " animate-alertEntering" + color;
             }
         }
-        return "opacity-0";
+        return " opacity-0";
     }
 
     // =============== MAIN RENDER =================
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between">
-            <div className="relative w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-12 sm:mt-24">
+            <div className="relative w-[97%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-3 lg:mt-12 sm:mt-24">
                 <div className="w-full p-2 mb-3 lg:p-8 bg-zinc-950 rounded-xl border border-gray-7 overflow-x-hidden">
                     <div className="flex mb-2">
-                        <div className="text-3xl mb-5">
-                            Messages for {stableDataLoading ? "..." : `"${groupChatName}"`}
+                        <div className="text-3xl mb-3 lg:mb-5 mt-2 lg:mt-0 mx-auto lg:mx-0 text-center lg:text-left">
+                            Messages for <br className="lg:hidden" /> {stableDataLoading ? "..." : `"${groupChatName}"`}
                         </div>
-                        <div className={`flex ml-auto self-center p-2 rounded-2xl overflow-hidden
-                        ${determineAlertAnimationClassName()}`}>
-                            {responseStatus.success
-                                ? <Image src="/success.svg" alt="Success" width={36} height={36} />
-                                : <Image src="/alert.svg" alt="Alert" width={36} height={36} />
-                            }
-                            <div className="self-center mx-2 text-green-100 whitespace-nowrap">
-                                {responseStatus.message}
-                            </div>
-                        </div>
+                        {/* HTTP Response alert */}
+                        {!isMobile && renderResponseAlert()}
                     </div>
                     <div className="flex mb-4">
-                        <fieldset className="px-3 pb-3 pt-1 border border-gray-3 rounded-lg">
-                            <legend className="text-gray-11">Query Filters</legend>
-                            <div className="flex">
-                                {renderParticipantFilterDropdown()}
-                                <div className="self-center mx-2 text-lg text-gray-8">
-                                    in
-                                </div>
-                                {renderQuizFilterDropdown()}
-                            </div>
-                        </fieldset>
-                        <fieldset className="ml-auto px-3 pb-3 pt-1 border border-gray-3 rounded-lg ">
-                            <legend className={`text-gray-11 transition duration-300 ease-in-out 
-                            ${selectedMessageIds.length === 0 ? "opacity-25" : ""}`}>
-                                Selection Actions
-                            </legend>
-                            {!filterQuizId &&
-                                <button className="btn mr-2 font-semibold transition duration-300 ease-in-out 
-                                disabled:opacity-25 hover:bg-gray-4" 
-                                disabled={selectedMessageIds.length === 0} onClick={() => toggleModal("delete-modal")}>
-                                    Delete
+                        {renderQueryFilterControls()}
+                        {/* Desktop selection action controls */}
+                        {!isMobile &&
+                            <fieldset className="ml-auto px-3 pb-3 pt-1 border border-gray-3 rounded-lg ">
+                                <legend className={`text-gray-11 transition duration-300 ease-in-out 
+                                ${selectedMessageIds.length === 0 ? "opacity-25" : ""}`}>
+                                    Selection Actions
+                                </legend>
+                                {!filterQuizId &&
+                                    <button className="btn mr-2 font-semibold transition duration-300 ease-in-out 
+                                    disabled:opacity-25 hover:bg-gray-4" 
+                                    disabled={selectedMessageIds.length === 0} onClick={() => toggleModal("delete-modal")}>
+                                        Delete
+                                    </button>
+                                }
+                                <button className="btn transition duration-300 ease-in-out disabled:opacity-25 hover:bg-gray-4" 
+                                disabled={selectedMessageIds.length === 0} onClick={() => toggleModal("add-remove-modal")}>
+                                    {filterQuizId ? "Remove from Quiz" : "Add to Quiz"}
                                 </button>
-                            }
-                            <button className="btn transition duration-300 ease-in-out disabled:opacity-25 hover:bg-gray-4" 
-                            disabled={selectedMessageIds.length === 0} onClick={() => toggleModal("add-remove-modal")}>
-                                {filterQuizId ? "Remove from Quiz" : "Add to Quiz"}
-                            </button>
-                        </fieldset>
+                            </fieldset>
+                        }
                     </div>
                     {renderMessagesTable()}
-                    {renderPaginationControls()}
                 </div>
             </div>
-            {/* MODAL - ADD/REMOVE MESSAGES TO QUIZ */}
+            {/* FIXED POSITION ELEMENTS */}
+            {renderSelectionActionsMobile()}
+            {/* Modals */}
             {renderAddRemoveQuizMessagesModal()}
             {!filterQuizId && renderDeleteMessagesModal()}
+            {isMobile && renderMobileParticipantFilterModal()}
+            {isMobile && renderMobileQuizFilterModal()}
+            {/* HTTP Response alert  */}
+            {isMobile && renderResponseAlert()}
         </main>
     );
 }

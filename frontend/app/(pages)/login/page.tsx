@@ -49,12 +49,12 @@ export default function Login() {
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[40%] translate-y-[-50%]">
-                <div className="flex flex-col items-center">
+            <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[47%] sm:top-[40%] translate-y-[-50%]">
+                <div className="relative flex flex-col items-center">
                     <h1 className="text-3xl font-semibold">Sign In</h1>
                     <p className="text-sm">Sign in to access your account</p>
                 </div>
-                <form className="form-group" onSubmit={loginSubmit}>
+                <form className="form-group px-4 sm:px-0" onSubmit={loginSubmit}>
                     <div className="form-field">
                         <label className="form-label">Username</label>
                         {/* Username input field */}
@@ -102,7 +102,8 @@ export default function Login() {
                     </div>
                     {/* Login error alert */}
                     {loginError !== "" &&
-                    <div className="alert alert-info py-3">
+                    <div className="alert alert-info w-full py-3 absolute bottom-[-100px] max-w-[350px] sm:max-w-full sm:relative sm:top-0
+                    left-[50%] translate-x-[-50%] sm:left-0 sm:translate-x-0">
                         <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fillRule="evenodd" clipRule="evenodd" d="M24 4C12.96 4 4 12.96 4 24C4 35.04 12.96 44 24 44C35.04 44 44 35.04 44 24C44 12.96 35.04 4 24 4ZM24 34C22.9 34 22 33.1 22 32V24C22 22.9 22.9 22 24 22C25.1 22 26 22.9 26 24V32C26 33.1 25.1 34 24 34ZM26 18H22V14H26V18Z" fill="#0085FF" />
                         </svg>

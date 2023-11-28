@@ -120,12 +120,12 @@ export default function Register() {
 
     return(
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[40%] translate-y-[-50%]">
+            <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[50%] sm:top-[40%] translate-y-[-50%]">
                 <div className="flex flex-col items-center">
                     <h1 className="text-3xl font-semibold">Register</h1>
                     <p className="text-sm mt-1">Enter your credentials to create an account</p>
                 </div>
-                <form className="form-group" onSubmit={registerSubmit}>
+                <form className="form-group px-4 sm:px-0" onSubmit={registerSubmit}>
                     <div className="form-field">
                         <label className="form-label">
                             Username

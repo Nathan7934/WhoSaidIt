@@ -13,71 +13,92 @@ const config: Config = {
                 '3xl': '2000px',
             },
             keyframes: {
-            // DASHBOARD (Leaderboard preview): Navigation arrows keyframes
-            leaderboardNavArrowLeft: {
-                '0%, 100%': { transform: 'translateX(0)' },
-                '50%': { transform: 'translateX(-4px)' },
-            },
-            leaderboardNavArrowRight: {
-                '0%, 100%': { transform: 'translateX(0)' },
-                '50%': { transform: 'translateX(4px)' },
-            },
-            
-            // GLOBAL: Keyframes for cycling elements left and right
-            slideInFromRight: {
-                from: { transform: 'translateX(100%)' },
-                to: { transform: 'translateX(0)' },
-            },
-            slideOutToLeft: {
-                from: { transform: 'translateX(0)' },
-                to: { transform: 'translateX(-100%)' },
-            },
-            slideInFromLeft: {
-                from: { transform: 'translateX(-100%)' },
-                to: { transform: 'translateX(0)' },
-            },
-            slideOutToRight: {
-                from: { transform: 'translateX(0)' },
-                to: { transform: 'translateX(100%)' },
-            },
+                // DASHBOARD (Leaderboard preview): Navigation arrows keyframes
+                leaderboardNavArrowLeft: {
+                    '0%, 100%': { transform: 'translateX(0)' },
+                    '50%': { transform: 'translateX(-4px)' },
+                },
+                leaderboardNavArrowRight: {
+                    '0%, 100%': { transform: 'translateX(0)' },
+                    '50%': { transform: 'translateX(4px)' },
+                },
+                
+                // GLOBAL: Keyframes for cycling elements left and right
+                slideInFromRight: {
+                    from: { transform: 'translateX(100%)' },
+                    to: { transform: 'translateX(0)' },
+                },
+                slideOutToLeft: {
+                    from: { transform: 'translateX(0)' },
+                    to: { transform: 'translateX(-100%)' },
+                },
+                slideInFromLeft: {
+                    from: { transform: 'translateX(-100%)' },
+                    to: { transform: 'translateX(0)' },
+                },
+                slideOutToRight: {
+                    from: { transform: 'translateX(0)' },
+                    to: { transform: 'translateX(100%)' },
+                },
 
-            // MESSAGES: Keyframes for response status alerts
-            alertEntering: {
-                '0%': {
-                    width: '52px',
-                    opacity: '0',
+                // MESSAGES: Keyframes for response status alerts
+                alertEntering: {
+                    '0%': {
+                        width: '52px',
+                        opacity: '0',
+                    },
+                    '25%': { opacity: '1' },
+                    '50%': { width: '52px' },
+                    '100%': { width: '310px' },
                 },
-                '25%': { opacity: '1' },
-                '50%': { width: '52px' },
-                '100%': { width: '310px' },
-            },
-            alertExiting: {
-                '0%': { 
-                    width: '310px',
-                    opacity: '1',
+                alertExiting: {
+                    '0%': { 
+                        width: '310px',
+                        opacity: '1',
+                    },
+                    '50%': { width: '52px' },
+                    '75%': { opacity: '1' },
+                    '100%': { 
+                        opacity: '0',
+                        width: '52px',
+                    },
                 },
-                '50%': { width: '52px' },
-                '75%': { opacity: '1' },
-                '100%': { 
-                    opacity: '0',
-                    width: '52px',
-                },
-            },
 
-            // MESSAGES: Mobile message select hold wave keyframes
-            holdWave: {
-                '0%': {
-                    width: '0%',
-                    opacity: '0.1',
+                // MESSAGES: Mobile message select hold wave keyframes
+                holdWave: {
+                    '0%': {
+                        width: '0%',
+                        opacity: '0.1',
+                    },
+                    '50%': {opacity: '0.3'},
+                    '99%': {opacity: '0.3'},
+                    '100%': {
+                        width: '200%',
+                        opacity: '0',
+                    },
                 },
-                '50%': {opacity: '0.3'},
-                '99%': {opacity: '0.3'},
-                '100%': {
-                    width: '200%',
-                    opacity: '0',
-                },
-            },
 
+                // MESSAGES: Mobile selection actions control keyframes
+                selectionActionsEntering: {
+                    '0%': {
+                        transform: 'translateY(-100%)',
+                        opacity: '0',
+                    },
+                    '100%': {
+                        transform: 'translateY(0)',
+                        opacity: '1',
+                    },
+                },
+                selectionActionsExiting: {
+                    '0%': {
+                        transform: 'translateY(0)',
+                        opacity: '1',
+                    },
+                    '100%': {
+                        transform: 'translateY(-100%)',
+                        opacity: '0',
+                    },
+                },
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -96,6 +117,16 @@ const config: Config = {
 
                 // MESSAGES: Mobile message select click wave animation
                 holdWave: `holdWave ${MOBILE_HOLD_DURATION - 100}ms cubic-bezier(.8,0,.65,1) 0.2s 1 forwards`,
+
+                // MESSAGES: Mobile selection actions control animations
+                selectionActionsEntering: 'selectionActionsEntering 0.4s ease-in-out 0s 1 forwards',
+                selectionActionsExiting: 'selectionActionsExiting 0.4s ease-in-out 0s 1 forwards',
+            },
+            dropShadow: {
+                glow: [
+                    "0 0px 20px rgba(255,255, 255, 0.35)",
+                    "0 0px 65px rgba(255, 255,255, 0.2)"
+                ]
             },
         },
     },
