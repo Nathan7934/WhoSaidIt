@@ -54,6 +54,10 @@ public class Participant {
     public void setName(String name) { this.name = name; }
 
     public ParticipantDTO toDTO() {
-        return new ParticipantDTO(this.id, this.name);
+        return new ParticipantDTO(
+                this.id,
+                this.name,
+                this.messages.size()
+        );
     }
 }

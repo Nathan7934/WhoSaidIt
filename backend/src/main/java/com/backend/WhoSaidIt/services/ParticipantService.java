@@ -8,6 +8,7 @@ import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.MessageRepository;
 import com.backend.WhoSaidIt.repositories.ParticipantRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,8 @@ public class ParticipantService {
     }
 
     public List<ParticipantDTO> getGroupChatParticipants(long groupChatId) {
-        return participantRepository.findByGroupChatId(groupChatId).stream().map(Participant::toDTO).toList();
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        return participantRepository.findByGroupChatId(groupChatId, sort).stream().map(Participant::toDTO).toList();
     }
 
     @Transactional
