@@ -70,6 +70,7 @@ export interface QuizLeaderboardInfo {
 export interface Participant {
     id: number;
     name: string;
+    numberOfMessages: number;
 }
 
 export interface Message {

@@ -120,7 +120,9 @@ export default function Dashboard() {
                             <Link href={`/messages/${latestGC.id}`} className="grow sm:flex-none mr-2">
                                 <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
                             </Link>
-                            <button className="btn btn-sm mt-2 sm:mt-0">Manage Participants</button>
+                            <Link href={`/participants/${latestGC.id}`}>
+                                <button className="btn btn-sm mt-2 sm:mt-0">Manage Participants</button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -287,7 +289,9 @@ export default function Dashboard() {
                                     <Link href={`/messages/${groupChat.id}`} className="grow sm:flex-none mr-2">
                                         <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
                                     </Link>
-                                    <button className="btn btn-sm mt-2 sm:mt-0">Manage Participants</button>
+                                    <Link href={`/participants/${groupChat.id}`}>
+                                        <button className="btn btn-sm mt-2 sm:mt-0">Manage Participants</button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -347,7 +351,7 @@ export default function Dashboard() {
                             <div className=" mb-4">{renderQuizTypeBadge(quiz.type)}</div>
                         </div>
                         <div className="px-4 mb-4">
-                            <button className="btn w-full text-lg">Copy Shareable Link</button>
+                            <button className="btn btn-primary w-full text-lg">Copy Shareable Link</button>
                             <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
                             <Link href={`/messages/${groupChat.id}/${quiz.id}`}>
                                 <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
@@ -355,29 +359,6 @@ export default function Dashboard() {
                             <button className="btn btn-sm w-full mt-2 text-red-8 font-bold">Delete Quiz</button>
                         </div>
                     </Modal>
-                    {/* <input className="modal-state" id={`modal-${startIdx + index}`} type="checkbox" />
-                    <div className="modal w-screen">
-                        <label className="modal-overlay" htmlFor={`modal-${startIdx + index}`}></label>
-                        <div className="modal-content flex flex-col w-full mx-6 p-0 bg-zinc-950 border-[1px] border-gray-3">
-                            <div className="flex w-full mt-1">
-                                <div className="relative bottom-[2px] self-center text-lg text-gray-11 font-extralight ml-4">Actions</div>
-                                <label htmlFor={`modal-${startIdx + index}`} className="btn btn-sm btn-circle btn-ghost text-lg ml-auto mr-1">✕</label>
-                            </div>
-                            <div className="divider my-0 mx-3 relative bottom-2"></div>
-                            <div className="px-4 text-center mb-3">
-                                <h2 className="text-xl text-white">{quiz.quizName}</h2>
-                                <div className=" mb-4">{renderQuizTypeBadge(quiz.type)}</div>
-                            </div>
-                            <div className="px-4 mb-4">
-                                <button className="btn w-full text-lg">Copy Shareable Link</button>
-                                <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
-                                <Link href={`/messages/${groupChat.id}/${quiz.id}`}>
-                                    <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
-                                </Link>
-                                <button className="btn btn-sm w-full mt-2 text-red-8 font-bold">Delete Quiz</button>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </div>
             {index !== quizzes.length - 1 && <div className="divider my-0"></div>}

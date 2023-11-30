@@ -219,7 +219,7 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
             transition-colors duration-100 ${selectedMessageIds.includes(message.id) ? "bg-blue-6/40" : ""}`}>
                 {/* div for hold wave effect */}
                 <div ref={holdWaveDOMref} className="absolute w-[0%] translate-x-[-50%] translate-y-[-50%] 
-                bg-blue-3 pointer-events-none rounded-[50%] aspect-square" />
+                bg-blue-6 pointer-events-none rounded-[50%] aspect-square" />
                 <div className="flex z-10">
                     <div className="mr-2 whitespace-nowrap overflow-x-hidden text-ellipsis noselect">
                         {message.sender.name}
