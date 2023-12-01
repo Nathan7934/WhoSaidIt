@@ -1,3 +1,5 @@
+import { ResponseStatus } from "../interfaces";
+
 export function renderQuizTypeBadge(type: string) {
     if (type === "TIME_ATTACK") {
         return (<span className="py-[2px] px-2 bg-blue-4 rounded-lg text-blue-12 text-sm
@@ -5,6 +7,18 @@ export function renderQuizTypeBadge(type: string) {
     }
     return (<span className="py-[2px] px-2 bg-red-4 rounded-lg text-red-12 text-sm
         font-semibold relative bottom-[1px] whitespace-nowrap">Survival</span>);
+}
+
+export const determineAlertAnimationClassName = (responseStatus: ResponseStatus) => {
+    const color = responseStatus.success ? " bg-green-2" : " bg-blue-2";
+    if (responseStatus.doAnimate) {
+        if (responseStatus.message === "") {
+            return " animate-alertExiting" + color;
+        } else {
+            return " animate-alertEntering" + color;
+        }
+    }
+    return " opacity-0";
 }
 
 export function toggleModal(modalId: string) {

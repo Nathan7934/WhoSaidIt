@@ -7,8 +7,11 @@ import useGetParticipants from "@/app/hooks/api_access/participants/useGetPartic
 import usePostMessagesInQuiz from "@/app/hooks/api_access/quizzes/usePostMessagesInQuiz";
 import useDeleteMessages from "@/app/hooks/api_access/messages/useDeleteMessages";
 
-import { renderQuizTypeBadge, toggleModal, isModalOpen } from "@/app/utilities/miscFunctions";
-import { GroupChat, Message, MessagePage, PaginationConfig, SurvivalQuiz, TimeAttackQuiz, Participant } from "@/app/interfaces";
+import { renderQuizTypeBadge, determineAlertAnimationClassName, toggleModal, isModalOpen } from "@/app/utilities/miscFunctions";
+import { 
+    GroupChat, Message, MessagePage, PaginationConfig, SurvivalQuiz,
+    TimeAttackQuiz, Participant, ResponseStatus 
+} from "@/app/interfaces";
 import MessageRow from "@/app/components/MessageRow";
 import Modal from "@/app/components/Modal";
 
@@ -23,12 +26,6 @@ interface PageInfo {
     hasPrevious: boolean;
 }
 
-interface ResponseStatus {
-    message: string;
-    success: boolean;
-    doAnimate: boolean;
-}
-
 const DEFAULT_PAGE_CONFIG: PaginationConfig = {
     pageNumber: 0,
     pageSize: 20,
@@ -37,9 +34,16 @@ const DEFAULT_PAGE_CONFIG: PaginationConfig = {
 
 export default function Messages({ params }: { params: { query: string[] }}) {
 
-    // Extracting the NextJS route query parameters
+    // Extracting the NextJS route query parameters "/messages/{groupChatId}/{?quizId}/{?participantId}"
     const groupChatId = Number(params.query[0]);
-    const quizId = params.query.length > 1 ? Number(params.query[1]) : null;
+    // const quizId = params.query.length > 1 ? Number(params.query[1]) : null;
+    let quizId: number | null = null;
+    if (params.query.length > 1) {
+        // If the second query parameter is "nfq", we set quizId to null to indicate that we don't want to filter by quiz
+        // This param is necessary when routing with a participant filter but no quiz filter
+        quizId = params.query[1] === "nfq" ? null : Number(params.query[1]);
+    }
+    const participantId = params.query.length > 2 ? Number(params.query[2]) : null;
 
     // ----------- Hooks ------------------
     const router = useRouter();
@@ -94,6 +98,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 setQuizzes(quizzes);
                 setParticipants(participants);
                 if (quizId) setFilterQuizId(quizId);
+                if (participantId) setFilterParticipantId(participantId);
                 setStableDataLoading(false);
             } else {
                 console.error("Error fetching group chat, quiz, and participant data, redirecting to root");
@@ -420,7 +425,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         }
         return (
             <select className="select sm:w-48 pr-7 text-ellipsis transition duration-300 ease-in-out hover:border-gray-8" 
-            onChange={selectionChanged} >
+            onChange={selectionChanged} defaultValue={participantId ? participantId : ""} >
                 <option value={""}>All Messages</option>
                 {participants.map((participant: Participant) => {
                     return (
@@ -699,7 +704,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
         const success: boolean = responseStatus.success;
         return (
-            <div className={`${alertStyle} ${determineAlertAnimationClassName()}`}>
+            <div className={`${alertStyle} ${determineAlertAnimationClassName(responseStatus)}`}>
                 {success
                     ? <Image src="/success.svg" alt="Success" width={36} height={36} />
                     : <Image src="/alert.svg" alt="Alert" width={36} height={36} />
@@ -709,20 +714,6 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 </div>
             </div>
         );
-    }
-
-    // ---------- Rendering Helper Functions --------
-
-    const determineAlertAnimationClassName = () => {
-        const color = responseStatus.success ? " bg-green-2" : " bg-blue-2";
-        if (responseStatus.doAnimate) {
-            if (responseStatus.message === "") {
-                return " animate-alertExiting" + color;
-            } else {
-                return " animate-alertEntering" + color;
-            }
-        }
-        return " opacity-0";
     }
 
     // =============== MAIN RENDER =================

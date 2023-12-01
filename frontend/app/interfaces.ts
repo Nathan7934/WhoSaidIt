@@ -94,3 +94,10 @@ export interface PaginationConfig {
     pageSize: number;
     ascending: boolean;
 }
+
+// ======= MISC =======
+export interface ResponseStatus {
+    message: string;
+    success: boolean;
+    doAnimate: boolean;
+}

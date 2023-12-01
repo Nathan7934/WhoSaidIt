@@ -15,7 +15,8 @@ export default function Modal({ domId, title, children }: React.PropsWithChildre
             <label className="modal-overlay" htmlFor={domId}></label>
             <div className="modal-content flex flex-col w-full max-w-[375px] mx-6 p-0 bg-zinc-950 border-[1px] border-gray-3">
                 <div className="flex w-full mt-1">
-                    <div className="relative bottom-[2px] self-center text-xl font-light ml-4 mr-3">
+                    <div className="relative bottom-[2px] self-center text-xl font-light ml-4 mr-3 
+                    overflow-x-hidden whitespace-nowrap text-ellipsis">
                         {title}
                     </div>
                     <label htmlFor={domId} className="btn btn-sm btn-circle btn-ghost text-lg ml-auto mr-1">✕</label>
