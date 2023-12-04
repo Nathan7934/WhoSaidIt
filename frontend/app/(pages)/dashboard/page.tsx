@@ -3,9 +3,9 @@
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
 import useGetGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useGetGroupChatLeaderboards";
-import { renderQuizTypeBadge } from "@/app/utilities/miscFunctions";
-import Modal from "@/app/components/Modal";
-import { User, GroupChatInfo, SurvivalQuiz, TimeAttackQuiz, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
+import { User, GroupChatInfo, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
+import { renderQuizRows } from "@/app/utilities/miscFunctions";
+import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -252,117 +252,15 @@ export default function Dashboard() {
         if (groupChats.length < 2) return (<div className="text-center text-gray-7 font-light text-sm">Nothing here</div>);
 
         let groupChatRows: Array<JSX.Element> = [];
-        let startIdx: number = groupChats[0].quizzes.length;
         groupChats.forEach((groupChat, index) => {
             if (index === 0) return;
-            groupChatRows.push(
-                <div className="accordion" key={index}>
-                    <input type="checkbox" id={`toggle-${index}`} className="accordion-toggle" />
-                    <label htmlFor={`toggle-${index}`} className="accordion-title bg-zinc-950">
-                        <span className="font-light text-lg sm:text-xl">{groupChat.groupChatName}</span>
-                        <div className="mt-1">
-                            <span className="badge badge-outline mr-2">
-                                <span className="font-normal mr-2">Uploaded:</span> {formatDate(groupChat.uploadDate)}
-                            </span>
-                            <span className="badge badge-outline mr-2">
-                                <span className="font-normal mr-2">Participants:</span> {groupChat.numParticipants}
-                            </span>
-                            <span className="badge badge-outline">
-                                <span className="font-normal mr-2">Messages:</span> {groupChat.numMessages}
-                            </span>
-                        </div>
-                    </label>
-                    <span className="accordion-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z" />
-                        </svg>
-                    </span>
-                    <div className="accordion-content text-content2 bg-[#09090bb9]">
-                        <div className="min-h-0">
-                            <div className="mb-4 text-lg text-gray-9 font-light">
-                                Quizzes for this chat:
-                            </div>
-                            {renderQuizRows(groupChat, startIdx)}
-                            <div className="sm:flex sm:flex-grow sm:items-end mt-6 sm:mt-3">
-                                <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Generate New Quiz</button>
-                                <div className="flex">
-                                    <Link href={`/messages/${groupChat.id}`} className="grow sm:flex-none mr-2">
-                                        <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
-                                    </Link>
-                                    <Link href={`/participants/${groupChat.id}`}>
-                                        <button className="btn btn-sm mt-2 sm:mt-0">Manage Participants</button>
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-            startIdx += groupChat.quizzes.length;
+            groupChatRows.push(<GroupChatInfoRow key={groupChat.id} groupChat={groupChat} />);
         });
         return(
             <div className="accordion-group accordion-group-bordered mb-5">
                 {groupChatRows}
             </div>
         );
-    }
-
-    const renderQuizRows = (groupChat: GroupChatInfo, startIdx:number = 0) => {
-        const quizzes: Array<TimeAttackQuiz | SurvivalQuiz> = groupChat.quizzes;
-
-        return quizzes.map((quiz, index) => (<div key={index}>
-            {/* --------------- DESKTOP LAYOUT --------------- */}
-            <div className="hidden sm:grid grid-cols-3 grid-rows-2 gap-1">
-                <div className="col-span-2">
-                    <span className="text-xl text-white font-semibold mr-3">{quiz.quizName}</span><wbr />
-                    {renderQuizTypeBadge(quiz.type)}
-                </div>
-                <div className="row-span-2 justify-self-end self-center flex items-center">
-                    <button className="btn btn-solid btn-sm mr-2 whitespace-nowrap hidden sm:block">Copy Link</button>
-                    {/* Options dropdown */}
-                    <details className="dropdown">
-                        <summary tabIndex={0} className="hover:cursor-pointer list-none"><Image src="menu.svg" alt="Menu" width={44} height={44} /></summary>
-                        <div className="dropdown-menu dropdown-menu-left shadow-md">
-                            <a className="dropdown-item text-sm">Quiz Leaderboard</a>
-                            <Link href={`/messages/${groupChat.id}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
-                            <a tabIndex={-1} className="dropdown-item text-sm text-red-9">Delete Quiz</a>
-                        </div>
-                    </details>
-                </div>
-                <span className="tooltip tooltip-right w-min" data-tooltip="date created">
-                    <label className="col-span-2 text-sm text-gray-9 self-center whitespace-nowrap mr-1">
-                        {formatDate(quiz.createdDate)}
-                    </label>
-                </span>
-            </div>
-            {/* --------------- MOBILE LAYOUT --------------- */}
-            <div className="flex sm:hidden">
-                <div className="block">
-                    <div className="text-lg font-semibold">{quiz.quizName}</div>
-                    <div className="text-xs text-gray-9">Created: {formatDate(quiz.createdDate)}</div>
-                    <div className="mt-1">{renderQuizTypeBadge(quiz.type)}</div>
-                </div>
-                {/* Options modal */}
-                <div className="ml-auto mr-1 self-center">
-                    <label htmlFor={`modal-${startIdx + index}`}><Image src="menu.svg" alt="Menu" width={36} height={36} /></label>
-                    <Modal domId={`modal-${startIdx + index}`} title="Quiz Actions">
-                        <div className="px-4 text-center mb-3">
-                            <h2 className="text-xl text-white">{quiz.quizName}</h2>
-                            <div className=" mb-4">{renderQuizTypeBadge(quiz.type)}</div>
-                        </div>
-                        <div className="px-4 mb-4">
-                            <button className="btn btn-primary w-full text-lg">Copy Shareable Link</button>
-                            <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
-                            <Link href={`/messages/${groupChat.id}/${quiz.id}`}>
-                                <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
-                            </Link>
-                            <button className="btn btn-sm w-full mt-2 text-red-8 font-bold">Delete Quiz</button>
-                        </div>
-                    </Modal>
-                </div>
-            </div>
-            {index !== quizzes.length - 1 && <div className="divider my-0"></div>}
-        </div>));
     }
 
     // =============== HELPER FUNCTIONS ===============
