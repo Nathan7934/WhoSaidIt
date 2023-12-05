@@ -46,11 +46,10 @@ export default function Dashboard() {
     useEffect(() => {
         const getPageData = async () => {
             const activeUser: User | null = await getActiveUser();
-            let groupChatsInfo: Array<GroupChatInfo> | null = await getGroupChatsInfo();
+            const groupChatsInfo: Array<GroupChatInfo> | null = await getGroupChatsInfo();
 
             if (activeUser && groupChatsInfo) {
                 setActiveUsername(activeUser.username);
-                groupChatsInfo = sortGroupChatsByDate(groupChatsInfo);
                 setGroupChats(groupChatsInfo);
 
                 if (groupChatsInfo.length > 0) {
@@ -90,7 +89,7 @@ export default function Dashboard() {
         const latestGC: GroupChatInfo = groupChats[0]; // The latest group chat is the first element in the array
 
         return (
-            <div className="w-full grid grid-cols-1 lg:grid-cols-3 mt-8 bg-zinc-950 py-7 px-5 rounded-xl border border-gray-7">
+            <div className="w-full grid grid-cols-1 lg:grid-cols-3 mb-3 lg:mb-0 mt-8 bg-zinc-950 py-7 px-5 rounded-xl border border-gray-7">
                 <div className="flex flex-col col-span-2 relative">
                     <div className="text-center sm:text-left text-3xl font-medium ml-1">
                         {latestGC.groupChatName} <span className="text-gray-7 font-light ml-2 hidden sm:inline-block">(Latest)</span>
@@ -111,11 +110,11 @@ export default function Dashboard() {
                     <div className="mt-5 sm:mt-8 text-lg text-gray-9 font-light">
                         Quizzes for this chat:
                     </div>
-                    <div className="w-full mt-4 mb-6 md:pr-8">
+                    <div className="w-full mt-2 mb-6 md:pr-8 max-h-[275px] overflow-y-scroll">
                         {renderQuizRows(latestGC)}
                     </div>
                     <div className="sm:flex sm:flex-grow sm:items-end">
-                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Generate New Quiz</button>
+                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Create New Quiz</button>
                         <div className="flex">
                             <Link href={`/messages/${latestGC.id}`} className="grow sm:flex-none mr-2">
                                 <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
@@ -254,7 +253,7 @@ export default function Dashboard() {
         let groupChatRows: Array<JSX.Element> = [];
         groupChats.forEach((groupChat, index) => {
             if (index === 0) return;
-            groupChatRows.push(<GroupChatInfoRow key={groupChat.id} groupChat={groupChat} />);
+            groupChatRows.push(<GroupChatInfoRow key={1000 - index} groupChat={groupChat} />);
         });
         return(
             <div className="accordion-group accordion-group-bordered mb-5">
@@ -264,10 +263,6 @@ export default function Dashboard() {
     }
 
     // =============== HELPER FUNCTIONS ===============
-
-    const sortGroupChatsByDate = (groupChats: Array<GroupChatInfo>) => {
-        return groupChats.sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
-    }
 
     const formatDate = (date: Date): string => {
         const month: string = date.toLocaleString('default', { month: 'long' });
@@ -339,14 +334,20 @@ export default function Dashboard() {
                 </div>
                 <div className="mt-8 flex flex-col sm:flex-row items-center">
                     <div className="btn-group btn-group-scrollable">
-                        <button className="btn">Manage Group Chats</button>
+                        <Link href="/group-chats" className="btn">
+                            <button>Manage Group Chats</button>
+                        </Link>
                         <button className="btn">Manage Quizzes</button>
                     </div>
-                    <button className="btn btn-primary sm:ml-auto mt-3 sm:mt-0 w-[330px] sm:w-auto">Upload New Group Chat</button>
+                    <button className="btn btn-primary sm:ml-auto mt-3 sm:mt-0 w-[330px] sm:w-auto">
+                        Upload New Group Chat
+                    </button>
                 </div>
                 {renderLatestGroupChat()}
-                <div className="divider divider-horizontal mt-10 mb-6 text-gray-9 font-light">Older Group Chats</div>
-                {renderOlderGroupChats()}
+                <div className="hidden lg:block">
+                    <div className="divider divider-horizontal mt-10 mb-6 text-gray-9 font-light">Older Group Chats</div>
+                    {renderOlderGroupChats()}
+                </div>
             </div>
         </main>
     )

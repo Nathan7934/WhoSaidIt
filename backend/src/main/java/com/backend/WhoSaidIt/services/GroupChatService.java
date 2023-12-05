@@ -10,6 +10,7 @@ import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.GroupChatRepository;
 import com.backend.WhoSaidIt.repositories.MessageRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,8 @@ public class GroupChatService {
     }
 
     public List<GroupChatInfoDTO> getAllUserGroupChatInfo(long userId) {
-        return groupChatRepository.findByUserId(userId).stream().map(GroupChat::toInfoDTO).toList();
+        Sort sort = Sort.by(Sort.Direction.DESC, "uploadDate");
+        return groupChatRepository.findByUserId(userId, sort).stream().map(GroupChat::toInfoDTO).toList();
     }
 
     public GroupChatDTO getGroupChat(long groupChatId) {

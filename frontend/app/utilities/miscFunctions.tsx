@@ -65,9 +65,10 @@ export function formatDateLong(date: Date): string {
 export function renderQuizRows(groupChat: GroupChatInfo) {
     const quizzes = groupChat.quizzes;
     return quizzes.map((quiz, index) => {
-        return (<>
-            <QuizRow key={quiz.id} groupChatId={groupChat.id} quiz={quiz} />
-            {index !== quizzes.length - 1 && <div className="divider my-0"></div>}
-        </>); 
+        return (
+            <div key={quiz.id} className={`border-gray-6 py-[6px] ${index !== quizzes.length - 1 ? "border-b" : ""}`}>
+                <QuizRow groupChatId={groupChat.id} quiz={quiz} />
+            </div>
+        ); 
     });
 }

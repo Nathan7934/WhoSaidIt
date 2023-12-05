@@ -15,7 +15,7 @@ import Link from "next/link";
 export default function GroupChatInfoRow({ groupChat }: { groupChat: GroupChatInfo}) {
 
     return (
-        <div className="accordion" key={groupChat.id}>
+        <div className="accordion">
             <input type="checkbox" id={`toggle-${groupChat.id}`} className="accordion-toggle" />
             <label htmlFor={`toggle-${groupChat.id}`} className="accordion-title bg-zinc-950">
                 <span className="font-light text-lg sm:text-xl">{groupChat.groupChatName}</span>
@@ -38,12 +38,12 @@ export default function GroupChatInfoRow({ groupChat }: { groupChat: GroupChatIn
             </span>
             <div className="accordion-content text-content2 bg-[#09090bb9]">
                 <div className="min-h-0">
-                    <div className="mb-4 text-lg text-gray-9 font-light">
+                    <div className="mb-3 text-lg text-gray-9 font-light">
                         Quizzes for this chat:
                     </div>
                     {renderQuizRows(groupChat)}
                     <div className="sm:flex sm:flex-grow sm:items-end mt-6 sm:mt-3">
-                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Generate New Quiz</button>
+                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Create New Quiz</button>
                         <div className="flex">
                             <Link href={`/messages/${groupChat.id}`} className="grow sm:flex-none mr-2">
                                 <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
