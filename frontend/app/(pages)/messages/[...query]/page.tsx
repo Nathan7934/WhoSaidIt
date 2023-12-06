@@ -308,7 +308,6 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         const pageNumber = paginationConfig.pageNumber + 1; // API is 0-indexed, while UI is 1-indexed
         const pageSize = paginationConfig.pageSize;
         const { totalPages, totalMessages } = pageInfo;
-        // if (totalPages <= 1) return renderStaticPaginationControls(); // Don't render pagination controls if there's only one or zero pages
     
         const coreButtons = isMobile ? 3 : 5; // Total core page buttons
     

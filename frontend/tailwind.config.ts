@@ -130,6 +130,8 @@ const config: Config = {
             },
         },
     },
-    plugins: [require('rippleui')],
+    plugins: [
+        require('rippleui'),
+    ],
 }
 export default config;

@@ -1,8 +1,11 @@
 "use client";
 
+import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
-import { GroupChatInfo } from "@/app/interfaces";
+import { User, GroupChatInfo } from "@/app/interfaces";
+import { toggleModal } from "@/app/utilities/miscFunctions";
 import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
+import GroupChatUploadModal from "@/app/components/GroupChatUploadModal";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -11,19 +14,26 @@ export default function ManageGroupChats() {
 
     // ----------- Hooks ------------------
     const router = useRouter();
+    const getActiveUser = useGetActiveUser();
     const getGroupChatsInfo = useGetGroupChatsInfo();
 
     // ----------- State (Data) -----------
+    const [activeUser, setActiveUser] = useState<User | null>(null);
     const [groupChats, setGroupChats] = useState<GroupChatInfo[]>([]);
 
     // ----------- State (UI) -------------
     const [loading, setLoading] = useState<boolean>(true);
 
+    // Used to trigger a re-fetch for the page data when the user uploads a new group chat
+    const [reloadCounter, setReloadCounter] = useState<number>(0); 
+
     // ----------- Data Retrieval ---------
     useEffect(() => {
         const getPageData = async () => {
+            const activeUser: User | null = await getActiveUser();
             const groupChatsInfo: Array<GroupChatInfo> | null = await getGroupChatsInfo();
-            if (groupChatsInfo) {
+            if (activeUser && groupChatsInfo) {
+                setActiveUser(activeUser);
                 setGroupChats(groupChatsInfo);
 
                 // We will expand the first group chat by default.
@@ -39,7 +49,7 @@ export default function ManageGroupChats() {
             }
         }
         getPageData();
-    }, []);
+    }, [reloadCounter]);
 
     // =============== RENDER FUNCTIONS ===============
 
@@ -91,7 +101,9 @@ export default function ManageGroupChats() {
                         Uploaded Group Chats
                     </div>
                     <div className="flex w-full mb-8">
-                        <button className="w-56 btn btn-primary btn-md mx-auto">Upload New</button>
+                        <button className="w-56 btn btn-primary btn-md mx-auto" onClick={() => toggleModal("upload-modal")}>
+                            Upload New
+                        </button>
                     </div>
                 </>}
                 <div className="max-w-[1000px]">
@@ -108,6 +120,8 @@ export default function ManageGroupChats() {
                     </div>
                 }
             </div>
+            {/* FIXED POSITION ELEMENTS */}
+            {activeUser && <GroupChatUploadModal userId={activeUser.id} modalDomId="upload-modal" setReloadCounter={setReloadCounter} />}
         </main>
     )
 }

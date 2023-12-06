@@ -4,8 +4,9 @@ import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
 import useGetGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useGetGroupChatLeaderboards";
 import { User, GroupChatInfo, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
-import { renderQuizRows } from "@/app/utilities/miscFunctions";
+import { renderQuizRows, toggleModal } from "@/app/utilities/miscFunctions";
 import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
+import GroupChatUploadModal from "@/app/components/GroupChatUploadModal";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -31,7 +32,7 @@ export default function Dashboard() {
     const getGroupChatLeaderboards = useGetGroupChatLeaderboards();
 
     // ----------- State (Data) -----------
-    const [activeUsername, setActiveUsername] = useState<string>("");
+    const [activeUser, setActiveUser] = useState<User | null>(null);
     const [groupChats, setGroupChats] = useState<Array<GroupChatInfo>>([]);
     const [previewLeaderboards, setPreviewLeaderboards] = useState<Array<NamedQuizLeaderboardInfo>>([]);
 
@@ -42,6 +43,9 @@ export default function Dashboard() {
     const [selectedLeaderboardIndex, setSelectedLeaderboardIndex] = useState<number>(0); // [0, previewLeaderboards.length)
     const [leaderboardAnimationStatus, setLeaderboardAnimationStatus] = useState<LeaderboardAnimationStatus | null>(null);
 
+    // Used to trigger a re-fetch for the page data when the user uploads a new group chat
+    const [reloadCounter, setReloadCounter] = useState<number>(0); 
+
     // ----------- Data Retrieval ---------
     useEffect(() => {
         const getPageData = async () => {
@@ -49,7 +53,7 @@ export default function Dashboard() {
             const groupChatsInfo: Array<GroupChatInfo> | null = await getGroupChatsInfo();
 
             if (activeUser && groupChatsInfo) {
-                setActiveUsername(activeUser.username);
+                setActiveUser(activeUser);
                 setGroupChats(groupChatsInfo);
 
                 if (groupChatsInfo.length > 0) {
@@ -68,7 +72,7 @@ export default function Dashboard() {
             }
         }
         getPageData();
-    }, []);
+    }, [reloadCounter]);
 
     // =============== RENDER FUNCTIONS ===============
 
@@ -329,7 +333,7 @@ export default function Dashboard() {
                 <div className="text-4xl text-center sm:text-left sm:text-5xl font-bold">
                     <span className="sm:mr-4">Welcome,</span>
                     <br className="sm:hidden" /> 
-                    {!loading ? activeUsername : 
+                    {!loading && activeUser ? activeUser.username : 
                     <div className="skeleton h-11 w-60 rounded-md inline-block mt-1 sm:mt-0 opacity-25" />}
                 </div>
                 <div className="mt-8 flex flex-col sm:flex-row items-center">
@@ -339,7 +343,8 @@ export default function Dashboard() {
                         </Link>
                         <button className="btn">Manage Quizzes</button>
                     </div>
-                    <button className="btn btn-primary sm:ml-auto mt-3 sm:mt-0 w-[330px] sm:w-auto">
+                    <button className="btn btn-primary sm:ml-auto mt-3 sm:mt-0 w-[330px] sm:w-auto"
+                    onClick={() => toggleModal("upload-modal")}>
                         Upload New Group Chat
                     </button>
                 </div>
@@ -349,6 +354,8 @@ export default function Dashboard() {
                     {renderOlderGroupChats()}
                 </div>
             </div>
+            {/* FIXED POSITION ELEMENTS */}
+            {activeUser && <GroupChatUploadModal userId={activeUser.id} modalDomId="upload-modal" setReloadCounter={setReloadCounter} />}
         </main>
     )
 }
