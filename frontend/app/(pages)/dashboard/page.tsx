@@ -111,13 +111,16 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
-                    <div className="mt-5 sm:mt-8 text-lg text-gray-9 font-light">
+                    <div className="hidden lg:block mt-5 sm:mt-8 text-lg text-gray-9 font-light opacity-60">
                         Quizzes for this chat:
                     </div>
-                    <div className="w-full mt-2 mb-6 md:pr-8 max-h-[275px] overflow-y-scroll">
+                    <div className="lg:hidden divider divider-horizontal mt-5 sm:mt-8 text-gray-9 font-light opacity-60">
+                        Quizzes for this chat:
+                    </div>
+                    <div className="w-full pt-2 pb-6 lg:pr-8 max-h-[275px] overflow-y-scroll">
                         {renderQuizRows(latestGC)}
                     </div>
-                    <div className="sm:flex sm:flex-grow sm:items-end">
+                    <div className="sm:flex sm:flex-grow sm:items-end justify-center lg:justify-start">
                         <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Create New Quiz</button>
                         <div className="flex">
                             <Link href={`/messages/${latestGC.id}`} className="grow sm:flex-none mr-2">
@@ -189,9 +192,11 @@ export default function Dashboard() {
 
     const renderLeaderboards = () => {
         if (previewLeaderboards.length === 0) {
-            return (<div className="w-full h-full flex flex-col items-center justify-center">
-                <div className="text-2xl text-gray-9 font-light">No quizzes yet</div>
-            </div>);
+            return (
+                <div className="absolute top-[45%] translate-y-[-50%] w-full text-center text-2xl text-gray-9 font-light opacity-60">
+                    No quizzes yet
+                </div>
+            );
         }
         
         let leaderboardElements: Array<JSX.Element> = [];

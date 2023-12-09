@@ -64,6 +64,21 @@ export function formatDateLong(date: Date): string {
 // This function renders the rows for a list of quizzes, given a group chat.
 export function renderQuizRows(groupChat: GroupChatInfo) {
     const quizzes = groupChat.quizzes;
+
+    if (quizzes.length < 1) {
+        return (
+            <div className="flex flex-col gap-4 px-4 justify-center w-full h-36 lg:h-[240px] border-2 border-dashed 
+            rounded-lg border-gray-6 text-center">
+                <div className="text-xl text-gray-11">
+                    Nothing here.
+                </div>
+                <div className="text-gray-9">
+                    Create a new quiz to get started.
+                </div>
+            </div>
+        )
+    }
+
     return quizzes.map((quiz, index) => {
         return (
             <div key={quiz.id} className={`border-gray-6 py-[6px] ${index !== quizzes.length - 1 ? "border-b" : ""}`}>

@@ -38,8 +38,11 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
     const heightRef = useRef<Height>(height);
 
     useEffect(() => {
-        // Mobile layout touch event handlers
+        const touchEnabled = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
         if (isMobile) {
+            // Touch device event handlers
+
             let touchStartPosition: TouchPosition = { x: 0, y: 0 };
 
             const handleTouchStart = (event: TouchEvent) => {
@@ -132,9 +135,9 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
                 document.removeEventListener("contextmenu", preventContextMenu, false);
             }
         } 
-
-        // Desktop layout click event handlers
         else {
+            // Desktop (Mouse & Keyboard) event handlers
+
             const handleClick = (event: MouseEvent) => {
                 if (desktopDOMref.current && !desktopDOMref.current.contains(event.target as Node)) {
                     // If the user clicks outside of the message row, collapse the message
@@ -199,6 +202,50 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
         return distance > SCROLL_THRESHOLD;
     }
 
+    // ----------------- Render functions -----------------
+
+    // Formats the content of a message so that WhatsApp-style text markup is displayed correctly
+    // (e.g. *bold*, _italic_)
+    const applyTextMarkup = (content: string): (string | JSX.Element)[] => {
+        
+        // Define a recursive function to process the text
+        const processText = (text: string, regex: RegExp , className: string): (string | JSX.Element)[] => {
+            if (!regex.test(text)) return [text]; // Base case: no matches found
+            
+            const segments = [];
+            let lastIndex = 0;
+            text.replace(regex, (match, group1, offset) => {
+                // Add the text before the match
+                if (offset > lastIndex) {
+                    segments.push(...processText(text.slice(lastIndex, offset), regex, className));
+                }
+                // Add the formatted span
+                segments.push(<span key={offset} className={className}>{group1}</span>);
+                lastIndex = offset + match.length;
+                return match;
+            });
+            
+            // Add any remaining text after the last match
+            if (lastIndex < text.length) {
+                segments.push(...processText(text.slice(lastIndex), regex, className));
+            }
+            
+            return segments;
+        };
+
+        // Replace in a specific order to handle nested formatting
+        let processedContent = processText(content, /\*_(.*?)_\*/g, 'font-bold italic');
+        processedContent = processedContent.flatMap((segment) =>
+            typeof segment === 'string' ? processText(segment, /\*(.*?)\*/g, 'font-bold') : segment
+        );
+        processedContent = processedContent.flatMap((segment) =>
+            typeof segment === 'string' ? processText(segment, /_(.*?)_/g, 'italic') : segment
+        );
+
+        return processedContent;
+    };
+      
+
     // Formats a date object into a string of type "MM/DD/YY h:mm am/pm"
     const formatDate = (date: Date) => {
         const hours = date.getHours();
@@ -232,7 +279,7 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
                     <div className={`grow relative overflow-hidden ${hasOverflow ? "cursor-pointer" : "cursor-default"}`}
                     onClick={() => {if (!isMobile) setHeight(height === 0 ? 'auto' : 0)}}>
                         <span className={`absolute max-w-full overflow-hidden text-ellipsis noselect ${contentWrapped ? "" : "whitespace-nowrap"}`}>
-                            {message.content}
+                            {applyTextMarkup(message.content)}
                         </span>
                         <AnimateHeight height={height} duration={300} className="invisible"
                         onHeightAnimationStart={() => setContentWrapped(true)} onHeightAnimationEnd={() => setContentWrapped(height !== 0)}>
@@ -257,14 +304,14 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
                 <div className={`grow relative overflow-hidden ${hasOverflow ? "cursor-pointer" : "cursor-default"}`}
                 onClick={() => {if (!isMobile) setHeight(height === 0 ? 'auto' : 0)}}>
                     <span ref={desktopDOMref} className={`absolute max-w-full overflow-hidden text-ellipsis noselect ${contentWrapped ? "" : "whitespace-nowrap"}`}>
-                        {message.content}
+                        {applyTextMarkup(message.content)}
                     </span>
                     <AnimateHeight height={height} duration={300} className="invisible"
                     onHeightAnimationStart={() => setContentWrapped(true)} onHeightAnimationEnd={() => setContentWrapped(height !== 0)}>
                         {message.content} {/* This is a hack to get the height of the message cell to expand properly. */}
                     </AnimateHeight>
                 </div>
-                <div className="flex-none w-[140px] ml-5 text-gray-9">
+                <div className="flex-none w-[145px] ml-5 text-gray-9 whitespace-nowrap">
                     {formatDate(message.timestamp)}
                 </div>
             </div>

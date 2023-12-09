@@ -83,7 +83,7 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
             });
         }
 
-        // Display the response message for 4 seconds, then close the modal and re-fetch the data.
+        // Display the response message for 3 seconds, then close the modal and re-fetch the data.
         setTimeout(() => {
             if (isModalOpen(modalDomId)) {
                 toggleModal(modalDomId);
@@ -99,7 +99,7 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
                     setReloadCounter(c => c + 1) // Reload the parent page to display the new group chat after 0.5s.
                 }, 500);
             }
-        }, 4000);
+        }, 3000);
 
         setUploading(false);
     }
@@ -180,8 +180,8 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
             <div className="flex gap-3 mb-5 sm:mb-4 pt-5 border-t border-gray-1">
                 <div className="w-2/3">
                     <label className="text-sm">Group Chat Name</label>
-                    <input name="groupChatName" className="input mt-[2px] max-w-none" type="text" placeholder="Enter name"
-                    value={groupChatName} onChange={handleInputChange}/>
+                    <input name="groupChatName" className={`input mt-[2px] max-w-none ${nameMissing ? "input-error" : ""}`} 
+                    type="text" placeholder="Enter name" value={groupChatName} onChange={handleInputChange}/>
                 </div>
                 <div className="w-1/3 flex-col">
                     <label className="text-sm">Min. Chars.</label>
@@ -195,7 +195,8 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
                 </div>
             </div>
             <div className="flex flex-wrap justify-center gap-3">
-                <input className="input-file input-file-primary" type="file" accept=".txt" onChange={handleFileChange} />
+                <input className={`input-file ${fileMissing ? "input-file-error" : "input-file-primary"}`} 
+                type="file" accept=".txt" onChange={handleFileChange} />
                 <button className="grow btn btn-primary max-w-[320px]" onClick={handleUpload}>
                     Upload
                 </button>

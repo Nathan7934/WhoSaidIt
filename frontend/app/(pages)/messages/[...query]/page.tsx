@@ -755,7 +755,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 </div>
             </div>
             {/* FIXED POSITION ELEMENTS */}
-            {renderSelectionActionsMobile()}
+            {isMobile && renderSelectionActionsMobile()}
             {/* Modals */}
             {renderAddRemoveQuizMessagesModal()}
             {!filterQuizId && renderDeleteMessagesModal()}
