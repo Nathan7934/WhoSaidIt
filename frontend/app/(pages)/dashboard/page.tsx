@@ -111,14 +111,14 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
-                    <div className="hidden lg:block mt-5 sm:mt-8 text-lg text-gray-9 font-light opacity-60">
-                        Quizzes for this chat:
-                    </div>
-                    <div className="lg:hidden divider divider-horizontal mt-5 sm:mt-8 text-gray-9 font-light opacity-60">
-                        Quizzes for this chat:
-                    </div>
-                    <div className="w-full pt-2 pb-6 lg:pr-8 max-h-[275px] overflow-y-scroll">
-                        {renderQuizRows(latestGC)}
+                    <div className="w-full pb-6 lg:pr-8 max-h-[350px] overflow-y-scroll">
+                        <div className="hidden lg:block mb-2 mt-5 sm:mt-8 text-lg text-gray-9 font-light opacity-60">
+                            Quizzes for this chat:
+                        </div>
+                        <div className="lg:hidden divider divider-horizontal mb-2 mt-5 sm:mt-8 text-gray-9 font-light opacity-60">
+                            Quizzes for this chat:
+                        </div>
+                        {renderQuizRows(latestGC, setReloadCounter)}
                     </div>
                     <div className="sm:flex sm:flex-grow sm:items-end justify-center lg:justify-start">
                         <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Create New Quiz</button>
@@ -262,7 +262,7 @@ export default function Dashboard() {
         let groupChatRows: Array<JSX.Element> = [];
         groupChats.forEach((groupChat, index) => {
             if (index === 0) return;
-            groupChatRows.push(<GroupChatInfoRow key={1000 - index} groupChat={groupChat} />);
+            groupChatRows.push(<GroupChatInfoRow key={1000 - index} groupChat={groupChat} setReloadCounter={setReloadCounter} />);
         });
         return(
             <div className="accordion-group accordion-group-bordered mb-5">

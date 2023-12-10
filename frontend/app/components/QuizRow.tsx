@@ -1,9 +1,12 @@
-import { Quiz, GroupChatInfo } from "../interfaces";
-import { renderQuizTypeBadge, toggleModal, isModalOpen, formatDateLong } from "../utilities/miscFunctions";
+import useDeleteQuiz from "../hooks/api_access/quizzes/useDeleteQuiz";
+
+import { Quiz, ResponseStatus } from "../interfaces";
+import { renderQuizTypeBadge, renderModalResponseAlert, formatDateLong, toggleModal, isModalOpen } from "../utilities/miscFunctions";
 import Modal from "./Modal";
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 
 // This component renders the information for a quiz as a row.
 // It displays the quiz name, type, and date created, as well as relevant actions for the quiz.
@@ -11,8 +14,105 @@ import Image from "next/image";
 interface QuizRowProps {
     groupChatId: number;
     quiz: Quiz;
+    setReloadCounter: React.Dispatch<React.SetStateAction<number>>;
 }
-export default function QuizRow({groupChatId, quiz}: QuizRowProps) {
+export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowProps) {
+
+    const deleteModalDomId: string = `quiz-delete-${quiz.id}`;
+
+    // ----------- Hooks ------------------
+    const deleteQuiz = useDeleteQuiz();
+
+    // ----------- State (UI) -------------
+    const [deleting, setDeleting] = useState<boolean>(false);
+    const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
+
+    const handleDelete = async () => {
+        setDeleting(true);
+        const error = await deleteQuiz(quiz.id);
+        if (!error) {
+            setResponseStatus({
+                message: "Quiz Deleted successfully",
+                success: true,
+                doAnimate: true,
+            });
+        } else {
+            console.error("Error deleting quiz: ", error);
+            setResponseStatus({
+                message: "Error deleting quiz",
+                success: false,
+                doAnimate: true,
+            });
+        }
+
+        // Display the response message for 3 seconds, then close the modal and re-fetch the data.
+        setTimeout(() => {
+            if (isModalOpen(deleteModalDomId)) {
+                toggleModal(deleteModalDomId);
+            }    
+            setResponseStatus({
+                message: "",
+                success: false,
+                doAnimate: false,
+            });
+            if (!error) {
+                setTimeout(() => {
+                    setReloadCounter(c => c + 1) // Reload the parent page to display the new group chat after 0.5s.
+                }, 500);
+            }
+        }, 3000);
+
+        setDeleting(false);
+    }
+
+    // =============== RENDER FUNCTIONS ===============
+
+    const renderDeleteQuizModal = () => {
+        let modalContent: JSX.Element;
+        if (responseStatus.doAnimate) {
+            modalContent = renderModalResponseAlert(responseStatus);
+        } else if (deleting) {
+            modalContent = (
+                <div className="my-6 sm:my-12">
+                    <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-gray-11">
+                            Deleting Quiz...
+                    </div>
+                    <div className="flex justify-center">
+                        <div className="spinner-circle w-10 h-10 sm:w-12 sm:h-12" />
+                    </div>
+                </div>
+            );
+        } else {
+            modalContent = (<>
+                <div className="mx-auto mb-5 text-center">
+                    <div className="mb-2 text-2xl text-gray-11">
+                        Delete {quiz.quizName}?
+                    </div>
+                    <div className="mb-2 px-4 max-w-[300px] text-sm text-gray-9 font-light">
+                        Deleting this quiz will also delete all of its leaderboard entries.
+                    </div>
+                    <div className="text-gray-10 font-semibold">
+                        This cannot be undone.
+                    </div>
+                </div>
+                <div className="flex gap-2 px-6 mb-4">
+                    <button className="btn grow" onClick={() => toggleModal("delete-modal")}>
+                        Cancel
+                    </button>
+                    <button className="btn btn-error grow" onClick={handleDelete}>
+                        Delete
+                    </button>
+                </div>
+            </>);
+        }
+
+        return (
+            <Modal domId={`quiz-delete-${quiz.id}`} title="Delete Quiz" maxWidth="400px" margin="24px" darkOverlay>
+                {modalContent}
+            </Modal>
+        );
+    }
+
     return (<>
         {/* --------------- DESKTOP LAYOUT --------------- */}
         <div className="hidden sm:grid grid-cols-3 grid-rows-2 gap-1">
@@ -28,7 +128,10 @@ export default function QuizRow({groupChatId, quiz}: QuizRowProps) {
                     <div className="dropdown-menu dropdown-menu-left shadow-md">
                         <a className="dropdown-item text-sm">Quiz Leaderboard</a>
                         <Link href={`/messages/${groupChatId}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
-                        <a tabIndex={-1} className="dropdown-item text-sm text-red-9">Delete Quiz</a>
+                        <a tabIndex={-1} className="dropdown-item text-sm text-red-9"
+                        onClick={() => toggleModal(deleteModalDomId)}>
+                            Delete Quiz
+                        </a>
                     </div>
                 </details>
             </div>
@@ -59,10 +162,15 @@ export default function QuizRow({groupChatId, quiz}: QuizRowProps) {
                         <Link href={`/messages/${groupChatId}/${quiz.id}`}>
                             <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
                         </Link>
-                        <button className="btn btn-sm w-full mt-2 text-red-8 font-bold">Delete Quiz</button>
+                        <button className="btn btn-sm w-full mt-2 text-red-8 font-bold"
+                        onClick={() => toggleModal(deleteModalDomId)}>
+                            Delete Quiz
+                        </button>
                     </div>
                 </Modal>
             </div>
         </div>
+        {/* FIXED POSITION ELEMENTS */}
+        {renderDeleteQuizModal()}
     </>);
 }

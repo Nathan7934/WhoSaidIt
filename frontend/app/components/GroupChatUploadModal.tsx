@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import SuccessIcon from "./icons/SuccessIcon";
 import AlertIcon from "./icons/AlertIcon";
 import InfoIcon from "./icons/InfoIcon";
-import { toggleModal, isModalOpen } from "../utilities/miscFunctions";
+import { toggleModal, isModalOpen, renderModalResponseAlert } from "../utilities/miscFunctions";
 import { ResponseStatus } from "../interfaces";
 
 import { useState } from "react";
@@ -57,12 +57,9 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
     }
 
     const handleUpload = async () => {
-        if (!selectedFile) {
-            setFileMissing(true);
-            return;
-        }
-        if (groupChatName.length === 0) {
-            setNameMissing(true);
+        if (!selectedFile || groupChatName.length === 0) {
+            setFileMissing(!selectedFile);
+            setNameMissing(groupChatName.length === 0);
             return;
         }
         
@@ -106,23 +103,6 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
 
     // =============== RENDER FUNCTIONS ===============
 
-    const renderResponseAlert = () => {
-        const success: boolean = responseStatus.success;
-        return (
-            <div className="my-6 sm:my-12">
-                <div className={`mx-auto mb-[2px] text-lg sm:text-xl text-center ${success ? "text-green-12" : "text-blue-12"}`}>
-                    {responseStatus.message}
-                </div>
-                <div className="flex justify-center animate__animated animate__fadeIn">
-                    {success
-                        ? <SuccessIcon className="w-12 h-12 sm:w-14 sm:h-14" />
-                        : <AlertIcon className="w-12 h-12 sm:w-14 sm:h-14" />
-                    }
-                </div>
-            </div>
-        )
-    }
-
     const renderMinCharsInfoModal = () => {
         return (
             <Modal domId="min-chars-info-modal" title="Minimum Characters" maxWidth="400px" margin="24px" darkOverlay>
@@ -147,7 +127,7 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
 
     let modalContent: JSX.Element;
     if (responseStatus.doAnimate) {
-        modalContent = renderResponseAlert();
+        modalContent = renderModalResponseAlert(responseStatus);
     } else if (uploading) {
         modalContent = (
             <div className="my-6 sm:my-12">

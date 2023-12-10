@@ -1,5 +1,7 @@
 import { ResponseStatus, GroupChatInfo } from "../interfaces";
 import QuizRow from "../components/QuizRow";
+import SuccessIcon from "../components/icons/SuccessIcon";
+import AlertIcon from "../components/icons/AlertIcon";
 
 // At some point, this file might grow sufficiently large that it should be split into multiple files.
 
@@ -62,7 +64,7 @@ export function formatDateLong(date: Date): string {
 }
 
 // This function renders the rows for a list of quizzes, given a group chat.
-export function renderQuizRows(groupChat: GroupChatInfo) {
+export function renderQuizRows(groupChat: GroupChatInfo, setReloadCounter: React.Dispatch<React.SetStateAction<number>>) {
     const quizzes = groupChat.quizzes;
 
     if (quizzes.length < 1) {
@@ -82,8 +84,25 @@ export function renderQuizRows(groupChat: GroupChatInfo) {
     return quizzes.map((quiz, index) => {
         return (
             <div key={quiz.id} className={`border-gray-6 py-[6px] ${index !== quizzes.length - 1 ? "border-b" : ""}`}>
-                <QuizRow groupChatId={groupChat.id} quiz={quiz} />
+                <QuizRow groupChatId={groupChat.id} quiz={quiz} setReloadCounter={setReloadCounter} />
             </div>
         ); 
     });
+}
+
+export function renderModalResponseAlert(responseStatus: ResponseStatus) {
+    const success: boolean = responseStatus.success;
+        return (
+            <div className="my-6 sm:my-12">
+                <div className={`mx-auto mb-[2px] text-lg sm:text-xl text-center ${success ? "text-green-12" : "text-blue-12"}`}>
+                    {responseStatus.message}
+                </div>
+                <div className="flex justify-center animate__animated animate__fadeIn">
+                    {success
+                        ? <SuccessIcon className="w-12 h-12 sm:w-14 sm:h-14" />
+                        : <AlertIcon className="w-12 h-12 sm:w-14 sm:h-14" />
+                    }
+                </div>
+            </div>
+        )
 }

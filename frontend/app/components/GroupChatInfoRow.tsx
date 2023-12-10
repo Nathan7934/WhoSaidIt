@@ -12,7 +12,11 @@ import Link from "next/link";
 
 // The accoridian is implemented using Ripple-UI tailwind classes and the checkbox hack.
 
-export default function GroupChatInfoRow({ groupChat }: { groupChat: GroupChatInfo}) {
+interface GroupChatInfoRowProps {
+    groupChat: GroupChatInfo;
+    setReloadCounter: React.Dispatch<React.SetStateAction<number>>;
+}
+export default function GroupChatInfoRow({ groupChat, setReloadCounter }: GroupChatInfoRowProps) {
 
     return (
         <div className="accordion">
@@ -41,7 +45,7 @@ export default function GroupChatInfoRow({ groupChat }: { groupChat: GroupChatIn
                     <div className="mb-3 text-lg text-gray-9 font-light">
                         Quizzes for this chat:
                     </div>
-                    {renderQuizRows(groupChat)}
+                    {renderQuizRows(groupChat, setReloadCounter)}
                     <div className="sm:flex sm:flex-grow sm:items-end mt-6 sm:mt-3">
                         <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Create New Quiz</button>
                         <div className="flex">

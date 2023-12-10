@@ -76,7 +76,7 @@ export default function ManageGroupChats() {
         const groupChatRows: JSX.Element[] = [];
         for (const groupChat in groupChats) {
             groupChatRows.push(
-                <GroupChatInfoRow key={groupChats[groupChat].id} groupChat={groupChats[groupChat]} />
+                <GroupChatInfoRow key={groupChats[groupChat].id} groupChat={groupChats[groupChat]} setReloadCounter={setReloadCounter}/>
             );
         }
 
@@ -96,16 +96,17 @@ export default function ManageGroupChats() {
     return (
         <main className="flex min-h-screen flex-col items-center justify-between">
             <div className="w-[97%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] 3xl:w-[40%] mt-8 sm:mt-24">
-                {!loading && <>
-                    <div className="text-2xl sm:text-3xl text-center font-bold mb-3">
-                        Uploaded Group Chats
-                    </div>
-                    <div className="flex w-full mb-8">
-                        <button className="w-56 btn btn-primary btn-md mx-auto" onClick={() => toggleModal("upload-modal")}>
+                {!loading && 
+                    <div className="w-full px-2 flex flex-col md:flex-row mb-6 md:mb-4 justify-center">
+                        <div className="text-3xl md:text-4xl text-center font-bold mb-3">
+                            Uploaded Group Chats
+                        </div>
+                        <button className="w-56 btn btn-primary btn-md mr-auto md:mr-0 ml-auto" 
+                        onClick={() => toggleModal("upload-modal")}>
                             Upload New
                         </button>
                     </div>
-                </>}
+                }
                 <div className="max-w-[1000px]">
                     {renderGroupChats()}
                 </div>
