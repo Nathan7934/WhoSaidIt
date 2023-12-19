@@ -99,6 +99,26 @@ const config: Config = {
                         opacity: '0',
                     },
                 },
+
+                // QUIZ CREATION: Quiz type selection control keyframes
+                quizTypeSelectionEntering: {
+                    '0%': {
+                        width: '0%',
+                        opacity: '1',
+                    },
+                    '100%': { width: '100%', },
+                },
+                quizTypeSelectionExiting: {
+                    '0%': {
+                        opacity: '1',
+                        width: '100%',
+                    },
+                    '99%': {
+                        opacity: '0',
+                        width: '100%',
+                    },
+                    '100%': { width: '0%', },
+                },
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -121,6 +141,10 @@ const config: Config = {
                 // MESSAGES: Mobile selection actions control animations
                 selectionActionsEntering: 'selectionActionsEntering 0.4s ease-in-out 0s 1 forwards',
                 selectionActionsExiting: 'selectionActionsExiting 0.4s ease-in-out 0s 1 forwards',
+
+                // QUIZ CREATION: Quiz type selection control keyframes
+                quizTypeSelectionEntering: 'quizTypeSelectionEntering 0.3s ease-in-out 0s 1 forwards',
+                quizTypeSelectionExiting: 'quizTypeSelectionExiting 0.2s ease-in-out 0s 1 forwards',
             },
             dropShadow: {
                 glow: [

@@ -1,5 +1,6 @@
 import { GroupChatInfo } from "../interfaces"
-import { formatDateLong, renderQuizRows } from "../utilities/miscFunctions";
+import { formatDateLong, renderQuizRows, toggleModal } from "../utilities/miscFunctions";
+import CreateQuizModal from "./CreateQuizModal";
 
 import Link from "next/link";
 
@@ -18,7 +19,7 @@ interface GroupChatInfoRowProps {
 }
 export default function GroupChatInfoRow({ groupChat, setReloadCounter }: GroupChatInfoRowProps) {
 
-    return (
+    return (<>
         <div className="accordion">
             <input type="checkbox" id={`toggle-${groupChat.id}`} className="accordion-toggle" />
             <label htmlFor={`toggle-${groupChat.id}`} className="accordion-title bg-zinc-950">
@@ -47,7 +48,10 @@ export default function GroupChatInfoRow({ groupChat, setReloadCounter }: GroupC
                     </div>
                     {renderQuizRows(groupChat, setReloadCounter)}
                     <div className="sm:flex sm:flex-grow sm:items-end mt-6 sm:mt-3">
-                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Create New Quiz</button>
+                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto"
+                        onClick={() => toggleModal(`create-quiz-modal-${groupChat.id}`)}>
+                            Create New Quiz
+                        </button>
                         <div className="flex">
                             <Link href={`/messages/${groupChat.id}`} className="grow sm:flex-none mr-2">
                                 <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
@@ -60,5 +64,8 @@ export default function GroupChatInfoRow({ groupChat, setReloadCounter }: GroupC
                 </div>
             </div>
         </div>
-    );
+        {/* Modal for creating a new quiz */}
+        <CreateQuizModal groupChatId={groupChat.id} groupChatName={groupChat.groupChatName} 
+        modalDomId={`create-quiz-modal-${groupChat.id}`} setReloadCounter={setReloadCounter} />
+    </>);
 }

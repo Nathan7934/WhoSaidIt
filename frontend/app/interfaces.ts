@@ -43,6 +43,23 @@ export interface TimeAttackQuiz extends Quiz {
     wrongAnswerPenalty: number;
 }
 
+// Interfaces for POST requests
+export interface PostQuiz {
+    quizName: string;
+    description: string;
+}
+
+export interface PostSurvivalQuiz extends PostQuiz {
+    numberOfSkips: number;
+}
+
+export interface PostTimeAttackQuiz extends PostQuiz {
+    numberOfQuestions: number;
+    initialQuestionScore: number;
+    penaltyPerSecond: number;
+    wrongAnswerPenalty: number;
+}
+
 // ======= LEADERBOARDS =======
 export interface LeaderboardEntry {
     id: number;

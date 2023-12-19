@@ -7,6 +7,7 @@ import { User, GroupChatInfo, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInf
 import { renderQuizRows, toggleModal } from "@/app/utilities/miscFunctions";
 import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
 import GroupChatUploadModal from "@/app/components/GroupChatUploadModal";
+import CreateQuizModal from "@/app/components/CreateQuizModal";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -121,7 +122,10 @@ export default function Dashboard() {
                         {renderQuizRows(latestGC, setReloadCounter)}
                     </div>
                     <div className="sm:flex sm:flex-grow sm:items-end justify-center lg:justify-start">
-                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto">Create New Quiz</button>
+                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto"
+                        onClick={() => toggleModal("create-quiz-modal")}>
+                            Create New Quiz
+                        </button>
                         <div className="flex">
                             <Link href={`/messages/${latestGC.id}`} className="grow sm:flex-none mr-2">
                                 <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
@@ -361,6 +365,10 @@ export default function Dashboard() {
             </div>
             {/* FIXED POSITION ELEMENTS */}
             {activeUser && <GroupChatUploadModal userId={activeUser.id} modalDomId="upload-modal" setReloadCounter={setReloadCounter} />}
+            {groupChats.length > 0 && 
+                <CreateQuizModal groupChatId={groupChats[0].id} groupChatName={groupChats[0].groupChatName} 
+                modalDomId="create-quiz-modal" setReloadCounter={setReloadCounter} />
+            }
         </main>
     )
 }

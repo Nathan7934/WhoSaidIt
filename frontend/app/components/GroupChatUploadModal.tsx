@@ -1,7 +1,5 @@
 import usePostGroupChatUpload from "../hooks/api_access/group_chats/usePostGroupChatUpload";
 import Modal from "./Modal";
-import SuccessIcon from "./icons/SuccessIcon";
-import AlertIcon from "./icons/AlertIcon";
 import InfoIcon from "./icons/InfoIcon";
 import { toggleModal, isModalOpen, renderModalResponseAlert } from "../utilities/miscFunctions";
 import { ResponseStatus } from "../interfaces";
@@ -18,7 +16,7 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
     // ----------- Hooks ------------------
     const postGroupChatUpload = usePostGroupChatUpload();
 
-    // ----------- State (Data) -----------
+    // ----------- State (Input) -----------
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [groupChatName, setGroupChatName] = useState<string>("");
     const [minChars, setMinChars] = useState<number>(100);
@@ -109,11 +107,11 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
                 <div className="mx-4 mb-4">
                     <div className="text-gray-11 mb-4">
                         This field sets the minimum number of characters that a message must contain
-                        in order to be used. This is to prevent short messages like "ok" from being included.
+                        in order to be exported. This is to prevent short messages like "ok" from being included.
                     </div>
                     <div className="text-gray-11 mb-4">
                         For example, if you set the minimum number of characters to 100, then only messages with 100 or more
-                        characters will be included in the quiz.
+                        characters will be included in the message set.
                     </div>
                     <div className="mb-1">
                         The default value is 100.
