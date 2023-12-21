@@ -112,7 +112,7 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
-                    <div className="w-full pb-6 lg:pr-8 max-h-[350px] overflow-y-scroll">
+                    <div className="w-full sm:pb-6 mb-2 sm:mb-0 pr-1 lg:pr-8 max-h-[350px] overflow-y-scroll">
                         <div className="hidden lg:block mb-2 mt-5 sm:mt-8 text-lg text-gray-9 font-light opacity-60">
                             Quizzes for this chat:
                         </div>
