@@ -126,7 +126,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
                 <details className="dropdown">
                     <summary tabIndex={0} className="hover:cursor-pointer list-none"><Image src="menu.svg" alt="Menu" width={44} height={44} /></summary>
                     <div className="dropdown-menu dropdown-menu-left shadow-md">
-                        <a className="dropdown-item text-sm">Quiz Leaderboard</a>
+                        <Link href={`/leaderboard/${quiz.id}`} className="dropdown-item text-sm">Quiz Leaderboard</Link>
                         <Link href={`/messages/${groupChatId}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
                         <a tabIndex={-1} className="dropdown-item text-sm text-red-9"
                         onClick={() => toggleModal(deleteModalDomId)}>
@@ -158,7 +158,9 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
                     </div>
                     <div className="px-4 mb-4">
                         <button className="btn btn-primary w-full text-lg">Copy Shareable Link</button>
-                        <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
+                        <Link href={`/leaderboard/${quiz.id}`}>
+                            <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
+                        </Link>
                         <Link href={`/messages/${groupChatId}/${quiz.id}`}>
                             <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
                         </Link>

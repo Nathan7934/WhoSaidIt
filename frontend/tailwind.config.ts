@@ -119,6 +119,20 @@ const config: Config = {
                     },
                     '100%': { width: '0%', },
                 },
+
+                // LEADERBOARD: Podium grow keyframes
+                podiumGrowFirst: {
+                    from: { height: '0%' },
+                    to: { height: '100%' },
+                },
+                podiumGrowSecond: {
+                    from: { height: '0%' },
+                    to: { height: '70%' },
+                },
+                podiumGrowThird: {
+                    from: { height: '0%' },
+                    to: { height: '45%' },
+                },
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -145,6 +159,11 @@ const config: Config = {
                 // QUIZ CREATION: Quiz type selection control keyframes
                 quizTypeSelectionEntering: 'quizTypeSelectionEntering 0.3s ease-in-out 0s 1 forwards',
                 quizTypeSelectionExiting: 'quizTypeSelectionExiting 0.2s ease-in-out 0s 1 forwards',
+
+                // LEADERBOARD: Podium grow animations
+                podiumGrowFirst: 'podiumGrowFirst 1s ease-in-out 0s 1 forwards',
+                podiumGrowSecond: 'podiumGrowSecond 1s ease-in-out 0s 1 forwards',
+                podiumGrowThird: 'podiumGrowThird 1s ease-in-out 0s 1 forwards',
             },
             dropShadow: {
                 glow: [

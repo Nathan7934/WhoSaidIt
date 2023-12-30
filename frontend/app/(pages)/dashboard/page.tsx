@@ -4,7 +4,7 @@ import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
 import useGetGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useGetGroupChatLeaderboards";
 import { User, GroupChatInfo, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
-import { renderQuizRows, toggleModal } from "@/app/utilities/miscFunctions";
+import { renderQuizRows, toggleModal, isTimeAttackEntry, isSurvivalEntry } from "@/app/utilities/miscFunctions";
 import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
 import GroupChatUploadModal from "@/app/components/GroupChatUploadModal";
 import CreateQuizModal from "@/app/components/CreateQuizModal";
@@ -324,14 +324,6 @@ export default function Dashboard() {
         if (index < selectedLeaderboardIndex) return " translate-x-[-100%]";
         
         return "";
-    }
-
-    // Custom type guards
-    const isTimeAttackEntry = (entry: TimeAttackEntry | SurvivalEntry): entry is TimeAttackEntry => {
-        return entry.type === "TIME_ATTACK";
-    }
-    const isSurvivalEntry = (entry: TimeAttackEntry | SurvivalEntry): entry is SurvivalEntry => {
-        return entry.type === "SURVIVAL";
     }
 
     // =============== MAIN RENDER ===============

@@ -1,9 +1,17 @@
-import { ResponseStatus, GroupChatInfo } from "../interfaces";
+import { ResponseStatus, GroupChatInfo, TimeAttackEntry, SurvivalEntry } from "../interfaces";
 import QuizRow from "../components/QuizRow";
 import SuccessIcon from "../components/icons/SuccessIcon";
 import AlertIcon from "../components/icons/AlertIcon";
 
 // At some point, this file might grow sufficiently large that it should be split into multiple files.
+
+// Custom type guards
+export const isTimeAttackEntry = (entry: TimeAttackEntry | SurvivalEntry): entry is TimeAttackEntry => {
+    return entry.type === "TIME_ATTACK";
+}
+export const isSurvivalEntry = (entry: TimeAttackEntry | SurvivalEntry): entry is SurvivalEntry => {
+    return entry.type === "SURVIVAL";
+}
 
 // This function renders a badge for a quiz type.
 export function renderQuizTypeBadge(type: string) {
