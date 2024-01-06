@@ -8,4 +8,6 @@ import java.util.List;
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
     List<Quiz> findByGroupChatId(long groupChatId);
+
+    boolean existsByUrlToken(String urlToken);
 }

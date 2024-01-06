@@ -1,6 +1,7 @@
 package com.backend.WhoSaidIt.security;
 
 import com.backend.WhoSaidIt.DTOs.AuthenticationResponseDTO;
+import com.backend.WhoSaidIt.DTOs.QuizTokenResponseDTO;
 import com.backend.WhoSaidIt.entities.Role;
 import com.backend.WhoSaidIt.entities.User;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthenticationService {
@@ -53,14 +55,6 @@ public class AuthenticationService {
         return new AuthenticationResponseDTO(user.getId(), accessToken, refreshToken);
     }
 
-    public AuthenticationResponseDTO generateQuizToken(long quizId) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow(
-                () -> new DataNotFoundException("Quiz with id " + quizId + " not found")
-        );
-        String jwtToken = jwtService.generateQuizToken(quiz);
-        return new AuthenticationResponseDTO(null, jwtToken, null);
-    }
-
     public AuthenticationResponseDTO authenticate(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         // If authentication fails, an exception is thrown and the remainder is not executed.
@@ -86,5 +80,41 @@ public class AuthenticationService {
         return new AuthenticationResponseDTO(user.getId(), accessToken, newRefreshToken);
 
         // TODO: Implement a way to invalidate refresh tokens once used.
+    }
+
+    @Transactional
+    public QuizTokenResponseDTO getQuizAccessToken(long quizId) {
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(
+                () -> new DataNotFoundException("Quiz with id " + quizId + " not found")
+        );
+
+        // If a shareable link has not been generated yet, we generate them and assign them to the quiz.
+        if (quiz.getShareableAccessToken() == null || quiz.getUrlToken() == null) {
+            String jwtToken = jwtService.generateQuizToken(quiz);
+            quiz.setShareableAccessToken(jwtToken);
+
+            String urlToken;
+            do {
+                urlToken = UrlTokenGenerator.generateUrlToken();
+            } while (quizRepository.existsByUrlToken(urlToken)); // Ensure uniqueness
+            quiz.setUrlToken(urlToken);
+
+            return new QuizTokenResponseDTO(jwtToken, urlToken);
+        }
+
+        return new QuizTokenResponseDTO(quiz.getShareableAccessToken(), quiz.getUrlToken());
+    }
+
+    // Takes a URL token and retrieves its corresponding access token (if the URL token matches what is stored)
+    public QuizTokenResponseDTO validateQuizUrlToken(long quizId, String urlToken) {
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(
+                () -> new DataNotFoundException("Quiz with id " + quizId + " not found")
+        );
+
+        if (!quiz.getUrlToken().equals(urlToken)) {
+            throw new IllegalArgumentException("Invalid URL token");
+        }
+
+        return new QuizTokenResponseDTO(quiz.getShareableAccessToken(), quiz.getUrlToken());
     }
 }

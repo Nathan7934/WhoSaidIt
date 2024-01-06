@@ -1,6 +1,7 @@
 package com.backend.WhoSaidIt.security;
 
 import com.backend.WhoSaidIt.DTOs.AuthenticationResponseDTO;
+import com.backend.WhoSaidIt.DTOs.QuizTokenResponseDTO;
 import com.backend.WhoSaidIt.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,14 +50,28 @@ public class AuthenticationController {
 
     // This endpoint is used to generate a shareable quiz token.
     // Requires the caller to be an authenticated user who owns the quiz with quizId.
-    @PostMapping("/quizzes/{quizId}/auth/generate-token")
-    public ResponseEntity<AuthenticationResponseDTO> generateQuizToken(
+    @PostMapping("/quizzes/{quizId}/generate-token")
+    public ResponseEntity<QuizTokenResponseDTO> generateQuizToken(
             @PathVariable long quizId
     ) {
-        return ResponseEntity.ok(authenticationService.generateQuizToken(quizId));
+        return ResponseEntity.ok(authenticationService.getQuizAccessToken(quizId));
+    }
+
+    @GetMapping("/auth/quizzes/{quizId}/validate-url-token")
+    public ResponseEntity<QuizTokenResponseDTO> validateQuizUrlToken(
+            @PathVariable long quizId,
+            @RequestParam String urlToken
+    ) {
+        try {
+            return ResponseEntity.ok(authenticationService.validateQuizUrlToken(quizId, urlToken));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     public record RegisterRequest(String username, String password, String email) {}
 
     public record AuthenticationRequest(String username, String password) {}
+
+
 }

@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(
-        name = "quizzes"
-)
+@Table(name = "quizzes", indexes = {
+    @Index(name = "idx_url_token", columnList = "urlToken", unique = true)
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "quizType")
 public abstract class Quiz {
@@ -59,12 +59,20 @@ public abstract class Quiz {
     @Column(name = "hasSpecifiedMessages", columnDefinition = "BOOLEAN", nullable = false)
     private boolean hasSpecifiedMessages = false;
 
+    @Column(name = "urlToken", columnDefinition = "TEXT", unique = true)
+    private String urlToken;
+
+    @Column(name = "shareableAccessToken", columnDefinition = "TEXT")
+    private String shareableAccessToken;
+
     public Quiz() {}
 
     public Quiz(GroupChat groupChat, String quizName, String description) {
         this.groupChat = groupChat;
         this.quizName = quizName;
         this.description = description;
+        this.urlToken = null;
+        this.shareableAccessToken = null;
     }
 
     public Long getId() { return id; }
@@ -87,5 +95,13 @@ public abstract class Quiz {
     public void updateHasSpecifiedMessages() {
         this.hasSpecifiedMessages = !messagesInQuiz.isEmpty();
     }
+
+    public String getUrlToken() { return urlToken; }
+
+    public String getShareableAccessToken() { return shareableAccessToken; }
+
+    public void setUrlToken(String urlToken) { this.urlToken = urlToken; }
+
+    public void setShareableAccessToken(String shareableAccessToken) { this.shareableAccessToken = shareableAccessToken; }
     public abstract QuizDTO toDTO();
 }
