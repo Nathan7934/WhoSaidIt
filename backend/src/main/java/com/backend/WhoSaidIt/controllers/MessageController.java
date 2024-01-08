@@ -28,9 +28,9 @@ public class MessageController {
 
     // The request parameter excludedMessageIds is a comma separated list of message ids that should be excluded from
     // the random selection. This is to prevent the same message from being selected twice in a session.
-    @GetMapping("/group-chats/{groupChatId}/messages/random")
-    public ResponseEntity<MessageDTO> getRandomMessage(
-            @PathVariable long groupChatId,
+    @GetMapping("/quizzes/{quizId}/messages/random")
+    public ResponseEntity<MessageDTO> getRandomQuizMessage(
+            @PathVariable long quizId,
             @RequestParam(required = false) String excludedMessageIds
     ) {
         List<Long> ids = new ArrayList<>();
@@ -38,8 +38,13 @@ public class MessageController {
             ids = Arrays.stream(excludedMessageIds.split(","))
                     .map(Long::valueOf).collect(Collectors.toList());
         }
-        return ResponseEntity.ok(messageService.getRandomMessage(groupChatId, ids));
+        try {
+            return ResponseEntity.ok(messageService.getRandomQuizMessage(quizId, ids));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
+
 
     @GetMapping("/group-chats/{groupChatId}/messages/paginated")
     public ResponseEntity<MessagePageDTO> getPaginatedGroupChatMessages(

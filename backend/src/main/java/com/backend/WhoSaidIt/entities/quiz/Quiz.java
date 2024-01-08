@@ -56,14 +56,13 @@ public abstract class Quiz {
     @Column(name = "createdDate", columnDefinition = "TIMESTAMP WITHOUT TIME ZONE", nullable = false)
     private LocalDateTime createdDate;
 
-    @Column(name = "hasSpecifiedMessages", columnDefinition = "BOOLEAN", nullable = false)
-    private boolean hasSpecifiedMessages = false;
-
-    @Column(name = "urlToken", columnDefinition = "TEXT", unique = true)
-    private String urlToken;
-
+    // Authentication token used to access the quiz without an account
     @Column(name = "shareableAccessToken", columnDefinition = "TEXT")
     private String shareableAccessToken;
+
+    // A shorter alias for the quiz jwt, used in shareable links
+    @Column(name = "urlToken", columnDefinition = "TEXT", unique = true)
+    private String urlToken;
 
     public Quiz() {}
 
@@ -86,15 +85,6 @@ public abstract class Quiz {
     public String getDescription() { return description; }
 
     public LocalDateTime getCreatedDate() { return createdDate; }
-
-    public boolean getHasSpecifiedMessages() { return hasSpecifiedMessages; }
-
-    // Method is called after the entity is persisted or updated, keeping the hasSpecifiedMessages field up to date.
-    @PostPersist
-    @PostUpdate
-    public void updateHasSpecifiedMessages() {
-        this.hasSpecifiedMessages = !messagesInQuiz.isEmpty();
-    }
 
     public String getUrlToken() { return urlToken; }
 

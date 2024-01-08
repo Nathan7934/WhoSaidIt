@@ -7,35 +7,51 @@ import com.backend.WhoSaidIt.entities.Participant;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.MessageRepository;
+import com.backend.WhoSaidIt.repositories.QuizRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class MessageService {
 
     private final MessageRepository messageRepository;
+    private final QuizRepository quizRepository;
 
-    public MessageService(MessageRepository messageRepository) {
+    public MessageService(MessageRepository messageRepository, QuizRepository quizRepository) {
         this.messageRepository = messageRepository;
+        this.quizRepository = quizRepository;
     }
 
-    public MessageDTO getRandomMessage(long groupChatId, List<Long> excludedMessageIds) {
-        long messageCount = messageRepository.countByGroupChatId(groupChatId);
-        Random rand = new Random();
-        long id = rand.nextInt((int) messageCount) + 1;
-        Message rMessage = messageRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Random generated an invalid id."));
-        while (excludedMessageIds.contains(rMessage.getId())) {
-            id = rand.nextInt((int) messageCount) + 1;
-            rMessage = messageRepository.findById(id)
-                    .orElseThrow(() -> new DataNotFoundException("Random generated an invalid id."));
+    public MessageDTO getRandomQuizMessage(long quizId, List<Long> excludedMessageIds) {
+        long quizMessageCount = messageRepository.countByQuizId(quizId);
+
+        // If the quiz has no messages, or if we have exhausted all specified messages, we instead return a random
+        // message from the group chat.
+        Message rMessage;
+        Pageable oiPageable = PageRequest.of(0, 1); // oi = one item; required for SQL randomization
+        if (quizMessageCount == 0 || excludedMessageIds.size() >= quizMessageCount) {
+            Quiz quiz = quizRepository.findById(quizId)
+                    .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
+            long groupChatId = quiz.getGroupChat().getId();
+            List<Message> oiPage = excludedMessageIds.isEmpty()
+                    ? messageRepository.findRandomMessageByGroupChatId(groupChatId, oiPageable).getContent()
+                    : messageRepository.findRandomMessageByGroupChatId(groupChatId, excludedMessageIds, oiPageable).getContent();
+            if (oiPage.isEmpty()) {
+                throw new DataNotFoundException("No messages found in group chat with id " + groupChatId);
+            }
+            rMessage = oiPage.get(0);
+        } else {
+            rMessage = excludedMessageIds.isEmpty()
+                    ? messageRepository.findRandomMessageByQuizId(quizId, oiPageable).getContent().get(0)
+                    : messageRepository.findRandomMessageByQuizId(quizId, excludedMessageIds, oiPageable).getContent().get(0);
         }
+
         return rMessage.toDTO();
     }
 

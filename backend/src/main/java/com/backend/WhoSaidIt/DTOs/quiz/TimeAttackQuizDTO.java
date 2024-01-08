@@ -7,7 +7,6 @@ public record TimeAttackQuizDTO(
         String quizName,
         String description,
         LocalDateTime createdDate,
-        Boolean hasSpecifiedMessages,
         Integer numberOfQuestions,
         Integer initialQuestionScore,
         Integer penaltyPerSecond,

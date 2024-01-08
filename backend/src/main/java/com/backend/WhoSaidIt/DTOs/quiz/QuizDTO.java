@@ -15,5 +15,4 @@ public sealed interface QuizDTO permits TimeAttackQuizDTO, SurvivalQuizDTO {
     String quizName();
     String description();
     LocalDateTime createdDate();
-    Boolean hasSpecifiedMessages();
 }

@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class AuthenticationController {
 
+    // This class handles requests to the /api/auth/** endpoints. These endpoints are the only ones that do not require
+    // authentication. The endpoints are used for registering new users, authenticating existing users, generating
+    // shareable quiz tokens, and determining whether a user without an account followed a valid shareable link.
+
     private final AuthenticationService authenticationService;
 
     public AuthenticationController(AuthenticationService authenticationService) {
@@ -49,7 +53,7 @@ public class AuthenticationController {
     }
 
     // This endpoint is used to generate a shareable quiz token.
-    // Requires the caller to be an authenticated user who owns the quiz with quizId.
+    // STILL REQUIRES AUTHENTICATION (hence no '/auth' prefix in the path)
     @PostMapping("/quizzes/{quizId}/generate-token")
     public ResponseEntity<QuizTokenResponseDTO> generateQuizToken(
             @PathVariable long quizId

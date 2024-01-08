@@ -47,7 +47,6 @@ public class TimeAttackQuiz extends Quiz{
                 this.getQuizName(),
                 this.getDescription(),
                 this.getCreatedDate(),
-                this.getHasSpecifiedMessages(),
                 this.getNumberOfQuestions(),
                 this.getInitialQuestionScore(),
                 this.getPenaltyPerSecond(),

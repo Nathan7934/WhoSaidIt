@@ -7,6 +7,5 @@ public record SurvivalQuizDTO(
         String quizName,
         String description,
         LocalDateTime createdDate,
-        Boolean hasSpecifiedMessages,
         Integer numberOfSkips
 ) implements QuizDTO {}
