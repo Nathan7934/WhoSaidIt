@@ -1,6 +1,6 @@
 import { EXTERNAL_API_ROOT } from "@/app/constants";
 
-import useAuthFetch from "../../useAuthFetch";
+import useAuthFetch from "../../security/useAuthFetch";
 import { Message, MessagePage, PaginationConfig } from "@/app/interfaces";
 
 export default function useGetMessages() {

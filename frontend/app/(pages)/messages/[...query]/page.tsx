@@ -36,7 +36,6 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
     // Extracting the NextJS route query parameters "/messages/{groupChatId}/{?quizId}/{?participantId}"
     const groupChatId = Number(params.query[0]);
-    // const quizId = params.query.length > 1 ? Number(params.query[1]) : null;
     let quizId: number | null = null;
     if (params.query.length > 1) {
         // If the second query parameter is "nfq", we set quizId to null to indicate that we don't want to filter by quiz

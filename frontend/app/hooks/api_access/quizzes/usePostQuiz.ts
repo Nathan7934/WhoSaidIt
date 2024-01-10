@@ -1,7 +1,7 @@
 import { EXTERNAL_API_ROOT } from "@/app/constants";
 import { PostSurvivalQuiz, PostTimeAttackQuiz } from "@/app/interfaces";
 
-import useAuthFetch from "../../useAuthFetch";
+import useAuthFetch from "../../security/useAuthFetch";
 
 export default function usePostQuiz() {
 

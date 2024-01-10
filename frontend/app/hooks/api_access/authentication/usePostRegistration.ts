@@ -1,5 +1,5 @@
 import { INTERNAL_API_ROOT, EXTERNAL_API_ROOT } from "@/app/constants";
-import useAuth from "../../useAuth";
+import useAuth from "../../security/useAuth";
 
 export default function usePostRegistration() {
 

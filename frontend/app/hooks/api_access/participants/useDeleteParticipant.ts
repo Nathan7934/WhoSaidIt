@@ -1,6 +1,6 @@
 import { EXTERNAL_API_ROOT } from "@/app/constants";
 
-import useAuthFetch from "../../useAuthFetch";
+import useAuthFetch from "../../security/useAuthFetch";
 
 export default function useDeleteParticipant() {
 

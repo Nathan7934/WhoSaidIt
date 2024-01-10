@@ -61,10 +61,10 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.getQuizAccessToken(quizId));
     }
 
-    @GetMapping("/auth/quizzes/{quizId}/validate-url-token")
+    @PostMapping("/auth/quizzes/{quizId}/validate-url-token")
     public ResponseEntity<QuizTokenResponseDTO> validateQuizUrlToken(
             @PathVariable long quizId,
-            @RequestParam String urlToken
+            @RequestBody String urlToken
     ) {
         try {
             return ResponseEntity.ok(authenticationService.validateQuizUrlToken(quizId, urlToken));

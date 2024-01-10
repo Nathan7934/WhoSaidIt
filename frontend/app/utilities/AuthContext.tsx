@@ -9,14 +9,18 @@ import { createContext, useState } from 'react';
 interface AuthContextType {
     userId: number | null,
     auth: string | null,
+    shareableAuth: string | null,
     setUserId: React.Dispatch<SetStateAction<number | null>>,
-    setAuth: React.Dispatch<SetStateAction<string | null>>
+    setAuth: React.Dispatch<SetStateAction<string | null>>,
+    setShareableAuth: React.Dispatch<SetStateAction<string | null>>,
 }
 const AuthContext = createContext<AuthContextType>({
     userId: null,
     auth: null,
+    shareableAuth: null,
     setUserId: () => {},
-    setAuth: () => {}
+    setAuth: () => {},
+    setShareableAuth: () => {},
 });
 
 interface Props {
@@ -25,9 +29,10 @@ interface Props {
 export const AuthProvider: React.FC<Props> = ({ children }) => {
     const [userId, setUserId] = useState<number | null>(null);
     const [auth, setAuth] = useState<string | null>(null);
+    const [shareableAuth, setShareableAuth] = useState<string | null>(null);
 
     return (
-        <AuthContext.Provider value={{userId, auth, setUserId, setAuth}}>
+        <AuthContext.Provider value={{userId, auth, shareableAuth, setUserId, setAuth, setShareableAuth}}>
             {children}
         </AuthContext.Provider>
     )

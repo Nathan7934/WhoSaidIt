@@ -1,3 +1,4 @@
+import useGenerateShareableLink from "../hooks/security/useGenerateShareableLink";
 import useDeleteQuiz from "../hooks/api_access/quizzes/useDeleteQuiz";
 
 import { Quiz, ResponseStatus } from "../interfaces";
@@ -6,7 +7,7 @@ import Modal from "./Modal";
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // This component renders the information for a quiz as a row.
 // It displays the quiz name, type, and date created, as well as relevant actions for the quiz.
@@ -15,21 +16,69 @@ interface QuizRowProps {
     groupChatId: number;
     quiz: Quiz;
     setReloadCounter: React.Dispatch<React.SetStateAction<number>>;
+    dropdownPosition: "dropdown-menu-left" | "dropdown-menu-left-top" | "dropdown-menu-left-bottom"; 
 }
-export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowProps) {
+export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPosition}: QuizRowProps) {
 
+    const linkModalDomId: string = `quiz-link-${quiz.id}`;
     const deleteModalDomId: string = `quiz-delete-${quiz.id}`;
+    const mobileActionsModalDomId: string = `quiz-actions-${quiz.id}`;
 
-    // ----------- Hooks ------------------
+    // ----------- Hooks --------------------
+    const generateShareableLink = useGenerateShareableLink();
     const deleteQuiz = useDeleteQuiz();
 
-    // ----------- State (UI) -------------
+    // ----------- State (Data) -------------
+    const [shareableLink, setShareableLink] = useState<string>(""); // TODO: [Optimization] Use a cache to store the shareable link for each quiz. [Low Priority]
+
+    // ----------- State (UI) ---------------
     const [deleting, setDeleting] = useState<boolean>(false);
+    const [generatingLink, setGeneratingLink] = useState<boolean>(false);
+    const [linkCopied, setLinkCopied] = useState<boolean>(false);
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
+
+    // ----------- Effects ------------------
+
+    // If the shareable link has been copied, we change the text of the copy button for 3 seconds.
+    useEffect(() => {
+        if (linkCopied) {
+            setTimeout(() => {
+                setLinkCopied(false);
+            }, 3000);
+        }
+    }, [linkCopied]);
+
+    // ----------- Data Helpers -------------
+
+    const getShareableLink = async () => {
+        setGeneratingLink(true);
+        const response: string = await generateShareableLink(quiz.id);
+        if (response.substring(0, 7) === "Success") {
+            const link = response.substring(9);
+            setShareableLink(link);
+        } else {
+            console.error("Error generating shareable link: ", response);
+            setResponseStatus({
+                message: "Error generating shareable link",
+                success: false,
+                doAnimate: true,
+            });
+
+            setTimeout(() => {
+                if (isModalOpen(linkModalDomId)) toggleModal(linkModalDomId);
+                setResponseStatus({
+                    message: "",
+                    success: false,
+                    doAnimate: false,
+                });
+            }, 3000);
+        }
+        setGeneratingLink(false);
+    }
 
     const handleDelete = async () => {
         setDeleting(true);
-        const error = await deleteQuiz(quiz.id);
+        const error: string | null = await deleteQuiz(quiz.id);
         if (!error) {
             setResponseStatus({
                 message: "Quiz Deleted successfully",
@@ -47,9 +96,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
 
         // Display the response message for 3 seconds, then close the modal and re-fetch the data.
         setTimeout(() => {
-            if (isModalOpen(deleteModalDomId)) {
-                toggleModal(deleteModalDomId);
-            }    
+            if (isModalOpen(deleteModalDomId)) toggleModal(deleteModalDomId);
             setResponseStatus({
                 message: "",
                 success: false,
@@ -66,6 +113,52 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
     }
 
     // =============== RENDER FUNCTIONS ===============
+
+    const renderQuizLinkModal = () => {
+        let modalContent: JSX.Element;
+        if (responseStatus.doAnimate) {
+            modalContent = renderModalResponseAlert(responseStatus);
+        } else if (generatingLink) {
+            modalContent = (
+                <div className="my-6 sm:my-12">
+                    <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-gray-11">
+                            Generating Link...
+                    </div>
+                    <div className="flex justify-center">
+                        <div className="spinner-circle w-10 h-10 sm:w-12 sm:h-12" />
+                    </div>
+                </div>
+            );
+        } else {
+            modalContent = (
+                <div className="flex flex-col w-full px-4">
+                    <div className="w-full text-center px-1 mb-3 mt-1 text-2xl text-white font-light">
+                        {quiz.quizName}
+                    </div>
+                    <div className="w-full text-center text-gray-11 mb-5">
+                        Anyone with the link below can play this quiz. Copy and send it to your friends!
+                    </div>
+                    <div className="flex w-full mb-6 rounded-xl border-2 border-primary overflow-hidden">
+                        <input type="text" value={shareableLink} readOnly 
+                        className="grow px-2 text-sm text-white py-3 bg-transparent focus:outline-none" />
+                        <button className="w-20 font-semibold bg-primary text-white"
+                        onClick={() => {
+                            navigator.clipboard.writeText(shareableLink);
+                            setLinkCopied(true);
+                        }}>
+                            {linkCopied ? <span className="animate__animated animate__fadeIn">Copied!</span> : "Copy"}
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <Modal domId={linkModalDomId} title="Share Your Quiz" maxWidth="450px" margin="6px" darkOverlay>
+                {modalContent}
+            </Modal>
+        );
+    }
 
     const renderDeleteQuizModal = () => {
         let modalContent: JSX.Element;
@@ -84,14 +177,14 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
             );
         } else {
             modalContent = (<>
-                <div className="mx-auto mb-5 text-center">
-                    <div className="mb-2 text-2xl text-gray-11">
+                <div className="flex flex-col w-full px-1 mb-5 text-center">
+                    <div className="mx-auto mb-2 text-2xl text-gray-11">
                         Delete {quiz.quizName}?
                     </div>
-                    <div className="mb-2 px-4 max-w-[300px] text-sm text-gray-9 font-light">
+                    <div className="mx-auto mb-2 px-4 max-w-[300px] text-sm text-gray-9 font-light">
                         Deleting this quiz will also delete all of its leaderboard entries.
                     </div>
-                    <div className="text-gray-10 font-semibold">
+                    <div className="mx-auto text-gray-10 font-semibold">
                         This cannot be undone.
                     </div>
                 </div>
@@ -107,25 +200,37 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
         }
 
         return (
-            <Modal domId={`quiz-delete-${quiz.id}`} title="Delete Quiz" maxWidth="400px" margin="24px" darkOverlay>
+            <Modal domId={deleteModalDomId} title="Delete Quiz" maxWidth="400px" margin="24px" darkOverlay>
                 {modalContent}
             </Modal>
         );
     }
 
+    // =============== MAIN RENDER ===============
+
     return (<>
         {/* --------------- DESKTOP LAYOUT --------------- */}
         <div className="hidden sm:grid grid-cols-3 grid-rows-2 gap-1">
             <div className="col-span-2">
-                <span className="text-xl text-white font-semibold mr-3">{quiz.quizName}</span><wbr />
+                <span className="text-xl text-white font-semibold mr-3">{quiz.quizName}</span>
+                <wbr />
                 {renderQuizTypeBadge(quiz.type)}
             </div>
             <div className="row-span-2 justify-self-end self-center flex items-center">
-                <button className="btn btn-solid btn-sm mr-2 whitespace-nowrap hidden sm:block">Copy Link</button>
+                <Link href={`/quiz/${quiz.id}`}>
+                    <button className="btn btn-solid btn-sm mr-2 whitespace-nowrap hidden sm:block">Play Quiz</button>
+                </Link>
                 {/* Options dropdown */}
-                <details className="dropdown">
-                    <summary tabIndex={0} className="hover:cursor-pointer list-none"><Image src="menu.svg" alt="Menu" width={44} height={44} /></summary>
-                    <div className="dropdown-menu dropdown-menu-left shadow-md">
+                <div className="dropdown">
+                    <label tabIndex={0} className="hover:cursor-pointer list-none"><Image src="menu.svg" alt="Menu" width={44} height={44} /></label>
+                    <div className={`dropdown-menu shadow-md ${dropdownPosition}`}>
+                        <a tabIndex={-1} className="dropdown-item text-sm font-semibold" 
+                        onClick={() => {
+                            getShareableLink();
+                            toggleModal(linkModalDomId);
+                        }}>
+                            Share Quiz
+                        </a>
                         <Link href={`/leaderboard/${quiz.id}`} className="dropdown-item text-sm">Quiz Leaderboard</Link>
                         <Link href={`/messages/${groupChatId}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
                         <a tabIndex={-1} className="dropdown-item text-sm text-red-9"
@@ -133,7 +238,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
                             Delete Quiz
                         </a>
                     </div>
-                </details>
+                </div>
             </div>
             <span className="tooltip tooltip-right w-min" data-tooltip="date created">
                 <label className="col-span-2 text-sm text-gray-9 self-center whitespace-nowrap mr-1">
@@ -150,14 +255,24 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
             </div>
             {/* Options modal */}
             <div className="ml-auto mr-1 self-center">
-                <label htmlFor={`quiz-actions-${quiz.id}`}><Image src="menu.svg" alt="Menu" width={36} height={36} /></label>
-                <Modal domId={`quiz-actions-${quiz.id}`} title="Quiz Actions">
+                <label htmlFor={mobileActionsModalDomId}><Image src="menu.svg" alt="Menu" width={36} height={36} /></label>
+                <Modal domId={mobileActionsModalDomId} title="Quiz Actions">
                     <div className="px-4 text-center mb-3">
                         <h2 className="text-xl text-white">{quiz.quizName}</h2>
-                        <div className=" mb-4">{renderQuizTypeBadge(quiz.type)}</div>
+                        <div className="mb-4">{renderQuizTypeBadge(quiz.type)}</div>
                     </div>
                     <div className="px-4 mb-4">
-                        <button className="btn btn-primary w-full text-lg">Copy Shareable Link</button>
+                        <button className="btn btn-primary w-full text-lg"
+                        onClick={() => {
+                            getShareableLink();
+                            toggleModal(linkModalDomId);
+                            toggleModal(mobileActionsModalDomId);
+                        }}>
+                            Copy Shareable Link
+                        </button>
+                        <Link href={`/quiz/${quiz.id}`}>
+                            <button className="btn btn-sm w-full mt-2 font-semibold">Play Quiz</button>
+                        </Link>
                         <Link href={`/leaderboard/${quiz.id}`}>
                             <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>
                         </Link>
@@ -165,7 +280,10 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
                             <button className="btn btn-sm w-full mt-2">Messages in Quiz</button>
                         </Link>
                         <button className="btn btn-sm w-full mt-2 text-red-8 font-bold"
-                        onClick={() => toggleModal(deleteModalDomId)}>
+                        onClick={() => {
+                            toggleModal(deleteModalDomId);
+                            toggleModal(mobileActionsModalDomId);
+                        }}>
                             Delete Quiz
                         </button>
                     </div>
@@ -173,6 +291,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter}: QuizRowPr
             </div>
         </div>
         {/* FIXED POSITION ELEMENTS */}
+        {renderQuizLinkModal()}
         {renderDeleteQuizModal()}
     </>);
 }

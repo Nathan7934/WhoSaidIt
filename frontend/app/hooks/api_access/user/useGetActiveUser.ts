@@ -1,8 +1,8 @@
 import { EXTERNAL_API_ROOT, INTERNAL_API_ROOT } from "@/app/constants";
 
-import useAuth from "../../useAuth";
-import useAuthFetch from "../../useAuthFetch";
-import useRefreshToken from "../../useRefreshToken";
+import useAuth from "../../security/useAuth";
+import useAuthFetch from "../../security/useAuthFetch";
+import useRefreshToken from "../../security/useRefreshToken";
 import { User } from "@/app/interfaces";
 
 export default function useGetActiveUser() {

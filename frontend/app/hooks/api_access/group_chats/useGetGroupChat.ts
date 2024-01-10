@@ -1,7 +1,7 @@
 import { EXTERNAL_API_ROOT } from "@/app/constants";
 import { GroupChat } from "@/app/interfaces";
 
-import useAuthFetch from "../../useAuthFetch";
+import useAuthFetch from "../../security/useAuthFetch";
 
 export default function useGetGroupChat() {
 

@@ -81,7 +81,7 @@ export function renderQuizRows(groupChat: GroupChatInfo, setReloadCounter: React
             rounded-lg border-gray-6 text-center">
                 <div className="text-xl text-gray-11">
                     Nothing here.
-                </div>
+                </div>aaaaaaaaa
                 <div className="text-gray-9">
                     Create a new quiz to get started.
                 </div>
@@ -90,9 +90,15 @@ export function renderQuizRows(groupChat: GroupChatInfo, setReloadCounter: React
     }
 
     return quizzes.map((quiz, index) => {
+        let dropdownPosition: ("dropdown-menu-left" | "dropdown-menu-left-bottom" | "dropdown-menu-left-top") = "dropdown-menu-left";
+        if (quizzes.length !== 1) {
+            if (index === 0) dropdownPosition = "dropdown-menu-left-bottom";
+            else if (index === quizzes.length - 1) dropdownPosition = "dropdown-menu-left-top";
+        }
         return (
             <div key={quiz.id} className={`border-gray-6 py-[6px] ${index !== quizzes.length - 1 ? "border-b" : ""}`}>
-                <QuizRow groupChatId={groupChat.id} quiz={quiz} setReloadCounter={setReloadCounter} />
+                <QuizRow groupChatId={groupChat.id} quiz={quiz} setReloadCounter={setReloadCounter}
+                dropdownPosition={dropdownPosition} />
             </div>
         ); 
     });
