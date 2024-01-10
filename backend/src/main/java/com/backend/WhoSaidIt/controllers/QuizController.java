@@ -3,6 +3,7 @@ package com.backend.WhoSaidIt.controllers;
 import com.backend.WhoSaidIt.DTOs.quiz.QuizDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.SurvivalQuizDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.TimeAttackQuizDTO;
+import com.backend.WhoSaidIt.DTOs.quiz.info.QuizInfoDTO;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.services.QuizService;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,11 @@ public class QuizController {
     @GetMapping("/quizzes/{quizId}")
     public ResponseEntity<QuizDTO> getQuiz(@PathVariable long quizId) {
         return ResponseEntity.ok(quizService.getQuiz(quizId));
+    }
+
+    @GetMapping("/quizzes/{quizId}/info")
+    public ResponseEntity<QuizInfoDTO> getQuizInfo(@PathVariable long quizId) {
+        return ResponseEntity.ok(quizService.getQuizInfo(quizId));
     }
 
     @GetMapping("/group-chats/{groupChatId}/quizzes")

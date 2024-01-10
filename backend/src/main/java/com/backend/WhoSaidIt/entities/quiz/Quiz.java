@@ -1,6 +1,7 @@
 package com.backend.WhoSaidIt.entities.quiz;
 
 import com.backend.WhoSaidIt.DTOs.quiz.QuizDTO;
+import com.backend.WhoSaidIt.DTOs.quiz.info.QuizInfoDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.Message;
 import com.backend.WhoSaidIt.entities.leaderboard.LeaderboardEntry;
@@ -94,4 +95,6 @@ public abstract class Quiz {
 
     public void setShareableAccessToken(String shareableAccessToken) { this.shareableAccessToken = shareableAccessToken; }
     public abstract QuizDTO toDTO();
+
+    public abstract QuizInfoDTO toInfoDTO();
 }

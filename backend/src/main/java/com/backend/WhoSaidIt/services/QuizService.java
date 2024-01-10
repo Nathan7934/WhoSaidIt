@@ -3,6 +3,7 @@ package com.backend.WhoSaidIt.services;
 import com.backend.WhoSaidIt.DTOs.quiz.QuizDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.SurvivalQuizDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.TimeAttackQuizDTO;
+import com.backend.WhoSaidIt.DTOs.quiz.info.QuizInfoDTO;
 import com.backend.WhoSaidIt.controllers.QuizController;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.Message;
@@ -44,6 +45,12 @@ public class QuizService {
         Quiz quiz = quizRepository.findById(id)
                     .orElseThrow(() -> new DataNotFoundException("Quiz with id " + id + " not found."));
         return quiz.toDTO();
+    }
+
+    public QuizInfoDTO getQuizInfo(long id) {
+        Quiz quiz = quizRepository.findById(id)
+                    .orElseThrow(() -> new DataNotFoundException("Quiz with id " + id + " not found."));
+        return quiz.toInfoDTO();
     }
 
     public TimeAttackQuizDTO createTimeAttackQuiz(long groupChatId, QuizController.TimeAttackQuizPostRequest taQuiz) {

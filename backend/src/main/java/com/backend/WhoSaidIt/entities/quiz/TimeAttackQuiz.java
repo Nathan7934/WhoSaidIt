@@ -1,10 +1,15 @@
 package com.backend.WhoSaidIt.entities.quiz;
 
+import com.backend.WhoSaidIt.DTOs.ParticipantDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.TimeAttackQuizDTO;
+import com.backend.WhoSaidIt.DTOs.quiz.info.TimeAttackQuizInfoDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
+import com.backend.WhoSaidIt.entities.Participant;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("TIME_ATTACK")
@@ -51,6 +56,23 @@ public class TimeAttackQuiz extends Quiz{
                 this.getInitialQuestionScore(),
                 this.getPenaltyPerSecond(),
                 this.getWrongAnswerPenalty()
+        );
+    }
+
+    public TimeAttackQuizInfoDTO toInfoDTO() {
+        List<ParticipantDTO> participants = this.getGroupChat().getParticipants().stream()
+                .map(Participant::toDTO)
+                .toList();
+        return new TimeAttackQuizInfoDTO(
+                this.getId(),
+                this.getQuizName(),
+                this.getDescription(),
+                this.getGroupChat().getGroupChatName(),
+                participants,
+                this.numberOfQuestions,
+                this.initialQuestionScore,
+                this.penaltyPerSecond,
+                this.wrongAnswerPenalty
         );
     }
 }

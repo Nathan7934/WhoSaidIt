@@ -1,10 +1,15 @@
 package com.backend.WhoSaidIt.entities.quiz;
 
+import com.backend.WhoSaidIt.DTOs.ParticipantDTO;
 import com.backend.WhoSaidIt.DTOs.quiz.SurvivalQuizDTO;
+import com.backend.WhoSaidIt.DTOs.quiz.info.SurvivalQuizInfoDTO;
 import com.backend.WhoSaidIt.entities.GroupChat;
+import com.backend.WhoSaidIt.entities.Participant;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("SURVIVAL")
@@ -29,6 +34,20 @@ public class SurvivalQuiz extends Quiz{
                 this.getDescription(),
                 this.getCreatedDate(),
                 this.getNumberOfSkips()
+        );
+    }
+
+    public SurvivalQuizInfoDTO toInfoDTO() {
+        List<ParticipantDTO> participants = this.getGroupChat().getParticipants().stream()
+                .map(Participant::toDTO)
+                .toList();
+        return new SurvivalQuizInfoDTO(
+                this.getId(),
+                this.getQuizName(),
+                this.getDescription(),
+                this.getGroupChat().getGroupChatName(),
+                participants,
+                this.numberOfSkips
         );
     }
 }

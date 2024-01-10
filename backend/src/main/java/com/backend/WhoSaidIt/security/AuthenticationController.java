@@ -69,7 +69,7 @@ public class AuthenticationController {
         try {
             return ResponseEntity.ok(authenticationService.validateQuizUrlToken(quizId, urlToken));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
     }
 
