@@ -6,9 +6,8 @@ import { EXTERNAL_API_ROOT } from "@/app/constants";
 // Returns true if the token was successfully validated, false otherwise.
 
 export default function useValidateUrlToken() {
-    const { setShareableAuth } = useAuth();
 
-    const validateUrlToken = async (quizId: number, token: string): Promise<boolean> => {
+    const validateUrlToken = async (quizId: number, token: string): Promise<string | null> => {
         
         const requestUrl: string = `${EXTERNAL_API_ROOT}/auth/quizzes/${quizId}/validate-url-token`;
 
@@ -18,7 +17,7 @@ export default function useValidateUrlToken() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ urlToken: token })
+                body: token
             });
             if (!response.ok) {
                 if (response.status >= 400 && response.status < 500) {
@@ -26,16 +25,16 @@ export default function useValidateUrlToken() {
                 } else if (response.status >= 500) {
                     console.error(`Server failed to process request: ${response.status}`);
                 }
-                return false;
+                return null;
             }
 
             const parsedJson = await response.json();
-            setShareableAuth(parsedJson.access_token);
-            return true;
+            console.log("Shareable token validated successfully.");
+            return parsedJson.access_token;
 
         } catch (error) {
             console.error(error);
-            return false;
+            return null;
         }
     }
 

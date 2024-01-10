@@ -60,6 +60,27 @@ export interface PostTimeAttackQuiz extends PostQuiz {
     wrongAnswerPenalty: number;
 }
 
+// This interface contains more information for the quiz page and complies with security reqs
+export interface QuizInfo {
+    id: number;
+    type: string;
+    quizName: string;
+    description: string;
+    groupChatName: string;
+    participants: Array<Participant>;
+}
+
+export interface SurvivalQuizInfo extends QuizInfo {
+    numberOfSkips: number;
+}
+
+export interface TimeAttackQuizInfo extends QuizInfo {
+    numberOfQuestions: number;
+    initialQuestionScore: number;
+    penaltyPerSecond: number;
+    wrongAnswerPenalty: number;
+}
+
 // ======= LEADERBOARDS =======
 export interface LeaderboardEntry {
     id: number;

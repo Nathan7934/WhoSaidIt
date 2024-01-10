@@ -14,9 +14,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const TIME_ATTACK: number = 0;
-const SURVIVAL: number = 1;
-
 export default function Leaderboard({ params }: { params: { quizId: string}}) {
 
     // NextJS route parameters
