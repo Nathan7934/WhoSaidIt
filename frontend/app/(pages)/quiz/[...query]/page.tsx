@@ -8,6 +8,9 @@ import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant } from "@/ap
 import useGetQuizInfo from "@/app/hooks/api_access/quizzes/useGetQuizInfo";
 import useGetRandomQuizMessage from "@/app/hooks/api_access/messages/useGetRandomQuizMessage";
 
+import AnimateHeight from "react-animate-height";
+import { Height } from "react-animate-height";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useReducer } from "react";
 
@@ -28,12 +31,9 @@ interface GameStateReducerAction {
 }
 type GameStateReducerActionType = "init_next_question" | "next_question" |  "correct_answer" | "incorrect_answer";
 
-// Custom type guards
+// Custom type guard
 const isTimeAttackQuizInfo = (quizInfo: TimeAttackQuizInfo | SurvivalQuizInfo): quizInfo is TimeAttackQuizInfo => {
     return quizInfo.type === "TIME_ATTACK";
-}
-const isSurvivalQuizInfo = (quizInfo: TimeAttackQuizInfo | SurvivalQuizInfo): quizInfo is SurvivalQuizInfo => {
-    return quizInfo.type === "SURVIVAL";
 }
 
 export default function Quiz({ params }: { params: { query: string[] } }) {
@@ -61,18 +61,24 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const [nextMessage, setNextMessage] = useState<Message | null>(null);
     const [seenMessageIds, setSeenMessageIds] = useState<Array<number>>([]);
 
-    // ----------- State (Game/UI) -----------
+    // ----------- State (Game) -----------
     const [score, setScore] = useState<number>(0); // For Survival Quizzes, this state records the streak instead.
     const [scoreGained, setScoreGained] = useState<number>(0); // The score gained for a specific question
     // The options for the current message. Max 4 options, including the correct answer.
     const [participantOptions, setParticipantOptions] = useState<Array<Participant>>([]);
+
+    // ----------- State (UI) -------------
+    const [staticDataLoading, setStaticDataLoading] = useState<boolean>(true);
+    const [introSplashTextEntering, setIntroSplashTextEntering] = useState<Array<"WAITING" | "ENTERING" | "EXITING">>(["WAITING", "WAITING"]);
+    const [landingActionsHeight, setLandingActionsHeight] = useState<Height>(0); // The height of the landing page actions [Begin Quiz, Leaderboard, Info]
+    const [landingActionsVisible, setLandingActionsVisible] = useState<boolean>(false); // Whether the landing page actions are visible
 
     // Timing
     const [quizStartTime, setQuizStartTime] = useState<Date>(new Date());
     const [questionStartTime, setQuestionStartTime] = useState<Date>(new Date());
     const [totalTimeTaken, setTotalTimeTaken] = useState<number | null>(null); // In milliseconds
 
-    // ----- Data Retrieval/Authentication -----
+    // ----- Data Retrieval/Authentication & Initial animation triggers -----
     useEffect(() => {
         const getPageData = async () => {
             
@@ -108,11 +114,24 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 console.error("Error retrieving data, redirecting to root");
                 router.push("/");
             }
+            setStaticDataLoading(false);
+            
+            // Begin the intro splash timing sequence
+            const introSplashSequence = [
+                { action: () => setIntroSplashTextEntering(["ENTERING", "WAITING"]), delay: 1800 },
+                { action: () => setIntroSplashTextEntering(["EXITING", "WAITING"]), delay: 2250 },
+                { action: () => setIntroSplashTextEntering(["WAITING", "ENTERING"]), delay: 500 },
+                { action: () => setIntroSplashTextEntering(["WAITING", "EXITING"]), delay: 2500},
+                { action: () => setLandingActionsHeight("auto"), delay: 500 },
+                { action: () => setLandingActionsVisible(true), delay: 500 }
+            ];
+            executeEventSequence(introSplashSequence);
         }
         getPageData();
     }, []);
 
-    // ----- Data Helpers -----
+    // ----- DATA HELPERS -----
+
     const getNextMessage = async () => {
         if (nextMessage) setCurrentMessage(nextMessage);
         setParticipantOptions(generateParticipantOptions(currentMessage?.sender));
@@ -148,7 +167,22 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         return options;
     }
 
-    // ----- State Change Handlers/Reducers -----
+    // ----- UI HELPERS -----
+
+    const executeEventSequence = (sequence: { action: () => void, delay: number }[]) => {
+        let index = 0;
+        const executeNext = () => {
+            const event = sequence[index];
+            setTimeout(() => {
+                event.action();
+                index++;
+                if (index < sequence.length) executeNext();
+            }, event.delay);
+        };
+        executeNext();
+    }
+
+    // ----- STATE CHANGE HANDLERS/REDUCERS -----
 
     // This reducer handles state changes specific to the page. I.e., transitions between the landing page, quiz, and results.
     const pageStateReducer = (state: PageState, action: PageStateReducerAction): PageState => {
@@ -233,17 +267,95 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         }
     }
 
-    // ----------- REDUCERS -----------
+    // ----------- Reducer declarations -----------
     const [pageState, pageStateDispatch] = useReducer<PageStateReducer>(pageStateReducer, "LANDING");
     const [gameState, gameStateDispatch] = useReducer<GameStateReducer>(gameStateReducer, "QUESTION");
 
-    return (<>
-        <div>Quiz Id: {quizId}</div>
-        <div>Participants:</div>
-        <div className="flex flex-col">
-            {quizInfo?.participants.map((participant, index) => {
-                return <div key={index}>{participant.name}</div>
-            })};
-        </div>
-    </>);
+    // =============== MAIN RENDER ===============
+
+    let renderContent: JSX.Element = <></>;
+    if (staticDataLoading || !quizInfo || !currentMessage) { // LOADING PAGE
+        renderContent = (
+            <div className="absolute flex flex-col left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
+                <svg className="spinner-ring spinner-lg mx-auto mt-3" viewBox="25 25 50 50" strokeWidth="5">
+                    <circle cx="50" cy="50" r="20" />
+                </svg>
+            </div>
+        );
+    } else if (pageState === "LANDING") { // LANDING PAGE
+        const getSplashTextAnimClass = (index: number): string => {
+            switch (introSplashTextEntering[index]) {
+                case "WAITING":
+                    return "invisible";
+                case "ENTERING":
+                    return `animate__animated animate__flipInX`;
+                case "EXITING":
+                    return "animate__animated animate__flipOutX animate__duration-800ms";
+            }
+        }
+
+        renderContent = (<>
+            <div className="relative bottom-8 flex justify-center mb-4 text-gray-12 text-5xl font-bold noselect">
+                <div className="animate__animated animate__bounceInDown">Who</div>
+                <div className="animate__animated animate__bounceInUp animate__delay-150ms">Said</div>
+                <div className="animate__animated animate__bounceInDown animate__delay-300ms">It</div>
+                <div className="animate__animated animate__fadeIn animate__delay-1s">?</div>
+            </div>
+            <div className="relative bottom-8">
+                <div className={`absolute left-0 right-0 flex flex-col items-center text-center ${getSplashTextAnimClass(0)}`}>
+                    <div className="text-2xl font-semibold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 
+                    text-transparent bg-clip-text">
+                        Test your knowledge of<br/><span className="font-extrabold">{quizInfo.groupChatName}</span>
+                    </div>
+                </div>
+                <div className={`absolute left-0 right-0 flex flex-col items-center text-center ${getSplashTextAnimClass(1)} `}>
+                    <div className="text-2xl bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 
+                    text-transparent bg-clip-text font-semibold">
+                        See how well you know<br/>your friends
+                    </div>
+                </div>
+            </div>
+            <AnimateHeight duration={500} height={landingActionsHeight}>
+                <div className={`flex flex-col w-full items-center pt-8 
+                ${landingActionsVisible ? " animate__animated animate__fadeIn" : "invisible"}`}>
+                    <div className={`text-3xl font-bold text-transparent bg-clip-text text-center bg-gradient-to-r
+                        ${isTimeAttackQuizInfo(quizInfo) 
+                            ? " from-blue-400 via-blue-300 to-blue-400" 
+                            : " from-purple-400 via-pink-400 to-purple-400"}`
+                    }>
+                        {quizInfo.quizName}
+                    </div>
+                    <div className="mt-2 text-gray-12 text-2xl">
+                        {isTimeAttackQuizInfo(quizInfo) ? "Time Attack Quiz" : "Survival Quiz"}
+                    </div>
+                    <button className={`mt-10 py-3 bg-gradient-to-r rounded-2xl w-[280px] font-semibold text-2xl 
+                        ${isTimeAttackQuizInfo(quizInfo)
+                            ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
+                            : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`
+                    }>
+                        Begin Quiz
+                    </button>
+                    <Link href={`/leaderboard/${quizId}${shareableToken ? `/${shareableToken}` : ""}`}>
+                        <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border  
+                        ${isTimeAttackQuizInfo(quizInfo) ? " border-blue-400" : " border-pink-400"}`}>
+                            Leaderboard
+                        </button>
+                    </Link>
+                    <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border
+                    ${isTimeAttackQuizInfo(quizInfo) ? " border-blue-400" : " border-pink-400"}`}>
+                        Details
+                    </button>
+                </div>
+            </AnimateHeight>
+        </>);
+    }
+
+    return (
+        <main className="flex min-h-screen flex-col items-center justify-center overflow-hidden
+        bg-gradient-to-b from-black via-zinc-950 to-black">
+            <div className="w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%]">
+                {renderContent}
+            </div>
+        </main>
+    );
 }

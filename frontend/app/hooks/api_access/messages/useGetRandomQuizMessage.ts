@@ -15,9 +15,10 @@ export default function useGetRandomQuizMessage() {
 
         const requestUrl: string = `${EXTERNAL_API_ROOT}/quizzes/${quizId}/messages/random`;
         const searchParams = new URLSearchParams({ excludedMessageIds: excludedMessageIds.join(',') });
+        const routeSuffix = excludedMessageIds.length > 0 ? '?' + searchParams : '';
 
         try {
-            const response: Response = await authFetch(requestUrl + searchParams, {}, shareableToken);
+            const response: Response = await authFetch(requestUrl + routeSuffix, {}, shareableToken);
             if (!response.ok) {
                 if (response.status >= 400 && response.status < 500) {
                     console.error(`Client failed request: ${response.status}`);
