@@ -133,6 +133,34 @@ const config: Config = {
                     from: { height: '0%' },
                     to: { height: '45%' },
                 },
+
+                // QUIZ: Message card slide out keyframes
+                messageCardSlideOutUpLeft: {
+                    '0%': { 
+                        transform: 'translate(0, 0) rotate(0deg)', 
+                        opacity: '1',
+                    },
+                    '25%': {
+                        opacity: '1',
+                    },
+                    '100%': { 
+                        transform: 'translate(-125%, -25%) rotate(-75deg)', 
+                        opacity: '0',
+                    },
+                },
+                messageCardSlideOutUpRight: {
+                    '0%': { 
+                        transform: 'translate(0, 0) rotate(0deg)', 
+                        opacity: '1',
+                    },
+                    '25%': {
+                        opacity: '1',
+                    },
+                    '100%': { 
+                        transform: 'translate(125%, -25%) rotate(75deg)', 
+                        opacity: '0',
+                    },
+                },
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -164,6 +192,10 @@ const config: Config = {
                 podiumGrowFirst: 'podiumGrowFirst 1s ease-in-out 0s 1 forwards',
                 podiumGrowSecond: 'podiumGrowSecond 1s ease-in-out 0s 1 forwards',
                 podiumGrowThird: 'podiumGrowThird 1s ease-in-out 0s 1 forwards',
+
+                // QUIZ: Message card slide out keyframes cubic-bezier(.85,0,.38,1.51)
+                messageCardSlideOutUpLeft: 'messageCardSlideOutUpLeft 0.5s cubic-bezier(.69,-0.14,.38,1.51) 0s 1 forwards',
+                messageCardSlideOutUpRight: 'messageCardSlideOutUpRight 0.5s cubic-bezier(.69,-0.14,.38,1.51) 0s 1 forwards',
             },
             dropShadow: {
                 glow: [

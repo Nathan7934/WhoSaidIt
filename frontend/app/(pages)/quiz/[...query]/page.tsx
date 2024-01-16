@@ -4,6 +4,7 @@ import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
 import useAuth from "@/app/hooks/security/useAuth";
 
 import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant } from "@/app/interfaces";
+import AnimatedScoreCounter from "@/app/components/AnimatedScoreCounter";
 
 import useGetQuizInfo from "@/app/hooks/api_access/quizzes/useGetQuizInfo";
 import useGetRandomQuizMessage from "@/app/hooks/api_access/messages/useGetRandomQuizMessage";
@@ -66,6 +67,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const [scoreGained, setScoreGained] = useState<number>(0); // The score gained for a specific question
     // The options for the current message. Max 4 options, including the correct answer.
     const [participantOptions, setParticipantOptions] = useState<Array<Participant>>([]);
+    const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+    const [questionNumber, setQuestionNumber] = useState<number>(1); // The current question number [1, ...
 
     // ----------- State (UI) -------------
     const [staticDataLoading, setStaticDataLoading] = useState<boolean>(true);
@@ -102,7 +105,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             if (quiz && currentMessage) {
                 setQuizInfo(quiz);
                 setCurrentMessage(currentMessage);
-                setParticipantOptions(generateParticipantOptions(currentMessage.sender));
+                setParticipantOptions(generateParticipantOptions(quiz, currentMessage.sender));
                 let excludedMessageIds = [currentMessage.id];
                 const nextMessage: Message | null = await getRandomQuizMessage(quizId, excludedMessageIds, shareableToken || undefined);
                 if (nextMessage) {
@@ -133,8 +136,10 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     // ----- DATA HELPERS -----
 
     const getNextMessage = async () => {
-        if (nextMessage) setCurrentMessage(nextMessage);
-        setParticipantOptions(generateParticipantOptions(currentMessage?.sender));
+        if (nextMessage) {
+            setCurrentMessage(nextMessage);
+            setParticipantOptions(generateParticipantOptions(quizInfo, nextMessage.sender));
+        }
         const newNextMessage: Message | null = await getRandomQuizMessage(quizId, seenMessageIds, shareableToken || undefined);
         if (newNextMessage) {
             setNextMessage(newNextMessage);
@@ -146,7 +151,10 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     }
 
     // Gets a random selection of 4 participants to choose from, including the correct participant.
-    const generateParticipantOptions = (currentSender: Participant | undefined): Array<Participant> => {
+    const generateParticipantOptions = (
+        quizInfo: SurvivalQuizInfo | TimeAttackQuizInfo | null, 
+        currentSender: Participant | undefined
+    ): Array<Participant> => {
         if (!quizInfo || !currentSender) return [];
         let potentialParticipants: Array<Participant> = quizInfo.participants.filter(p => p.id !== currentSender.id);
         const options = [currentSender];
@@ -190,7 +198,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             case "init_start_quiz": // Animations: Fade out the landing page
                 setTimeout(() => {
                     pageStateDispatch({ type: "start_quiz" });
-                }, 3000);
+                }, 800);
                 return "QUIZ_STARTING";
 
             case "start_quiz":
@@ -222,11 +230,12 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             case "init_next_question": // Animations: Slide off the current message to reveal the next message; Fade out participant options
                 setTimeout(() => {
                     gameStateDispatch({ type: "next_question" });
-                }, 1000);
+                }, 500);
                 return "QUESTION_STARTING";
 
             case "next_question":
                 getNextMessage();
+                setQuestionNumber(questionNumber + 1);
                 setQuestionStartTime(new Date());
                 setScoreGained(0);
                 return "QUESTION";
@@ -235,7 +244,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 if (isTimeAttackQuizInfo(quizInfo)) {
                     const { initialQuestionScore, penaltyPerSecond } = quizInfo;
                     const secondsTaken = Math.floor((Date.now() - questionStartTime.getTime()) / 1000); // Convert to seconds (rounded down)
-                    const qScore = initialQuestionScore - (secondsTaken * penaltyPerSecond);
+                    const qScore = Math.max(initialQuestionScore - (secondsTaken * penaltyPerSecond), 150);
                     setScoreGained(qScore);
                     setScore(score + qScore);
                 } else {
@@ -274,7 +283,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     // =============== MAIN RENDER ===============
 
     let renderContent: JSX.Element = <></>;
-    if (staticDataLoading || !quizInfo || !currentMessage) { // LOADING PAGE
+    // =+=+=+=+=+=+=+=+= LOADING PAGE =+=+=+=+=+=+=+=+=
+    if (staticDataLoading || !quizInfo || !currentMessage) {
         renderContent = (
             <div className="absolute flex flex-col left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
                 <svg className="spinner-ring spinner-lg mx-auto mt-3" viewBox="25 25 50 50" strokeWidth="5">
@@ -282,7 +292,9 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 </svg>
             </div>
         );
-    } else if (pageState === "LANDING") { // LANDING PAGE
+    // =+=+=+=+=+=+=+=+= LANDING PAGE =+=+=+=+=+=+=+=+=
+    } else if (pageState === "LANDING" || pageState === "QUIZ_STARTING") {
+        
         const getSplashTextAnimClass = (index: number): string => {
             switch (introSplashTextEntering[index]) {
                 case "WAITING":
@@ -294,17 +306,17 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             }
         }
 
-        renderContent = (<>
+        renderContent = (<div className={`w-full ${pageState === "QUIZ_STARTING" ? "animate__animated animate__fadeOut animate__duration-500ms" : ""}`}>
             <div className="relative bottom-8 flex justify-center mb-4 text-gray-12 text-5xl font-bold noselect">
                 <div className="animate__animated animate__bounceInDown">Who</div>
                 <div className="animate__animated animate__bounceInUp animate__delay-150ms">Said</div>
                 <div className="animate__animated animate__bounceInDown animate__delay-300ms">It</div>
                 <div className="animate__animated animate__fadeIn animate__delay-1s">?</div>
             </div>
-            <div className="relative bottom-8">
+            <div className="relative bottom-8 w-full">
                 <div className={`absolute left-0 right-0 flex flex-col items-center text-center ${getSplashTextAnimClass(0)}`}>
                     <div className="text-2xl font-semibold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 
-                    text-transparent bg-clip-text">
+                    text-transparent bg-clip-text w-full">
                         Test your knowledge of<br/><span className="font-extrabold">{quizInfo.groupChatName}</span>
                     </div>
                 </div>
@@ -328,15 +340,15 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     <div className="mt-2 text-gray-12 text-2xl">
                         {isTimeAttackQuizInfo(quizInfo) ? "Time Attack Quiz" : "Survival Quiz"}
                     </div>
-                    <button className={`mt-10 py-3 bg-gradient-to-r rounded-2xl w-[280px] font-semibold text-2xl 
+                    <button className={`mt-10 py-3 bg-gradient-to-r rounded-2xl w-[280px] font-semibold text-2xl active:scale-[98%] transition duration-100 ease-in-out
                         ${isTimeAttackQuizInfo(quizInfo)
                             ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
                             : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`
-                    }>
+                    } onClick={() => pageStateDispatch({ type: "init_start_quiz" })}>
                         Begin Quiz
                     </button>
                     <Link href={`/leaderboard/${quizId}${shareableToken ? `/${shareableToken}` : ""}`}>
-                        <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border  
+                        <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border
                         ${isTimeAttackQuizInfo(quizInfo) ? " border-blue-400" : " border-pink-400"}`}>
                             Leaderboard
                         </button>
@@ -347,15 +359,86 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     </button>
                 </div>
             </AnimateHeight>
-        </>);
+        </div>);
+    // =+=+=+=+=+=+=+=+= QUIZ PAGE =+=+=+=+=+=+=+=+=
+    } else if (pageState === "QUIZ" || pageState === "QUIZ_ENDING") {
+
+        const renderParticipantOptions = () => {
+            return participantOptions.map((participant) => {
+                const isCorrect = participant.id === currentMessage.sender.id;
+                const isSelected = selectedParticipant?.id === participant.id;
+                let extraClasses: string;
+                switch (gameState) {
+                    case "QUESTION_STARTING":
+                        extraClasses = `animate__animated animate__flipOutX animate__duration-500ms 
+                        ${isCorrect ? " bg-green-400" : !isCorrect && isSelected ? " bg-red-400" : " bg-zinc-950"}`; 
+                        break;
+                    case "QUESTION":
+                        extraClasses = "bg-zinc-950 animate__animated animate__flipInX animate__duration-500ms"; break;
+                    case "CORRECT_ANSWER":
+                        extraClasses = isCorrect ? "bg-green-400" : "bg-zinc-950"; break;
+                    case "INCORRECT_ANSWER":
+                        extraClasses = isCorrect ? "bg-green-400" : isSelected ? "bg-red-400" : "bg-zinc-950"; break;
+                }
+                return (
+                    <button key={participant.id} 
+                    className={`w-full py-[10px] my-1 rounded-xl font-semibold text-lg 
+                    ${extraClasses}`} onClick={() => {
+                        if (gameState === "QUESTION") {
+                            setSelectedParticipant(participant);
+                            if (isCorrect) {
+                                gameStateDispatch({ type: "correct_answer" });
+                            } else {
+                                gameStateDispatch({ type: "incorrect_answer" });
+                            }
+                        }
+                    }}>
+                        {participant.name} {isCorrect ? "(*)" : ""}
+                    </button>
+                );
+            });
+        }
+
+        const getCardAnimClass = (): string => {
+            if (questionNumber % 2 === 0)
+                return " animate-messageCardSlideOutUpLeft";
+            return " animate-messageCardSlideOutUpRight";
+        }
+
+        renderContent = (
+            <div className="flex flex-col items-center min-w-[270px] w-[90%] max-w-[500px] animate__animated animate__fadeIn animate__duration-500ms">
+                <AnimatedScoreCounter type={isTimeAttackQuizInfo(quizInfo) ? "score" : "streak"} 
+                score={score} scoreGained={scoreGained} delay={1000} duration={800} />
+                <div className="relative w-full h-[320px] sm:h-[350px] mt-4 mb-4 sm:my-6 bg-zinc-950 rounded-xl border border-[#858585]
+                shadow-[1px_1px_0px_1px_#858585]">
+                    {/* We render the next message underneath the current message */}
+                    {nextMessage && (
+                        <div className="absolute flex left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] bg-zinc-950 rounded-xl border border-[#858585]
+                        py-5 px-3">
+                            <div className="grow px-2 w-full h-full text-xl font-semibold overflow-y-scroll overflow-x-hidden">
+                                {nextMessage.content}
+                            </div>
+                        </div>
+                    )}
+                    {/* Current message */}
+                    <div className={`absolute flex left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] bg-zinc-950 rounded-xl border border-[#858585] py-5 px-3
+                    ${gameState === "QUESTION_STARTING" ? getCardAnimClass() : ""}`}>
+                        <div className="grow px-2 w-full h-full text-xl font-semibold overflow-y-scroll overflow-x-hidden">
+                            {currentMessage.content}
+                        </div>
+                    </div>
+                </div>
+                <div className="flex flex-col w-full">
+                    {renderParticipantOptions()}
+                </div>
+            </div>
+        );
     }
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center overflow-hidden
         bg-gradient-to-b from-black via-zinc-950 to-black">
-            <div className="w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%]">
-                {renderContent}
-            </div>
+            {renderContent}
         </main>
     );
 }
