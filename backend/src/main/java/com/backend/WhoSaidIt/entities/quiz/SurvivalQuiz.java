@@ -45,6 +45,7 @@ public class SurvivalQuiz extends Quiz{
                 this.getId(),
                 this.getQuizName(),
                 this.getDescription(),
+                this.getGroupChat().getUser().getUsername(),
                 this.getGroupChat().getGroupChatName(),
                 participants,
                 this.numberOfSkips

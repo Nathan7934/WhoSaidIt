@@ -15,6 +15,7 @@ public sealed interface QuizInfoDTO permits TimeAttackQuizInfoDTO, SurvivalQuizI
     Long id();
     String quizName();
     String description();
+    String username();
     String groupChatName();
     List<ParticipantDTO> participants();
 }

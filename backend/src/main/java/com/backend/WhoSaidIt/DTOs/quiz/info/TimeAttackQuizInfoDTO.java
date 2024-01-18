@@ -8,6 +8,7 @@ public record TimeAttackQuizInfoDTO(
         Long id,
         String quizName,
         String description,
+        String username,
         String groupChatName,
         List<ParticipantDTO> participants,
         Integer numberOfQuestions,
