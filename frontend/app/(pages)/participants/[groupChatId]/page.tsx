@@ -334,7 +334,7 @@ export default function Participants({ params }: { params: { groupChatId: string
                         {loading ? <div className=" inline-block ml-3 skeleton w-48 h-8 rounded-xl" /> : <span> "{groupChatName}"</span>}
                     </div>
                     <div className="hidden sm:block text-gray-9 mb-6 px-1 max-w-[650px]">
-                        Here you may see the participants of a group chat, edit their names, or delete them and all their messages
+                        Here you can see the participants of a group chat, edit their names, or delete them and all their messages
                         from the group chat.
                     </div>
                     <div className="w-full py-2 bg-gray-2 text-lg rounded-t-md border border-gray-6 text-center">

@@ -7,12 +7,12 @@ export default function useGetLeaderboard() {
 
     const authFetch = useAuthFetch();
 
-    const getLeaderboard = async (quizId: number): Promise<Array<TimeAttackEntry | SurvivalEntry> | null> => {
+    const getLeaderboard = async (quizId: number, shareableToken?: string | undefined): Promise<Array<TimeAttackEntry | SurvivalEntry> | null> => {
 
         const requestUrl: string = `${EXTERNAL_API_ROOT}/quizzes/${quizId}/leaderboard`;
 
         try {
-            const response: Response = await authFetch(requestUrl);
+            const response: Response = await authFetch(requestUrl, {}, shareableToken);
             if (!response.ok) {
                 if (response.status >= 400 && response.status < 500) {
                     console.error(`Client request rejected: ${response.status}`);

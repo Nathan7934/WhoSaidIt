@@ -161,6 +161,21 @@ const config: Config = {
                         opacity: '0',
                     },
                 },
+
+                // QUIZ: Correct and incorrect answer keyframes
+                correctAnswer: {
+                    '0%': { transform: 'scale(1)' },
+                    '33%': { transform: 'scale(1.03)' },
+                    '66%': { transform: 'scale(0.99)' },
+                    '100%': { transform: 'scale(1)' },
+                },
+                incorrectAnswer: {
+                    '0%': { transform: 'translate(0, 0)' },
+                    '25%': { transform: 'translate(-1%, 0)' },
+                    '50%': { transform: 'translate(1%, 0)' },
+                    '75%': { transform: 'translate(-1%, 0)' },
+                    '100%': { transform: 'translate(0, 0)' },
+                }
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -193,9 +208,13 @@ const config: Config = {
                 podiumGrowSecond: 'podiumGrowSecond 1s ease-in-out 0s 1 forwards',
                 podiumGrowThird: 'podiumGrowThird 1s ease-in-out 0s 1 forwards',
 
-                // QUIZ: Message card slide out keyframes cubic-bezier(.85,0,.38,1.51)
+                // QUIZ: Message card slide out animations
                 messageCardSlideOutUpLeft: 'messageCardSlideOutUpLeft 0.5s cubic-bezier(.69,-0.14,.38,1.51) 0s 1 forwards',
                 messageCardSlideOutUpRight: 'messageCardSlideOutUpRight 0.5s cubic-bezier(.69,-0.14,.38,1.51) 0s 1 forwards',
+
+                // QUIZ: Correct and incorrect answer animations
+                incorrectAnswer: 'incorrectAnswer 0.3s ease-in-out 0s 1 forwards',
+                correctAnswer: 'correctAnswer 0.3s ease-in-out 0s 1 forwards',
             },
             dropShadow: {
                 glow: [

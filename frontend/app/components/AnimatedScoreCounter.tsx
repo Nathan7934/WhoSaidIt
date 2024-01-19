@@ -65,9 +65,15 @@ export default function AnimatedScoreCounter({ type, score, scoreGained, delay, 
         setDisplayScore(score - scoreGained); // Set the score to the value before the score increase
         setDisplayScoreGained(scoreGained);
         if (scoreGained !== 0) {
+            const animDelay = type === "score" ? delay : 2000;
             setTimeout(() => {
-                animationFrame.current = requestAnimationFrame(animateScore);
-            }, delay);
+                if (type === "score") {
+                    animationFrame.current = requestAnimationFrame(animateScore);
+                } else {
+                    setDisplayScore(score);
+                    setDisplayScoreGained(0);
+                }
+            }, animDelay);
         }
         return () => cancelAnimationFrame(animationFrame.current);
     }, [score, scoreGained]);
@@ -77,7 +83,8 @@ export default function AnimatedScoreCounter({ type, score, scoreGained, delay, 
         <div className="flex relative right-[6px] mx-auto items-center">
             {type === "score" && <StarIcon className="w-7 h-7 mr-[6px]" />}
             {type === "streak" && <StreakIcon className="w-7 h-7 mr-[6px]" />}
-            <div className={`text-5xl font-semibold ${displayScore < 0 ? " text-red-500" : ""}`}>
+            <div className={`text-5xl font-semibold 
+            ${displayScore < 0 ? " text-red-500" : ""}`}>
                 {displayScore}
             </div>
             {displayScoreGained !== 0 &&

@@ -66,6 +66,7 @@ export interface QuizInfo {
     type: string;
     quizName: string;
     description: string;
+    username: string;
     groupChatName: string;
     participants: Array<Participant>;
 }

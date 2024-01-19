@@ -7,12 +7,12 @@ export default function useGetQuiz() {
 
     const authFetch = useAuthFetch();
 
-    const getQuiz = async (quizId: number): Promise<SurvivalQuiz | TimeAttackQuiz | null> => {
+    const getQuiz = async (quizId: number, shareableToken?: string | undefined): Promise<SurvivalQuiz | TimeAttackQuiz | null> => {
 
         const requestUrl: string = `${EXTERNAL_API_ROOT}/quizzes/${quizId}`;
 
         try {
-            const response: Response = await authFetch(requestUrl);
+            const response: Response = await authFetch(requestUrl, {}, shareableToken);
             if (!response.ok) {
                 if (response.status >= 400 && response.status < 500) {
                     console.error(`Client failed request: ${response.status}`);

@@ -2,6 +2,8 @@
 
 import useGetLeaderboard from "@/app/hooks/api_access/leaderboards/useGetLeaderboard";
 import useGetQuiz from "@/app/hooks/api_access/quizzes/useGetQuiz";
+import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
+import useAuth from "@/app/hooks/security/useAuth";
 
 import { TimeAttackEntry, SurvivalEntry, TimeAttackQuiz, SurvivalQuiz } from "@/app/interfaces";
 import { isTimeAttackEntry, isSurvivalEntry } from "@/app/utilities/miscFunctions";
@@ -14,15 +16,20 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export default function Leaderboard({ params }: { params: { quizId: string}}) {
+export default function Leaderboard({ params }: { params: { query: string[]}}) {
 
-    // NextJS route parameters
-    const quizId = Number(params.quizId);
+    // Extracting the NextJS route query parameters "/leaderboard/{quizId}/{?urlToken}"
+    const quizId = Number(params.query[0]);
+    const urlToken: string | null = params.query.length > 1 ? params.query[1] : null;
 
     // ----------- Hooks ------------------
     const router = useRouter();
     const getLeaderboard = useGetLeaderboard();
     const getQuiz = useGetQuiz();
+
+    // Security
+    const { auth } = useAuth();
+    const validateUrlToken = useValidateUrlToken();
 
     // ----------- State (Data) -----------
     const [leaderboard, setLeaderboard] = useState<Array<TimeAttackEntry | SurvivalEntry>>([]);
@@ -35,8 +42,21 @@ export default function Leaderboard({ params }: { params: { quizId: string}}) {
     // ----------- Data Retrieval ---------
     useEffect(() => {
         const getPageData = async () => {
-            const quiz: TimeAttackQuiz | SurvivalQuiz | null = await getQuiz(quizId);
-            const leaderboard: Array<TimeAttackEntry | SurvivalEntry> | null = await getLeaderboard(quizId);
+
+            // If the user is not logged in, we need to extract the urlToken and authenticate them
+            let shareableToken: string | null = null;
+            if (urlToken) {
+                shareableToken = await validateUrlToken(quizId, urlToken);
+                if (!shareableToken && !auth) {
+                    // If the urlToken is invalid (and user is not logged in), redirect to the home page
+                    console.error("Error authenticating user, redirecting to root");
+                    router.push("/");
+                    return;
+                }
+            }
+
+            const quiz: TimeAttackQuiz | SurvivalQuiz | null = await getQuiz(quizId, shareableToken || undefined);
+            const leaderboard: Array<TimeAttackEntry | SurvivalEntry> | null = await getLeaderboard(quizId, shareableToken || undefined);
             if (quiz && leaderboard) {
                 setQuiz(quiz);
                 setLeaderboard(leaderboard);
