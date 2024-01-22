@@ -9,8 +9,13 @@ interface AnimatedScoreProps {
     scoreGained: number;
     delay: number;
     duration: number;
+    isAnimated?: boolean;
+    isLarge?: boolean;
+    hideScoreGained?: boolean;
 }
-export default function AnimatedScoreCounter({ type, score, scoreGained, delay, duration }: AnimatedScoreProps) {
+export default function AnimatedScoreCounter(
+    { type, score, scoreGained, delay, duration, isAnimated = true, isLarge = false, hideScoreGained = false }: AnimatedScoreProps
+) {
 
     const [displayScore, setDisplayScore] = useState<number>(score);
     const [displayScoreGained, setDisplayScoreGained] = useState<number>(scoreGained);
@@ -65,37 +70,42 @@ export default function AnimatedScoreCounter({ type, score, scoreGained, delay, 
         setDisplayScore(score - scoreGained); // Set the score to the value before the score increase
         setDisplayScoreGained(scoreGained);
         if (scoreGained !== 0) {
-            const animDelay = type === "score" ? delay : 2000;
             setTimeout(() => {
-                if (type === "score") {
+                if (isAnimated) {
                     animationFrame.current = requestAnimationFrame(animateScore);
                 } else {
                     setDisplayScore(score);
                     setDisplayScoreGained(0);
                 }
-            }, animDelay);
+            }, delay);
         }
         return () => cancelAnimationFrame(animationFrame.current);
     }, [score, scoreGained]);
 
+    const renderScoreGained = () => {
+        if (hideScoreGained || displayScoreGained === 0) return <></>;
+        return (
+            <div className="absolute flex left-[100%] top-0 bottom-0 items-center
+            animate__animated animate__bounceIn animate__duration-500ms">
+                <div className={`ml-2 text-2xl font-semibold
+                ${displayScoreGained < 0 ? " text-red-500" : " text-green-500"}`}>
+                    {displayScoreGained > 0 ? "+" : ""}{displayScoreGained}
+                </div>
+            </div>
+        );
+    }
+
     // MAIN RENDER
     return (
         <div className="flex relative right-[6px] mx-auto items-center">
-            {type === "score" && <StarIcon className="w-7 h-7 mr-[6px]" />}
-            {type === "streak" && <StreakIcon className="w-7 h-7 mr-[6px]" />}
-            <div className={`text-5xl font-semibold 
+            {type === "score" && <StarIcon className={`${isLarge ? "w-8 h-8" : "w-7 h-7"} mr-[6px]`} />}
+            {type === "streak" && <StreakIcon className={`${isLarge ? "w-8 h-8" : "w-7 h-7"} mr-[6px]`} />}
+            <div className={`font-semibold
+            ${isLarge ? " text-6xl" : " text-5xl"} 
             ${displayScore < 0 ? " text-red-500" : ""}`}>
                 {displayScore}
             </div>
-            {displayScoreGained !== 0 &&
-                <div className="absolute flex left-[100%] top-0 bottom-0 items-center
-                animate__animated animate__bounceIn animate__duration-500ms">
-                    <div className={`ml-2 text-2xl font-semibold
-                    ${displayScoreGained < 0 ? " text-red-500" : " text-green-500"}`}>
-                        {displayScoreGained > 0 ? "+" : ""}{displayScoreGained}
-                    </div>
-                </div>
-            }
+            {renderScoreGained()}
         </div>
     );
 }

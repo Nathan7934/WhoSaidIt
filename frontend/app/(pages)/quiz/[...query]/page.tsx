@@ -3,13 +3,14 @@
 import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
 import useAuth from "@/app/hooks/security/useAuth";
 
-import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant } from "@/app/interfaces";
+import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant, ResponseStatus, PostTimeAttackEntry, PostSurvivalEntry } from "@/app/interfaces";
 import AnimatedScoreCounter from "@/app/components/AnimatedScoreCounter";
 import Modal from "@/app/components/Modal";
-import { toggleModal } from "@/app/utilities/miscFunctions";
+import { toggleModal, isModalOpen, applyTextMarkup, renderModalResponseAlert } from "@/app/utilities/miscFunctions";
 
 import useGetQuizInfo from "@/app/hooks/api_access/quizzes/useGetQuizInfo";
 import useGetRandomQuizMessage from "@/app/hooks/api_access/messages/useGetRandomQuizMessage";
+import usePostLeaderboardEntry from "@/app/hooks/api_access/leaderboards/usePostLeaderboardEntry";
 
 import AnimateHeight from "react-animate-height";
 import { Height } from "react-animate-height";
@@ -19,12 +20,12 @@ import { useEffect, useState, useReducer } from "react";
 
 // The page state is used to determine what to render on the level of the page.
 // Transitional states are used for animations, etc.
-type PageState = "LANDING" | "QUIZ_STARTING" | "QUIZ" | "QUIZ_ENDING" | "RESULTS";
+type PageState = "LANDING" | "QUIZ_STARTING" | "QUIZ" | "QUIZ_ENDING" | "RESULTS" | "RESTARTING";
 type PageStateReducer = (state: PageState, action: PageStateReducerAction) => PageState;
 interface PageStateReducerAction {
     type: PageStateReducerActionType;
 }
-type PageStateReducerActionType = "init_start_quiz" | "start_quiz" | "init_end_quiz" | "end_quiz";
+type PageStateReducerActionType = "init_start_quiz" | "start_quiz" | "init_end_quiz" | "end_quiz" | "restart_quiz";
 
 // The game state is used to determine what to render on the level of the game.
 type GameState = "QUESTION_STARTING" | "QUESTION" | "CORRECT_ANSWER" | "INCORRECT_ANSWER";
@@ -51,6 +52,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     // API access hooks
     const getQuizInfo = useGetQuizInfo();
     const getRandomQuizMessage = useGetRandomQuizMessage();
+    const postLeaderboardEntry = usePostLeaderboardEntry();
 
     // Security
     const { auth } = useAuth();
@@ -62,7 +64,9 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const [quizInfo, setQuizInfo] = useState<TimeAttackQuizInfo | SurvivalQuizInfo | null>(null);
     const [currentMessage, setCurrentMessage] = useState<Message | null>(null);
     const [nextMessage, setNextMessage] = useState<Message | null>(null);
-    const [seenMessageIds, setSeenMessageIds] = useState<Array<number>>([]);
+    const [seenMessageIds, setSeenMessageIds] = useState<Array<number>>([]); // Prevent repeats
+    const [playerName, setPlayerName] = useState<string>(""); // The name of the player (for submitting to the leaderboard)
+    const [scoreSubmitted, setScoreSubmitted] = useState<boolean>(false); // Whether the score has been submitted to the leaderboard
 
     // ----------- State (Game) -----------
     const [score, setScore] = useState<number>(0); // For Survival Quizzes, this state records the streak instead.
@@ -74,9 +78,16 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
 
     // ----------- State (UI) -------------
     const [staticDataLoading, setStaticDataLoading] = useState<boolean>(true);
+    const [submitting, setSubmitting] = useState<boolean>(false); // Whether the score is being submitted to the leaderboard
+    // The response status of the leaderboard submission
+    const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
+    const [nameMissing, setNameMissing] = useState<boolean>(false); // Whether the player name is missing (for submitting to the leaderboard)
+
     const [introSplashTextEntering, setIntroSplashTextEntering] = useState<Array<"WAITING" | "ENTERING" | "EXITING">>(["WAITING", "WAITING"]);
     const [landingActionsHeight, setLandingActionsHeight] = useState<Height>(0); // The height of the landing page actions [Begin Quiz, Leaderboard, Info]
     const [landingActionsVisible, setLandingActionsVisible] = useState<boolean>(false); // Whether the landing page actions are visible
+    const [resultsActionsHeight, setResultsActionsHeight] = useState<Height>(0); // The height of the results page actions [Submit Score, Play Again]
+    const [resultsActionsVisible, setResultsActionsVisible] = useState<boolean>(false); // Whether the results page actions are visible
 
     // Timing
     const [quizStartTime, setQuizStartTime] = useState<Date>(new Date());
@@ -152,6 +163,46 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         }
     }
 
+    const submitLeaderboardEntry = async () => {
+        if (!quizInfo || !totalTimeTaken) return;
+        if (playerName === "") {
+            setNameMissing(true);
+            return;
+        }
+        setSubmitting(true);
+        let postRequest: PostTimeAttackEntry | PostSurvivalEntry;
+        if (isTimeAttack(quizInfo)) {
+            postRequest = {
+                playerName: playerName,
+                score: score,
+                timeTaken: totalTimeTaken,
+            };
+        } else {
+            postRequest = {
+                playerName: playerName,
+                streak: score,
+                skipsUsed: skipsUsed,
+            };
+        }
+        const error: string | null = await postLeaderboardEntry(quizId, postRequest, shareableToken || undefined);
+        if (!error) {
+            setResponseStatus({ message: "Entry submitted!", success: true, doAnimate: true });
+            setScoreSubmitted(true);
+        } else {
+            console.error("Error submitting leaderboard entry:", error);
+            setResponseStatus({ message: error, success: false, doAnimate: true });
+        }
+
+        // Display the response message for 3 seconds, then close the modal
+        setTimeout(() => {
+            if (isModalOpen("leaderboard-submit-modal")) {
+                toggleModal("leaderboard-submit-modal");
+            }
+            setSubmitting(false);
+            setResponseStatus({ message: "", success: false, doAnimate: false });
+        }, 3000);
+    }
+
     // Gets a random selection of 4 or 3 (depending on type) participants to choose from, including the correct participant.
     const generateParticipantOptions = (
         quizInfo: SurvivalQuizInfo | TimeAttackQuizInfo | null, 
@@ -220,6 +271,21 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             case "end_quiz":
                 return "RESULTS";
 
+            case "restart_quiz":
+                // Lots of state resets need to happen on restart
+                setQuestionNumber(0); // This is incremented to 1 in the gameStateReducer
+                setSkipsUsed(0);
+                setTimeout(() => {
+                    setScore(0);
+                    setScoreSubmitted(false);
+                    setNameMissing(false);
+                    setResultsActionsHeight(0);
+                    setResultsActionsVisible(false);
+                    pageStateDispatch({ type: "start_quiz" }); // Go straight to the quiz
+                    gameStateDispatch({ type: "next_question" });
+                }, 500);
+                return "RESTARTING";
+
             default: // This should never happen
                 return state;
         }
@@ -278,7 +344,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         // If Survival, quiz ends on wrong answer. If Time Attack, quiz ends if it's the last question.
                         pageStateDispatch({ type: "init_end_quiz" });
                     } else {
-                        gameStateDispatch({ type: "init_next_question" });                    
+                        gameStateDispatch({ type: "init_next_question" });
                     }
                 }, 2000);
                 return "INCORRECT_ANSWER";
@@ -295,7 +361,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     // =============== MAIN RENDER ===============
 
     let renderContent: JSX.Element = <></>;
-    // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+= LOADING VIEW =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
+    // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+= LOADING VIEW =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
     if (staticDataLoading || !quizInfo || !currentMessage) {
         renderContent = (
             <div className="absolute flex flex-col left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
@@ -304,7 +370,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 </svg>
             </div>
         );
-    // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+= LANDING VIEW =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
+    // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+= LANDING VIEW =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
     } else if (pageState === "LANDING" || pageState === "QUIZ_STARTING") {
         
         const getSplashTextAnimClass = (index: number): string => {
@@ -320,8 +386,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
 
         const renderDetailsModal = () => {
             return (
-                <Modal domId="quiz-details-modal" title="Details" margin="8px">
-                    <div className={`w-full mb-2 text-center text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r
+                <Modal domId="quiz-details-modal" margin="8px">
+                    <div className={`w-full mb-2 text-center text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r
                     ${isTimeAttack(quizInfo) ? " from-blue-400 via-blue-300 to-blue-400" : " from-purple-400 via-pink-400 to-purple-400"}`}>
                         {isTimeAttack(quizInfo) ? "Time Attack Quiz" : "Survival Quiz"}
                     </div>
@@ -403,7 +469,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             </div>
             {renderDetailsModal()}
         </>);
-    // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+= QUIZ VIEW =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
+    // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+= QUIZ VIEW =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
     } else if (pageState === "QUIZ" || pageState === "QUIZ_ENDING") {
 
         const renderParticipantOptions = () => {
@@ -451,7 +517,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     ? " text-gray-3 border border-dashed border-zinc-900 cursor-default" 
                     : " bg-zinc-950/30 text-gray-11 border border-zinc-900";
                 options.push(
-                    <button key="skip" className={`w-[75%] py-[10px] mx-auto mt-2 mb-1 rounded-2xl text-lg animate__animated animate__duration-500ms ${styling}
+                    <button key="skip" className={`w-[50%] py-[10px] mx-auto mt-2 mb-1 rounded-2xl text-lg animate__animated animate__duration-500ms ${styling}
                     ${gameState === "QUESTION_STARTING" ? " animate__flipOutX" : " animate__flipInX"}
                     `} 
                     onClick={() => {
@@ -485,8 +551,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             return (
                 <div className={`absolute flex left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] bg-zinc-950 rounded-xl border border-zinc-500 px-3
                 ${!isNext ? gameState === "QUESTION_STARTING" ? getCardAnimClass() : "" : ""} ${isTimeAttack(quizInfo) ? "pt-5 pb-8" : "py-5"}`}>
-                    <div className="grow px-2 w-full h-full text-xl font-semibold overflow-y-scroll overflow-x-hidden">
-                        {message.content}
+                    <div className="grow px-2 w-full h-full text-xl font-medium overflow-y-scroll overflow-x-hidden">
+                        {applyTextMarkup(message.content)}
                     </div>
                     {isTimeAttack(quizInfo) && (
                         <div className="absolute bottom-[6px] right-3 text-center text-sm font-light text-gray-7">
@@ -500,8 +566,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         renderContent = (
             <div className={`flex flex-col items-center min-w-[270px] w-[90%] max-w-[500px] animate__animated
             ${pageState === "QUIZ_ENDING" ? " animate__fadeOut" : " animate__fadeIn animate__duration-500ms"}`}>
-                <AnimatedScoreCounter type={isTimeAttack(quizInfo) ? "score" : "streak"} 
-                score={score} scoreGained={scoreGained} delay={1000} duration={800} />
+                <AnimatedScoreCounter type={isTimeAttack(quizInfo) ? "score" : "streak"} score={score} scoreGained={scoreGained} 
+                delay={isTimeAttack(quizInfo) ? 1000 : 2000} duration={800} isAnimated={isTimeAttack(quizInfo)} />
                 <div className="relative w-full h-[320px] sm:h-[350px] mt-4 mb-4 sm:my-6 bg-zinc-950 rounded-xl border border-zinc-500 
                 shadow-[1px_1px_0px_0px_rgb(113,113,122)]">
                     {/* We render the next message underneath the current message */}
@@ -515,9 +581,146 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             </div>
         );
     }
-    // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+= RESULTS VIEW =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
-    else if (pageState === "RESULTS") {
+    // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+= RESULTS VIEW =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
+    else if (pageState === "RESULTS" || pageState === "RESTARTING") {
+        const resultsSequence = [
+            { action: () => setResultsActionsHeight('auto'), delay: 2000 },
+            { action: () => setResultsActionsVisible(true), delay: 500 },
+        ]
+        executeEventSequence(resultsSequence);
 
+        const leaderboardRoute: string = `/leaderboard/${quizId}${shareableToken ? `/${urlToken}` : ""}`;
+
+        const renderLeaderboardNavCheckModal = () => {
+            return (
+                <Modal domId="leaderboard-nav-check-modal" darkOverlay>
+                    <div className="w-full mt-3 text-center text-2xl font-semibold">
+                        {isTimeAttack(quizInfo) ? "Score" : "Streak"} not submitted
+                    </div>
+                    <div className="w-full text-center mt-1 text-gray-11">
+                        Are you sure you want to leave?
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 my-4 mx-7">
+                        <button className="grow btn btn-lg"
+                        onClick={() => { toggleModal("leaderboard-nav-check-modal") }}>
+                            Cancel
+                        </button>
+                        <button className="grow btn btn-lg"
+                        onClick={() => { router.push(leaderboardRoute) }}>
+                            Yes
+                        </button>
+                    </div>
+                </Modal>
+            );
+        }
+
+        const leaderboardClicked = () => {
+            if (!scoreSubmitted) {
+                toggleModal("leaderboard-nav-check-modal");
+            } else {
+                router.push(leaderboardRoute);
+            }
+        }
+
+        const renderLeaderboardSubmitModal = () => {
+            let modalContent: JSX.Element;
+            if (responseStatus.doAnimate) {
+                modalContent = renderModalResponseAlert(responseStatus);
+            } else if (submitting) {
+                modalContent = (
+                    <div className="my-6 sm:my-12">
+                        <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-gray-11">
+                                Submitting...
+                        </div>
+                        <div className="flex justify-center">
+                            <div className="spinner-circle w-10 h-10 sm:w-12 sm:h-12" />
+                        </div>
+                    </div>
+                );
+            } else {
+                modalContent = (<>
+                    <div className={`w-full mt-2 text-center text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r
+                    ${isTimeAttack(quizInfo) ? " from-blue-400 via-blue-300 to-blue-400" : " from-purple-400 via-pink-400 to-purple-400"}`}>
+                        Submit Results
+                    </div>
+                    <div className="w-full text-center mt-3 text-gray-12">
+                        Post your {isTimeAttack(quizInfo) ? "score" : "streak"} to the leaderboard<br/>
+                        and compare with your friends!
+                    </div>
+                    <div className="flex flex-col mt-4 mb-5 mx-6">
+                        <label className="w-full text-center mb-1 text-lg font-bold">
+                            Enter Name
+                        </label>
+                        <div className={`flex w-full p-[1px] rounded-[0.75rem] bg-gradient-to-r
+                        ${isTimeAttack(quizInfo)
+                            ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
+                            : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`}
+                        >
+                            <input className="input input-lg grow bg-black border-2 border-transparent text-lg text-center"
+                            value={playerName} onChange={playerNameChanged} />
+                        </div>
+                    </div>
+                    <div className="flex mx-6 mb-6">
+                        <button className={`py-2 bg-gradient-to-r rounded-xl w-[280px] font-semibold text-xl
+                            ${isTimeAttack(quizInfo)
+                                ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
+                                : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`}
+                        onClick={() => submitLeaderboardEntry()}>
+                            Submit
+                        </button>
+                    </div>
+                </>);
+            }
+
+            return (
+                <Modal domId="leaderboard-submit-modal" darkOverlay>
+                    {modalContent}
+                </Modal>
+            );
+        }
+
+        const playerNameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (e.target.value.length > 15) return;
+            setPlayerName(e.target.value);
+        }
+
+        renderContent = (<>
+            <div className={`flex flex-col items-center w-full animate__animated animate__duration-500ms
+            ${pageState === "RESULTS" ? " animate__fadeIn" : " animate__fadeOut"}`}>
+                <div className="flex flex-col mb-6">
+                    <div className={`w-full mb-2 text-center text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r
+                    ${isTimeAttack(quizInfo) ? " from-blue-400 via-blue-300 to-blue-400" : " from-purple-400 via-pink-400 to-purple-400"}`}>
+                        Your {isTimeAttack(quizInfo) ? "Score" : "Streak"}
+                    </div>
+                    <AnimatedScoreCounter type={isTimeAttack(quizInfo) ? "score" : "streak"} score={score} scoreGained={score} 
+                    delay={500} duration={1000} isLarge hideScoreGained />
+                </div>
+                <AnimateHeight duration={500} height={resultsActionsHeight}>
+                    <div className={`flex flex-col pt-3 w-full items-center 
+                    ${resultsActionsVisible ? " animate__animated animate__fadeIn" : " invisible"}`}>
+                        <button className={`py-2 bg-gradient-to-r rounded-xl w-[280px] font-semibold text-xl
+                            ${isTimeAttack(quizInfo)
+                                ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
+                                : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`}
+                        onClick={() => { toggleModal("leaderboard-submit-modal") }}>
+                            Submit
+                        </button>
+                        <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border
+                        ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}`}
+                        onClick={() => { leaderboardClicked() }}>
+                            Leaderboard
+                        </button>
+                        <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border
+                        ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}`}
+                        onClick={() => { pageStateDispatch({ type: 'restart_quiz' }) }}>
+                            Play Again
+                        </button>
+                    </div>
+                </AnimateHeight>
+            </div>
+            {renderLeaderboardSubmitModal()}
+            {renderLeaderboardNavCheckModal()}
+        </>);
     }
 
     return (

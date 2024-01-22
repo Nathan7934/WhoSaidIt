@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Message } from "../interfaces";
 import { MOBILE_HOLD_DURATION } from "../constants";
 import AnimateHeight, { Height } from "react-animate-height";
+import { applyTextMarkup } from "../utilities/miscFunctions";
 
 // This component represents a row of content in a message list.
 // Contains information for a single message, as well as actions for selecting the message.
@@ -203,48 +204,6 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
     }
 
     // ----------------- Render functions -----------------
-
-    // Formats the content of a message so that WhatsApp-style text markup is displayed correctly
-    // (e.g. *bold*, _italic_)
-    const applyTextMarkup = (content: string): (string | JSX.Element)[] => {
-        
-        // Define a recursive function to process the text
-        const processText = (text: string, regex: RegExp , className: string): (string | JSX.Element)[] => {
-            if (!regex.test(text)) return [text]; // Base case: no matches found
-            
-            const segments = [];
-            let lastIndex = 0;
-            text.replace(regex, (match, group1, offset) => {
-                // Add the text before the match
-                if (offset > lastIndex) {
-                    segments.push(...processText(text.slice(lastIndex, offset), regex, className));
-                }
-                // Add the formatted span
-                segments.push(<span key={offset} className={className}>{group1}</span>);
-                lastIndex = offset + match.length;
-                return match;
-            });
-            
-            // Add any remaining text after the last match
-            if (lastIndex < text.length) {
-                segments.push(...processText(text.slice(lastIndex), regex, className));
-            }
-            
-            return segments;
-        };
-
-        // Replace in a specific order to handle nested formatting
-        let processedContent = processText(content, /\*_(.*?)_\*/g, 'font-bold italic');
-        processedContent = processedContent.flatMap((segment) =>
-            typeof segment === 'string' ? processText(segment, /\*(.*?)\*/g, 'font-bold') : segment
-        );
-        processedContent = processedContent.flatMap((segment) =>
-            typeof segment === 'string' ? processText(segment, /_(.*?)_/g, 'italic') : segment
-        );
-
-        return processedContent;
-    };
-      
 
     // Formats a date object into a string of type "MM/DD/YY h:mm am/pm"
     const formatDate = (date: Date) => {

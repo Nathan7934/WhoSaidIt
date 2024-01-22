@@ -81,7 +81,7 @@ export function renderQuizRows(groupChat: GroupChatInfo, setReloadCounter: React
             rounded-lg border-gray-6 text-center">
                 <div className="text-xl text-gray-11">
                     Nothing here.
-                </div>aaaaaaaaa
+                </div>
                 <div className="text-gray-9">
                     Create a new quiz to get started.
                 </div>
@@ -120,3 +120,44 @@ export function renderModalResponseAlert(responseStatus: ResponseStatus) {
             </div>
         )
 }
+
+// Formats the content of a message so that WhatsApp-style text markup is displayed correctly
+// (e.g. *bold*, _italic_)
+export function applyTextMarkup(content: string): (string | JSX.Element)[] {
+    
+    // Define a recursive function to process the text
+    const processText = (text: string, regex: RegExp , className: string): (string | JSX.Element)[] => {
+        if (!regex.test(text)) return [text]; // Base case: no matches found
+        
+        const segments = [];
+        let lastIndex = 0;
+        text.replace(regex, (match, group1, offset) => {
+            // Add the text before the match
+            if (offset > lastIndex) {
+                segments.push(...processText(text.slice(lastIndex, offset), regex, className));
+            }
+            // Add the formatted span
+            segments.push(<span key={offset} className={className}>{group1}</span>);
+            lastIndex = offset + match.length;
+            return match;
+        });
+        
+        // Add any remaining text after the last match
+        if (lastIndex < text.length) {
+            segments.push(...processText(text.slice(lastIndex), regex, className));
+        }
+        
+        return segments;
+    };
+
+    // Replace in a specific order to handle nested formatting
+    let processedContent = processText(content, /\*_(.*?)_\*/g, 'font-bold italic');
+    processedContent = processedContent.flatMap((segment) =>
+        typeof segment === 'string' ? processText(segment, /\*(.*?)\*/g, 'font-bold') : segment
+    );
+    processedContent = processedContent.flatMap((segment) =>
+        typeof segment === 'string' ? processText(segment, /_(.*?)_/g, 'italic') : segment
+    );
+
+    return processedContent;
+};

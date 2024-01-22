@@ -105,6 +105,21 @@ export interface QuizLeaderboardInfo {
     leaderboard: Array<TimeAttackEntry | SurvivalEntry>;
 }
 
+// Post request interfaces
+export interface PostLeaderboardEntry {
+    playerName: string;
+}
+
+export interface PostTimeAttackEntry extends PostLeaderboardEntry {
+    score: number;
+    timeTaken: number;
+}
+
+export interface PostSurvivalEntry extends PostLeaderboardEntry {
+    streak: number;
+    skipsUsed: number;
+}
+
 // ======= MESSAGES =======
 export interface Participant {
     id: number;
