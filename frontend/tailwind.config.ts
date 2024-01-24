@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss'
-import { MOBILE_HOLD_DURATION } from './app/constants';
+import { MOBILE_HOLD_DURATION, NAVBAR_HEIGHT } from './app/constants';
 
 const config: Config = {
     content: [
@@ -9,9 +9,13 @@ const config: Config = {
     ],
     theme: {
         extend: {
-            screens: {
-                '3xl': '2000px',
+            screens: { '3xl': '2000px', },
+            height: { 
+                'navbar': `${NAVBAR_HEIGHT}px`, 
+                'content': `calc(100vh - ${NAVBAR_HEIGHT}px)`
             },
+            maxHeight: { 'content': `calc(100vh - ${NAVBAR_HEIGHT}px)`, },
+            spacing: { 'navbar': `${NAVBAR_HEIGHT}px`, },
             keyframes: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows keyframes
                 leaderboardNavArrowLeft: {
@@ -215,6 +219,10 @@ const config: Config = {
                 // QUIZ: Correct and incorrect answer animations
                 incorrectAnswer: 'incorrectAnswer 0.3s ease-in-out 0s 1 forwards',
                 correctAnswer: 'correctAnswer 0.3s ease-in-out 0s 1 forwards',
+
+                // NAVBAR: Menu expansion animations
+                menuEntering: 'slideInFromRight 0.15s ease-in-out 0s 1 forwards',
+                menuExiting: 'slideOutToRight 0.15s ease-in-out 0s 1 forwards',
             },
             dropShadow: {
                 glow: [

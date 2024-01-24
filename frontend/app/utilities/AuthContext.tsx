@@ -1,4 +1,4 @@
-"use-client";
+"use client";
 
 import React, { SetStateAction } from 'react';
 import { createContext, useState } from 'react';
@@ -25,7 +25,6 @@ interface Props {
 export const AuthProvider: React.FC<Props> = ({ children }) => {
     const [userId, setUserId] = useState<number | null>(null);
     const [auth, setAuth] = useState<string | null>(null);
-    const [shareableAuth, setShareableAuth] = useState<string | null>(null);
 
     return (
         <AuthContext.Provider value={{userId, auth, setUserId, setAuth}}>

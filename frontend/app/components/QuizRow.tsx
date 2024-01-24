@@ -4,6 +4,7 @@ import useDeleteQuiz from "../hooks/api_access/quizzes/useDeleteQuiz";
 import { Quiz, ResponseStatus } from "../interfaces";
 import { renderQuizTypeBadge, renderModalResponseAlert, formatDateLong, toggleModal, isModalOpen } from "../utilities/miscFunctions";
 import Modal from "./Modal";
+import MenuIcon from "./icons/MenuIcon";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -255,7 +256,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
             </div>
             {/* Options modal */}
             <div className="ml-auto mr-1 self-center">
-                <label htmlFor={mobileActionsModalDomId}><Image src="menu.svg" alt="Menu" width={36} height={36} /></label>
+                <label htmlFor={mobileActionsModalDomId}><MenuIcon className="text-gray-8 w-10 h-10" /></label>
                 <Modal domId={mobileActionsModalDomId} title="Quiz Actions">
                     <div className="px-4 text-center mb-3">
                         <h2 className="text-xl text-white">{quiz.quizName}</h2>

@@ -237,9 +237,10 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
 
     // =============== MAIN RENDER =============== 
 
-    return (
-        <main className="flex flex-col items-center justify-between min-h-screen">
-            <div className="mt-6 md:mt-20 lg:mt-36 w-[97%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] 3xl:w-[30%]">
+    return (<>
+        <div className="w-full h-navbar" /> {/* Navbar spacer */}
+        <main className="flex flex-col max-h-content overflow-y-scroll items-center justify-between">
+            <div className="mt-7 md:mt-20 lg:mt-36 w-[97%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] 3xl:w-[30%]">
                 <div className="flex justify-center w-full text-3xl sm:text-4xl font-bold whitespace-nowrap">
                     <div className="relative w-[35px] h-[35px] mr-3">
                         <Image src="/sparkles.png" alt="~" fill style={{ objectFit: "contain"}} className="scale-x-[-1]"/>
@@ -265,7 +266,8 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
                 {renderLeaderboardEntries()}
                 {!loading && 
                 <div className="fixed bottom-0 sm:relative w-full flex bg-gradient-to-t from-black">
-                    <button className="btn btn-primary btn-lg mx-auto mb-4">
+                    <button className="mx-auto mb-4 py-3 px-5 rounded-xl bg-black/90 border border-blue-400 text-xl
+                    text-blue-50 font-semibold backdrop-blur-sm">
                         Start New Attempt
                     </button>
                 </div>
@@ -273,5 +275,5 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
             </div>
             
         </main>
-    );
+    </>);
 }

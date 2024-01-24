@@ -107,7 +107,7 @@ export default function GroupChatUploadModal({ userId, modalDomId, setReloadCoun
                 <div className="mx-4 mb-4">
                     <div className="text-gray-11 mb-4">
                         This field sets the minimum number of characters that a message must contain
-                        in order to be exported. This is to prevent short messages like "ok" from being included.
+                        in order to be imported. This is to prevent short messages like "ok" from being included.
                     </div>
                     <div className="text-gray-11 mb-4">
                         For example, if you set the minimum number of characters to 100, then only messages with 100 or more

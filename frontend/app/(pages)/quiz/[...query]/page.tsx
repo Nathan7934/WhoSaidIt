@@ -81,7 +81,6 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const [submitting, setSubmitting] = useState<boolean>(false); // Whether the score is being submitted to the leaderboard
     // The response status of the leaderboard submission
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
-    const [nameMissing, setNameMissing] = useState<boolean>(false); // Whether the player name is missing (for submitting to the leaderboard)
 
     const [introSplashTextEntering, setIntroSplashTextEntering] = useState<Array<"WAITING" | "ENTERING" | "EXITING">>(["WAITING", "WAITING"]);
     const [landingActionsHeight, setLandingActionsHeight] = useState<Height>(0); // The height of the landing page actions [Begin Quiz, Leaderboard, Info]
@@ -164,11 +163,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     }
 
     const submitLeaderboardEntry = async () => {
-        if (!quizInfo || !totalTimeTaken) return;
-        if (playerName === "") {
-            setNameMissing(true);
-            return;
-        }
+        if (!quizInfo || !totalTimeTaken || playerName === "") return;
         setSubmitting(true);
         let postRequest: PostTimeAttackEntry | PostSurvivalEntry;
         if (isTimeAttack(quizInfo)) {
@@ -278,7 +273,6 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 setTimeout(() => {
                     setScore(0);
                     setScoreSubmitted(false);
-                    setNameMissing(false);
                     setResultsActionsHeight(0);
                     setResultsActionsVisible(false);
                     pageStateDispatch({ type: "start_quiz" }); // Go straight to the quiz
@@ -594,7 +588,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         const renderLeaderboardNavCheckModal = () => {
             return (
                 <Modal domId="leaderboard-nav-check-modal" darkOverlay>
-                    <div className="w-full mt-3 text-center text-2xl font-semibold">
+                    <div className="w-full mt-[6px] text-center text-2xl font-semibold">
                         {isTimeAttack(quizInfo) ? "Score" : "Streak"} not submitted
                     </div>
                     <div className="w-full text-center mt-1 text-gray-11">
@@ -625,15 +619,18 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         const renderLeaderboardSubmitModal = () => {
             let modalContent: JSX.Element;
             if (responseStatus.doAnimate) {
-                modalContent = renderModalResponseAlert(responseStatus);
+                modalContent = (<>
+                    <div className="mt-[-12px]" />
+                    {renderModalResponseAlert(responseStatus)}
+                </>);
             } else if (submitting) {
                 modalContent = (
-                    <div className="my-6 sm:my-12">
-                        <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-gray-11">
+                    <div className="mb-8 mt-1 sm:my-12">
+                        <div className="mx-auto mb-3 text-2xl text-center">
                                 Submitting...
                         </div>
                         <div className="flex justify-center">
-                            <div className="spinner-circle w-10 h-10 sm:w-12 sm:h-12" />
+                            <div className="spinner-circle w-12 h-12 sm:w-14 sm:h-14" />
                         </div>
                     </div>
                 );
@@ -656,7 +653,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                             ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
                             : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`}
                         >
-                            <input className="input input-lg grow bg-black border-2 border-transparent text-lg text-center"
+                            <input className="input input-lg grow bg-black border-2 border-transparent text-lg text-center placeholder-white"
                             value={playerName} onChange={playerNameChanged} />
                         </div>
                     </div>
@@ -698,15 +695,18 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 <AnimateHeight duration={500} height={resultsActionsHeight}>
                     <div className={`flex flex-col pt-3 w-full items-center 
                     ${resultsActionsVisible ? " animate__animated animate__fadeIn" : " invisible"}`}>
-                        <button className={`py-2 bg-gradient-to-r rounded-xl w-[280px] font-semibold text-xl
+                        {!scoreSubmitted &&
+                            <button className={`py-2 bg-gradient-to-r rounded-xl w-[280px] font-semibold text-xl
                             ${isTimeAttack(quizInfo)
                                 ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
                                 : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`}
-                        onClick={() => { toggleModal("leaderboard-submit-modal") }}>
-                            Submit
-                        </button>
-                        <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border
-                        ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}`}
+                            onClick={() => { toggleModal("leaderboard-submit-modal") }}>
+                                Submit
+                            </button>
+                        }
+                        <button className={`mt-3  w-[280px]  font-semibold bg-zinc-950 border
+                        ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}
+                        ${scoreSubmitted ? " py-[14px] text-xl rounded-2xl" : " py-[10px] rounded-xl"}`}
                         onClick={() => { leaderboardClicked() }}>
                             Leaderboard
                         </button>

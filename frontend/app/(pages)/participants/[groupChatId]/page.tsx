@@ -11,8 +11,9 @@ import MessagesIcon from "@/app/components/icons/MessagesIcon";
 import DeleteIcon from "@/app/components/icons/DeleteIcon";
 
 import { GroupChat, Participant, ResponseStatus } from "@/app/interfaces";
+import { NAVBAR_HEIGHT } from "@/app/constants";
 import Modal from "@/app/components/Modal";
-import { toggleModal, isModalOpen, determineAlertAnimationClassName } from "@/app/utilities/miscFunctions";
+import { toggleModal, determineAlertAnimationClassName } from "@/app/utilities/miscFunctions";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -318,15 +319,16 @@ export default function Participants({ params }: { params: { groupChatId: string
     const calculateListMaxHeight = () => {
         const titleHeight = titleRef.current?.clientHeight || 0;
         const blurbHeight = blurbRef.current?.clientHeight || 0;
-        const remainingStaticHeight = 182 + 24; // 182px for the static content, 24px for margins
+        const remainingStaticHeight = 182 + 24 + NAVBAR_HEIGHT; // 182px for the static content, 24px for margins
         const maxHeight = window.innerHeight - titleHeight - blurbHeight - remainingStaticHeight;
         setListMaxHeight(`${Math.min(600, maxHeight)}px`);
     }
 
     // =============== MAIN RENDER =================
 
-    return (
-        <main className="flex flex-col items-center justify-between min-h-screen">
+    return (<>
+        <div className="w-full h-navbar" /> {/* Navbar spacer */}
+        <main className="relative flex flex-col items-center justify-between h-content">
             <div className="absolute top-[50%] translate-y-[-50%] w-[97%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] 3xl:w-[30%]">
                 <div className="flex flex-col w-full p-2 sm:p-8 bg-zinc-950 rounded-xl border border-gray-7 overflow-hidden">
                     <div className="text-3xl mb-6 sm:mb-5 mt-4 sm:mt-0 mx-auto sm:mx-0 text-center sm:text-left">
@@ -359,5 +361,5 @@ export default function Participants({ params }: { params: { groupChatId: string
             {renderDeleteParticipantModal()}
             {renderResponseAlert()}
         </main>
-    );
+    </>);
 }

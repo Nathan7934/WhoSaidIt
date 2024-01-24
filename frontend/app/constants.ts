@@ -9,3 +9,6 @@ export const DOMAIN_URL: string = "http://localhost:3000";
 
 // How long the user must hold on a message to select it in mobile layout (ms)
 export const MOBILE_HOLD_DURATION = 400;
+
+// The height of the navbar (px)
+export const NAVBAR_HEIGHT = 60;

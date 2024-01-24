@@ -93,13 +93,14 @@ export default function ManageGroupChats() {
     const totalParticipants = groupChats.reduce((acc, curr) => acc + curr.numParticipants, 0);
     const totalQuizzes = groupChats.reduce((acc, curr) => acc + curr.quizzes.length, 0);
 
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-between">
-            <div className="w-[97%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] 3xl:w-[40%] mt-8 sm:mt-24">
+    return (<>
+        <div className="w-full h-navbar" /> {/* Navbar spacer */}
+        <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
+            <div className="w-[97%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] 3xl:w-[40%] mt-4 sm:mt-24">
                 {!loading && 
                     <div className="w-full px-2 flex flex-col md:flex-row mb-6 md:mb-4 justify-center">
                         <div className="text-3xl md:text-4xl text-center font-bold mb-3">
-                            Uploaded Group Chats
+                            Your Group Chats
                         </div>
                         <button className="w-56 btn btn-primary btn-md mr-auto md:mr-0 ml-auto" 
                         onClick={() => toggleModal("upload-modal")}>
@@ -124,5 +125,5 @@ export default function ManageGroupChats() {
             {/* FIXED POSITION ELEMENTS */}
             {activeUser && <GroupChatUploadModal userId={activeUser.id} modalDomId="upload-modal" setReloadCounter={setReloadCounter} />}
         </main>
-    )
+    </>)
 }

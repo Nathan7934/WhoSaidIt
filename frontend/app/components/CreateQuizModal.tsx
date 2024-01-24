@@ -84,7 +84,7 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
         } else {
             console.error("Error creating quiz: ", error);
             setResponseStatus({
-                message: "Error creating quiz",
+                message: error,
                 success: false,
                 doAnimate: true,
             });

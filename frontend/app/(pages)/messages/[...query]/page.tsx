@@ -716,13 +716,14 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
     // =============== MAIN RENDER =================
 
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-between">
-            <div className="relative w-[97%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-3 lg:mt-24">
+    return (<>
+        <div className="w-full h-navbar" /> {/* Navbar spacer */}
+        <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
+            <div className="relative w-[97%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-3 lg:mt-5">
                 <div className="w-full p-2 mb-3 lg:p-8 bg-zinc-950 rounded-xl border border-gray-7 overflow-x-hidden">
                     <div className="flex mb-2">
                         <div className="text-3xl mb-3 lg:mb-5 mt-2 lg:mt-0 mx-auto lg:mx-0 text-center lg:text-left">
-                            Messages for <br className="lg:hidden" /> {stableDataLoading ? "..." : `"${groupChatName}"`}
+                            <span className="text-2xl lg:text-3xl">Messages for</span> <br className="lg:hidden" /> {stableDataLoading ? "..." : `"${groupChatName}"`}
                         </div>
                         {/* HTTP Response alert */}
                         {!isMobile && renderResponseAlert()}
@@ -763,5 +764,5 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             {/* HTTP Response alert  */}
             {isMobile && renderResponseAlert()}
         </main>
-    );
+    </>);
 }

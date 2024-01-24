@@ -329,16 +329,11 @@ export default function Dashboard() {
 
     // =============== MAIN RENDER ===============
 
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-between">
-            <div className="relative w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-12 sm:mt-24">
-                <div className="text-4xl text-center sm:text-left sm:text-5xl font-bold">
-                    <span className="sm:mr-4">Welcome,</span>
-                    <br className="sm:hidden" /> 
-                    {!loading && activeUser ? activeUser.username : 
-                    <div className="skeleton h-11 w-60 rounded-md inline-block mt-1 sm:mt-0 opacity-25" />}
-                </div>
-                <div className="mt-8 flex flex-col sm:flex-row items-center">
+    return (<>
+        <div className="w-full h-navbar" /> {/* Navbar spacer */}
+        <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
+            <div className={`relative w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%]`}>
+                <div className="mt-6 flex flex-col sm:flex-row items-center">
                     <div className="btn-group btn-group-scrollable">
                         <Link href="/group-chats" className="btn">
                             <button>Manage Group Chats</button>
@@ -363,5 +358,5 @@ export default function Dashboard() {
                 modalDomId="create-quiz-modal" setReloadCounter={setReloadCounter} />
             }
         </main>
-    )
+    </>)
 }
