@@ -38,7 +38,7 @@ public class UserService {
                 () -> new DataNotFoundException("User with id " + id + " not found.")
         );
 
-        // We delete this user's group chats using their service class because it contains logic that accounts for
+        // We delete this user's group chats using the groupChatService class because it contains logic that accounts for
         // maintaining referential integrity and clearing orphaned records.
         List<GroupChat> groupChats = new ArrayList<>(user.getGroupChats());
         for (GroupChat groupChat : groupChats) {
@@ -46,5 +46,17 @@ public class UserService {
         }
 
         userRepository.delete(user);
+    }
+
+    @Transactional
+    public void updateFocusedGroupChat(long userId, long groupChatId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new DataNotFoundException("User with id " + userId + " not found.")
+        );
+        // Find the group chat among the user's list of group chats with the given id
+        GroupChat groupChat = user.getGroupChats().stream().filter(gc -> gc.getId() == groupChatId).findFirst().orElseThrow(
+                () -> new DataNotFoundException("Group chat with id " + groupChatId + " not found.")
+        );
+        user.setFocusedGroupChat(groupChat);
     }
 }

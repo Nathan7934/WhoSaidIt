@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AuthenticationService {
 
@@ -72,14 +74,35 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new DataNotFoundException("User with username " + username + " not found")
         );
-        if (!jwtService.validateUserToken(refreshToken, user)) {
+        if (!jwtService.validateUserRefreshToken(refreshToken, user)) {
             throw new IllegalArgumentException("Invalid refresh token. User must authenticate again.");
         }
         String accessToken = jwtService.generateUserToken(user);
         String newRefreshToken = jwtService.generateUserRefreshToken(user);
         return new AuthenticationResponseDTO(user.getId(), accessToken, newRefreshToken);
+    }
 
-        // TODO: Implement a way to invalidate refresh tokens once used.
+    @Transactional
+    public void updateUserPassword(long userId, String currentPassword, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new DataNotFoundException("User with id " + userId + " not found")
+        );
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordModifiedDate(LocalDateTime.now());
+    }
+
+    @Transactional
+    public void updateUserEmail(long userId, String password, String newEmail) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new DataNotFoundException("User with id " + userId + " not found")
+        );
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Password is incorrect");
+        }
+        user.setEmail(newEmail);
     }
 
     @Transactional

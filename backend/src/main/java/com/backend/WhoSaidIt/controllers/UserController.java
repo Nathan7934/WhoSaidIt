@@ -38,4 +38,19 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PatchMapping("/users/{userId}/focused-group-chat/{groupChatId}")
+    public ResponseEntity<String> updateFocusedGroupChat(
+            @PathVariable long userId,
+            @PathVariable long groupChatId
+    ) {
+        try {
+            userService.updateFocusedGroupChat(userId, groupChatId);
+            return ResponseEntity.ok(
+            "Changed focused group chat of user with id " + userId + " to group chat with id " + groupChatId
+            );
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

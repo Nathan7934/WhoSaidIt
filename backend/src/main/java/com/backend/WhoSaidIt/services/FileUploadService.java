@@ -7,6 +7,7 @@ import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.UserRepository;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -120,10 +121,7 @@ public class FileUploadService {
     public void persistGroupChatFromFile(
             long userId, String groupChatName, MultipartFile file, Integer minCharacters
     ) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new DataNotFoundException("User with id " + userId + " not found.")
-        );
-        GroupChat groupChat = groupChatService.createGroupChat(user, groupChatName, file.getOriginalFilename());
+        GroupChat groupChat = groupChatService.createGroupChat(userId, groupChatName, file.getOriginalFilename());
 
         // Each key in the messages map is a sender name, and each value is a list of pairs of timestamps and message
         HashMap<String, List<Pair<LocalDateTime, String>>> messages = new HashMap<String, List<Pair<LocalDateTime, String>>>();

@@ -2,6 +2,7 @@ package com.backend.WhoSaidIt.security;
 
 import com.backend.WhoSaidIt.DTOs.AuthenticationResponseDTO;
 import com.backend.WhoSaidIt.DTOs.QuizTokenResponseDTO;
+import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,45 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
 
+    // This endpoint is used to update a user's password.
+    // The endpoint is not prefixed with '/auth' because it requires an authentication token.
+    // It is located in this class (rather than UserController) because it requires authentication services.
+    @PatchMapping("/users/{userId}/password")
+    public ResponseEntity<String> updateUserPassword(
+            @PathVariable long userId,
+            @RequestBody UpdatePasswordRequest request
+    ) {
+        try {
+            authenticationService.updateUserPassword(userId, request.currentPassword(), request.newPassword());
+            return ResponseEntity.ok("Password updated.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            // This exception is thrown when the old password provided does not match the user's current password.
+            // We return a 422 status code to indicate that the request was valid, but the provided data was not.
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
+        }
+    }
+
+    // This endpoint is used to update a user's email.
+    // The endpoint is not prefixed with '/auth' because it requires an authentication token.
+    // It is located in this class (rather than UserController) because it requires authentication services.
+    @PatchMapping("/users/{userId}/email")
+    public ResponseEntity<String> updateUserEmail(
+            @PathVariable long userId,
+            @RequestBody UpdateEmailRequest request
+    ) {
+        try {
+            authenticationService.updateUserEmail(userId, request.password(), request.newEmail());
+            return ResponseEntity.ok("Email updated to: " + request.newEmail());
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            // This exception is thrown when the old password provided does not match the user's current password.
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
+        }
+    }
+
     // This endpoint is used to generate a shareable quiz token.
     // STILL REQUIRES AUTHENTICATION (hence no '/auth' prefix in the path)
     @PostMapping("/quizzes/{quizId}/generate-token")
@@ -77,5 +117,7 @@ public class AuthenticationController {
 
     public record AuthenticationRequest(String username, String password) {}
 
+    public record UpdatePasswordRequest(String currentPassword, String newPassword) {}
 
+    public record UpdateEmailRequest(String password, String newEmail) {}
 }

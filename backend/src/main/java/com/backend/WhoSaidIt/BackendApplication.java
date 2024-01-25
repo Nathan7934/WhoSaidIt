@@ -40,9 +40,8 @@ public class BackendApplication {
 			authenticationService.register("nathanraymant@gmail.com", "Nathan7934", "password");
 
 			// Adding some extra group chats without data to fill out the front end
-			User user = userRepository.findById(1L).orElseThrow();
-			groupChatService.createGroupChat(user, "Virgin Squad", "demoGroupChat.txt");
-			groupChatService.createGroupChat(user, "Anti-Goon Chat (November 2023)", "demoGroupChat.txt");
+			groupChatService.createGroupChat(1L, "Virgin Squad", "demoGroupChat.txt");
+			groupChatService.createGroupChat(1L, "Anti-Goon Chat (November 2023)", "demoGroupChat.txt");
 
 			// Adding some extra quizzes without data to fill out the front end
 			QuizController.TimeAttackQuizPostRequest taq3 = new QuizController.TimeAttackQuizPostRequest(

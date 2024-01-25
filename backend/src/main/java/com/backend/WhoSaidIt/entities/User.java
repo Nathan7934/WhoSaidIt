@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,9 +39,16 @@ public class User implements UserDetails {
 	@Column(name = "password", columnDefinition = "TEXT", nullable = false)
 	private String password;
 
+	@Column(name = "passwordModifiedDate", columnDefinition = "TIMESTAMP", nullable = false)
+	private LocalDateTime passwordModifiedDate;
+
 	@OneToMany(mappedBy = "user")
 	@JsonBackReference
 	private List<GroupChat> groupChats = new ArrayList<GroupChat>();
+
+	@OneToOne
+	@JoinColumn(name = "focusedGroupChatId", referencedColumnName = "groupChatId")
+	private GroupChat focusedGroupChat; // Defined as foreign key reference to groupChats table
 
 	@Enumerated(EnumType.STRING)
 	private Role role;
@@ -50,6 +58,7 @@ public class User implements UserDetails {
 	public User(String username, String password, String email, Role role) {
 		this.username = username;
 		this.password = password;
+		this.passwordModifiedDate = LocalDateTime.now();
 		this.email = email;
 		this.role = role;
 	}
@@ -62,7 +71,21 @@ public class User implements UserDetails {
 	@Override
 	public String getPassword() { return password; }
 
+	public void setPassword(String password) { this.password = password; }
+
+	public LocalDateTime getPasswordModifiedDate() { return passwordModifiedDate; }
+
+	public void setPasswordModifiedDate(LocalDateTime passwordModifiedDate) {
+		this.passwordModifiedDate = passwordModifiedDate;
+	}
+
+	public void setEmail(String email) { this.email = email; }
+
 	public List<GroupChat> getGroupChats() { return groupChats; }
+
+	public GroupChat getFocusedGroupChat() { return focusedGroupChat; }
+
+	public void setFocusedGroupChat(GroupChat focusedGroupChat) { this.focusedGroupChat = focusedGroupChat; }
 
 	// The below methods are required implementations for the UserDetails interface
 	// ============================================================================
@@ -88,7 +111,8 @@ public class User implements UserDetails {
 		return new UserDTO(
 				this.id,
 				this.username,
-				this.email
+				this.email,
+				this.focusedGroupChat == null ? -1L : this.focusedGroupChat.getId()
 		);
 	}
 }

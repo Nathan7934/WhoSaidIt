@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.security;
 
+import com.backend.WhoSaidIt.entities.User;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.security.tokens.TokenType;
 import io.jsonwebtoken.Claims;
@@ -11,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,11 +87,23 @@ public class JwtService {
                 .compact();
     }
 
-    // Validates a JWT token by checking that the token's subject matches the given user details and that
+    // Validates a JWT access token by checking that the token's subject matches the given user details and that
     // the token has not expired.
-    public boolean validateUserToken(String token, UserDetails userDetails) {
-        final String username = extractSubject(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public boolean validateUserAccessToken(String accessToken, UserDetails userDetails) {
+        final String username = extractSubject(accessToken);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(accessToken);
+    }
+
+    // Validates a JWT refresh token by checking that the token's subject matches the given user and that the token
+    // has not expired. Also checks that the user's password was not changed after the token was issued.
+    // This is to ensure that if a user changes their password, all of their refresh tokens are invalidated.
+    public boolean validateUserRefreshToken(String refreshToken, User user) {
+        final String username = extractSubject(refreshToken);
+        Date tokenIssueDate = extractAllClaims(refreshToken).getIssuedAt();
+        LocalDateTime tokenIssueDateTime = tokenIssueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        boolean isPasswordChangedAfterTokenIssued = user.getPasswordModifiedDate().isAfter(tokenIssueDateTime);
+
+        return username.equals(user.getUsername()) && !isTokenExpired(refreshToken) && !isPasswordChangedAfterTokenIssued;
     }
 
     // Validates a shareable quiz token by checking that the token's subject matches the given quiz.
