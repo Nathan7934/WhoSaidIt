@@ -179,7 +179,47 @@ const config: Config = {
                     '50%': { transform: 'translate(1%, 0)' },
                     '75%': { transform: 'translate(-1%, 0)' },
                     '100%': { transform: 'translate(0, 0)' },
-                }
+                },
+
+                // NAVBAR: Submenu entering and exiting keyframes
+                subMenuEnteringFromRight: {
+                    from: { 
+                        transform: 'translateX(100%)',
+                        visibility: 'visible',
+                    },
+                    to: { transform: 'translateX(0)' },
+                },
+                subMenuExitingToLeft: {
+                    from: { transform: 'translateX(0)' },
+                    to: { 
+                        transform: 'translateX(-100%)',
+                        visibility: 'hidden',
+                    },
+                },
+                subMenuEnteringFromLeft: {
+                    from: { 
+                        transform: 'translateX(-100%)',
+                        visibility: 'visible',
+                    },
+                    to: { transform: 'translateX(0)' },
+                },
+                subMenuExitingToRight: {
+                    from: { transform: 'translateX(0)' },
+                    to: { 
+                        transform: 'translateX(100%)',
+                        visibility: 'hidden',
+                    },
+                },
+
+                // NAVBAR: Home/Close button slideover for desktop keyframes
+                homeCloseExpand: {
+                    from: { marginRight: '0px' },
+                    to: { marginRight: '310px' },
+                },
+                homeCloseCollapse: {
+                    from: { marginRight: '310px' },
+                    to: { marginRight: '0px' },
+                },
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -223,6 +263,16 @@ const config: Config = {
                 // NAVBAR: Menu expansion animations
                 menuEntering: 'slideInFromRight 0.15s ease-in-out 0s 1 forwards',
                 menuExiting: 'slideOutToRight 0.15s ease-in-out 0s 1 forwards',
+
+                // NAVBAR: Submenu entering and exiting animations
+                subMenuEnteringFromRight: 'subMenuEnteringFromRight 0.25s ease-in-out 0s 1 forwards',
+                subMenuEnteringFromLeft: 'subMenuEnteringFromLeft 0.25s ease-in-out 0s 1 forwards',
+                subMenuExitingToRight: 'subMenuExitingToRight 0.25s ease-in-out 0s 1 forwards',
+                subMenuExitingToLeft: 'subMenuExitingToLeft 0.25s ease-in-out 0s 1 forwards',
+
+                // NAVBAR: Home/Close button slideover for desktop keyframes
+                homeCloseExpand: 'homeCloseExpand 0.15s ease-in-out 0s 1 forwards',
+                homeCloseCollapse: 'homeCloseCollapse 0.15s ease-in-out 0s 1 forwards',
             },
             dropShadow: {
                 glow: [

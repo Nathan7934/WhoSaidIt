@@ -59,6 +59,9 @@ details > summary.list-none::marker {
 }
 
 /* ========== Additional classes for Animate.css ========== */
+.animate__animated.animate__duration-100ms { --animate-duration: 100ms; }
+.animate__animated.animate__duration-150ms { --animate-duration: 150ms; }
+.animate__animated.animate__duration-200ms { --animate-duration: 200ms; }
 .animate__animated.animate__duration-300ms { --animate-duration: 300ms; }
 .animate__animated.animate__duration-400ms { --animate-duration: 400ms; }
 .animate__animated.animate__duration-500ms { --animate-duration: 500ms; }
