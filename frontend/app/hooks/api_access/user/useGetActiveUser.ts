@@ -1,6 +1,6 @@
 import { EXTERNAL_API_ROOT, INTERNAL_API_ROOT } from "@/app/constants";
 
-import useAuth from "../../security/useAuth";
+import useAuth from "../../context_imports/useAuth";
 import useAuthFetch from "../../security/useAuthFetch";
 import useRefreshToken from "../../security/useRefreshToken";
 import { User } from "@/app/interfaces";

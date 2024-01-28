@@ -13,12 +13,11 @@ import DeleteIcon from "@/app/components/icons/DeleteIcon";
 import { GroupChat, Participant, ResponseStatus } from "@/app/interfaces";
 import { NAVBAR_HEIGHT } from "@/app/constants";
 import Modal from "@/app/components/Modal";
-import { toggleModal, determineAlertAnimationClassName } from "@/app/utilities/miscFunctions";
+import { toggleModal, renderResponseAlert } from "@/app/utilities/miscFunctions";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 
 interface ParticipantEdit {
     id: number;
@@ -296,21 +295,9 @@ export default function Participants({ params }: { params: { groupChatId: string
         return (<Modal domId="delete-modal" title={modalTitle} >{modalContent}</Modal>);
     }
 
-    // TODO: Might be worth making this a component
-    const renderResponseAlert = () => {
-        const success: boolean = responseStatus.success;
-        return (
-            <div className={`fixed top-6 left-[50%] translate-x-[-50%] flex z-50 p-2 rounded-2xl overflow-hidden 
-            ${determineAlertAnimationClassName(responseStatus)}`}>
-                {success
-                    ? <Image src="/success.svg" alt="Success" width={36} height={36} />
-                    : <Image src="/alert.svg" alt="Alert" width={36} height={36} />
-                }
-                <div className={`self-center mx-2 whitespace-nowrap ${success ? "text-green-100" : "text-red-100"}`}>
-                    {responseStatus.message}
-                </div>
-            </div>
-        );
+    const renderParticipantResponseAlert = () => {
+        const positioning = "fixed top-6 left-[50%] translate-x-[-50%]";
+        return renderResponseAlert(responseStatus, positioning);
     }
 
     // =============== HELPER FUNCTIONS ===============
@@ -359,7 +346,7 @@ export default function Participants({ params }: { params: { groupChatId: string
             </div>
             {/* FIXED POSITION ELEMENTS */}
             {renderDeleteParticipantModal()}
-            {renderResponseAlert()}
+            {renderParticipantResponseAlert()}
         </main>
     </>);
 }

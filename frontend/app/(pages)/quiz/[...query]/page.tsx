@@ -1,7 +1,7 @@
 "use client";
 
 import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
-import useAuth from "@/app/hooks/security/useAuth";
+import useAuth from "@/app/hooks/context_imports/useAuth";
 
 import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant, ResponseStatus, PostTimeAttackEntry, PostSurvivalEntry } from "@/app/interfaces";
 import AnimatedScoreCounter from "@/app/components/AnimatedScoreCounter";

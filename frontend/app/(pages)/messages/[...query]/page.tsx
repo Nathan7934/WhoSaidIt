@@ -7,7 +7,7 @@ import useGetParticipants from "@/app/hooks/api_access/participants/useGetPartic
 import usePostMessagesInQuiz from "@/app/hooks/api_access/quizzes/usePostMessagesInQuiz";
 import useDeleteMessages from "@/app/hooks/api_access/messages/useDeleteMessages";
 
-import { renderQuizTypeBadge, determineAlertAnimationClassName, toggleModal, isModalOpen } from "@/app/utilities/miscFunctions";
+import { renderQuizTypeBadge, renderResponseAlert, toggleModal, isModalOpen } from "@/app/utilities/miscFunctions";
 import { 
     GroupChat, Message, MessagePage, PaginationConfig, SurvivalQuiz,
     TimeAttackQuiz, Participant, ResponseStatus 
@@ -489,12 +489,12 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         }
 
         return(
-            <div className={`fixed flex top-0 left-0 right-0 translate-y-[-100%] bg-zinc-950/90 border-b border-gray-3 z-50
+            <div className={`fixed flex top-navbar left-0 right-0 translate-y-[-100%] bg-zinc-950/90 backdrop-blur-sm border-b border-gray-3 z-40
             ${determineAnimationClass()}`}>
                 <div className="self-center ml-4 text-lg font-semibold">
                     {selectedMessageIds.length} Selected
                 </div>
-                <div className="ml-auto mr-2 py-4">
+                <div className="ml-auto mr-2 py-2">
                     {!filterQuizId &&
                         <button className="btn btn-solid mr-1" onClick={() => toggleModal('delete-modal')}>
                             Delete
@@ -695,23 +695,11 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         });
     }
 
-    const renderResponseAlert = () => {
-        const alertStyle: string = isMobile
-            ? "fixed bottom-4 left-[50%] translate-x-[-50%] flex z-50 p-2 rounded-2xl overflow-hidden"
-            : "flex ml-auto self-center p-2 rounded-2xl overflow-hidden"
-
-        const success: boolean = responseStatus.success;
-        return (
-            <div className={`${alertStyle} ${determineAlertAnimationClassName(responseStatus)}`}>
-                {success
-                    ? <Image src="/success.svg" alt="Success" width={36} height={36} />
-                    : <Image src="/alert.svg" alt="Alert" width={36} height={36} />
-                }
-                <div className={`self-center mx-2 whitespace-nowrap ${success ? "text-green-100" : "text-red-100"}`}>
-                    {responseStatus.message}
-                </div>
-            </div>
-        );
+    const renderMessageResponseAlert = () => {
+        const positioning: string = isMobile
+            ? "fixed bottom-4 left-[50%] translate-x-[-50%]"
+            : "ml-auto self-center";
+        return renderResponseAlert(responseStatus, positioning);
     }
 
     // =============== MAIN RENDER =================
@@ -726,7 +714,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                             <span className="text-2xl lg:text-3xl">Messages for</span> <br className="lg:hidden" /> {stableDataLoading ? "..." : `"${groupChatName}"`}
                         </div>
                         {/* HTTP Response alert */}
-                        {!isMobile && renderResponseAlert()}
+                        {!isMobile && renderMessageResponseAlert()}
                     </div>
                     <div className="flex mb-4">
                         {renderQueryFilterControls()}
@@ -762,7 +750,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             {isMobile && renderMobileParticipantFilterModal()}
             {isMobile && renderMobileQuizFilterModal()}
             {/* HTTP Response alert  */}
-            {isMobile && renderResponseAlert()}
+            {isMobile && renderMessageResponseAlert()}
         </main>
     </>);
 }

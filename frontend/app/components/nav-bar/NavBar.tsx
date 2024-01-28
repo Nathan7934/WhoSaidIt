@@ -1,8 +1,8 @@
 "use client";
 
-import { NavBarState } from "@/app/utilities/NavBarContext";
-import { NAVBAR_HEIGHT } from "@/app/constants";
-import { User } from "@/app/interfaces";
+import { User, ResponseStatus } from "@/app/interfaces";
+import { renderModalResponseAlert, toggleModal, isModalOpen } from "@/app/utilities/miscFunctions";
+import Modal from "../Modal";
 
 // Navbar header icons
 import MenuIcon from "../icons/MenuIcon";
@@ -21,9 +21,11 @@ import LogoutIcon from "../icons/nav-bar/LogoutIcon";
 
 // Navbar submenus
 import GroupChatUploadSubmenu from "./GroupChatUploadSubmenu";
+import ChangePasswordSubmenu from "./ChangePasswordSubmenu";
 
-import useNavBar from "@/app/hooks/useNavBar";
+import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
+import useHandleLogout from "@/app/hooks/security/useHandleLogout";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -35,10 +37,12 @@ export default function NavBar() {
     const router = useRouter();
 
     // Extract NavBar state from global context
-    const { navBarHidden, navBarExpanded, navBarState, setNavBarHidden, setNavBarExpanded, setNavBarState } = useNavBar();
+    const { navBarHidden, navBarExpanded, navBarState, refetchDataCounter, 
+        setNavBarHidden, setNavBarExpanded, setNavBarState, setRefetchDataCounter } = useNavBar();
 
     // API access
     const getActiveUser = useGetActiveUser();
+    const handleLogout = useHandleLogout();
 
     // ----------- State (Data) -----------
     const [user, setUser] = useState<User | null>(null);
@@ -49,6 +53,10 @@ export default function NavBar() {
     const [doAnimateExpansion, setDoAnimateExpansion] = useState<boolean>(false);
     const [doAnimateMenuOptionsTransition, setDoAnimateMenuOptionsTransition] = useState<boolean>(false);
     const [isHomeButton, setIsHomeButton] = useState<boolean>(true);
+    const [navBarOverlayHidden, setNavBarOverlayHidden] = useState<boolean>(true);
+
+    const [loggingOut, setLoggingOut] = useState<boolean>(false);
+    const [logoutResponseStatus, setLogoutResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
 
     // ----------- Data Retrieval ---------
     useEffect(() => {
@@ -61,7 +69,44 @@ export default function NavBar() {
             setLoading(false);
         }
         getNavBarData();
-    }, []);
+    }, [refetchDataCounter]);
+
+    // ----------- Data Helpers -----------
+
+    const executeLogout = async () => {
+        setLoggingOut(true);
+        const error: string | null = await handleLogout();
+        if (!error) {
+            setLogoutResponseStatus({ 
+                message: "Successfully logged out.", 
+                success: true, 
+                doAnimate: true 
+            });
+            setTimeout(() => {
+                if (isModalOpen("logout-confirmation-modal")) toggleModal("logout-confirmation-modal");
+                router.push("/"); // Navigate to home page
+                setNavBarExpanded(false);
+                setLogoutResponseStatus({ message: "", success: false, doAnimate: false });
+                setTimeout(() => {
+                    setDoAnimateExpansion(false);
+                    setDoAnimateMenuOptionsTransition(false);
+                    setUser(null);
+                }, 150);
+            }, 1000);
+        } else {
+            console.error("Error logging out: ", error);
+            setLogoutResponseStatus({ 
+                message: "Error logging out. Please try again or contact developer.", 
+                success: false, 
+                doAnimate: true 
+            });
+            setTimeout(() => {
+                if (isModalOpen("logout-confirmation-modal")) toggleModal("logout-confirmation-modal");
+                setLogoutResponseStatus({ message: "", success: false, doAnimate: false });
+            }, 3000);
+        }
+        setLoggingOut(false);
+    }
 
     // ----------- UI Effects ---------
 
@@ -82,9 +127,62 @@ export default function NavBar() {
 
     useEffect(() => {
         setIsHomeButton(navBarState === "DEFAULT" || navBarState.includes("EXITING"));
-    }, [navBarState])
+    }, [navBarState]);
+
+    // Ensures that the desktop navbar overlay does not render when the navbar is collapsed
+    useEffect(() => {
+        if (!isFullWidth) {
+            if (navBarExpanded) {
+                setNavBarOverlayHidden(false);
+            } else {
+                setTimeout(() => {
+                    setNavBarOverlayHidden(true);
+                }, 200);
+            }
+        }
+    }, [navBarExpanded]);
 
     // =============== RENDER FUNCTIONS ===============
+
+    const renderLogoutConfirmationModal = () => {
+        let modalContent: JSX.Element;
+        if (logoutResponseStatus.doAnimate) {
+            modalContent = renderModalResponseAlert(logoutResponseStatus);
+        } else if (loggingOut) {
+            modalContent = (
+                <div className="my-6 sm:my-12">
+                    <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-gray-11">
+                            Logging Out...
+                    </div>
+                    <div className="flex justify-center">
+                        <div className="spinner-circle w-10 h-10 sm:w-12 sm:h-12" />
+                    </div>
+                </div>
+            );
+        } else {
+            modalContent = (<>
+                <div className="w-full text-center text-2xl font-semibold">
+                    Are you sure?
+                </div>
+                <div className="grid grid-cols-2 gap-2 my-4 mx-7">
+                    <button className="grow btn btn-lg"
+                    onClick={() => toggleModal("logout-confirmation-modal")}>
+                        Cancel
+                    </button>
+                    <button className="grow btn btn-lg"
+                    onClick={() => executeLogout()}>
+                        Logout
+                    </button>
+                </div>
+            </>);
+        }
+
+        return (
+            <Modal domId="logout-confirmation-modal" darkOverlay>
+                {modalContent}
+            </Modal>
+        );
+    }
 
     const renderMainMenuOptions = () => {
         if (!user) return null;
@@ -164,13 +262,14 @@ export default function NavBar() {
                     </div>
                     <div className="flex items-center">
                         <LogoutIcon className="w-5 h-5" />
-                        <div className="ml-3 md:hover:font-semibold md:hover:text-white noselect cursor-pointer">
+                        <div className="ml-3 md:hover:font-semibold md:hover:text-white noselect cursor-pointer"
+                        onClick={() => toggleModal("logout-confirmation-modal")}>
                             Logout
                         </div>
                     </div>
                 </div>
-                <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-6 items-center mt-2 text-gray-8 underline font-light
-                decoration-1 decoration-gray-8/50 underline-offset-4 noselect text-sm">
+                <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-6 items-center mt-2 text-gray-6 underline font-light
+                decoration-1 decoration-gray-6/50 underline-offset-4 noselect text-sm">
                     <a className="transition duration-200 hover:text-gray-11 hover:decoration-gray-11/50 cursor-pointer"
                     href="https://github.com/Nathan7934/WhoSaidIt" target="_blank">
                         GitHub
@@ -205,7 +304,7 @@ export default function NavBar() {
                 break;
             case "PASSWORD":
             case "PASSWORD_EXITING":
-                subMenu = <>Password</>; 
+                subMenu = <ChangePasswordSubmenu username={user.username} />; 
                 break;
             case "EMAIL":
             case "EMAIL_EXITING":
@@ -244,13 +343,14 @@ export default function NavBar() {
                         {subMenu}
                     </div>
                 }
+                {renderLogoutConfirmationModal()}
             </div>
         );
     }
 
     // =============== MAIN RENDER ===============
 
-    const homeCloseButtonClicked = () => {
+    const homeBackButtonClicked = () => {
         if (isHomeButton) {
             setNavBarExpanded(false);
             router.push("/"); // Navigate to home page
@@ -286,7 +386,7 @@ export default function NavBar() {
             </div>
             <div className={`h-full flex items-center w-[70px] md:w-[70px] md:ml-auto md:pl-[5px] md:border-l border-gray-5
             ${doAnimateExpansion ? navBarExpanded ? " md:animate-homeCloseExpand" : " md:animate-homeCloseCollapse" : ""}`}>
-                <button className="" onClick={() => homeCloseButtonClicked()}>
+                <button className="" onClick={() => homeBackButtonClicked()}>
                     {isHomeButton
                         ? <HomeIcon className="relative left-[2px] ml-4 h-7 w-7 text-gray-12" />
                         : <BackIcon className="relative left-[2px] ml-4 h-7 w-7 text-gray-12" />}
@@ -315,7 +415,7 @@ export default function NavBar() {
         {/* Navbar Menu */}
         {renderMenu()}
         {/* Navbar Overlay */}
-        {!isFullWidth &&
+        {!isFullWidth && !navBarOverlayHidden &&
             <div className={`fixed top-navbar left-0 right-0 bottom-0 bg-black/75 z-10 animate__animated animate__duration-200ms
             ${doAnimateExpansion ? navBarExpanded ? " animate__fadeIn" : " animate__fadeOut" : " hidden"}`}
             onClick={() => {

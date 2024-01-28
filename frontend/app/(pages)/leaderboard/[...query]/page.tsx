@@ -3,7 +3,7 @@
 import useGetLeaderboard from "@/app/hooks/api_access/leaderboards/useGetLeaderboard";
 import useGetQuiz from "@/app/hooks/api_access/quizzes/useGetQuiz";
 import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
-import useAuth from "@/app/hooks/security/useAuth";
+import useAuth from "@/app/hooks/context_imports/useAuth";
 
 import { TimeAttackEntry, SurvivalEntry, TimeAttackQuiz, SurvivalQuiz } from "@/app/interfaces";
 import { isTimeAttackEntry, isSurvivalEntry } from "@/app/utilities/miscFunctions";

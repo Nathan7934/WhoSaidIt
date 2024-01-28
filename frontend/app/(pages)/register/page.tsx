@@ -1,13 +1,17 @@
 "use client";
 
+import usePostRegistration from "@/app/hooks/api_access/authentication/usePostRegistration";
+import useNavBar from "@/app/hooks/context_imports/useNavBar";
+import { validateUsername, validateEmail, validatePassword } from "@/app/utilities/formValidationFunctions";
+
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import usePostRegistration from "@/app/hooks/api_access/authentication/usePostRegistration";
 
 export default function Register() {
 
     const postRegistration = usePostRegistration();
+    const { setRefetchDataCounter } = useNavBar();
     const router = useRouter();
 
     // Register form fields states
@@ -57,6 +61,7 @@ export default function Register() {
             if (!error) {
                 // If we successfully registered, redirect to the dashboard
                 router.push("/dashboard");
+                setRefetchDataCounter(c => c + 1); // This will trigger a refetch of the data in the navbar
             } else {
                 // If there was an error
                 console.error(error);
@@ -66,9 +71,6 @@ export default function Register() {
         });
     }
 
-    // Validation functions:
-    // TODO: Add identical validation to the backend
-    // ========================================================================================================================
     const isFormValid = (): boolean => {
         if (
             (usernameValid && emailValid && passwordValidMessage === "" && confirmPasswordValid) &&
@@ -76,46 +78,14 @@ export default function Register() {
         ) {
             return true;
         }
-        if (registerUsername === "") {
-            setUsernameValid(false);
-        }
-        if (registerEmail === "") {
-            setEmailValid(false);
-        }
-        if (registerPassword === "") {
-            setPasswordValidMessage("Password cannot be empty");
-        }
-        if (registerConfirmPassword === "") {
-            setConfirmPasswordValid(false);
-        }
+        if (registerUsername === "") setUsernameValid(false);
+        if (registerEmail === "") setEmailValid(false);
+        if (registerPassword === "") setPasswordValidMessage("Password cannot be empty");
+        if (registerConfirmPassword === "") setConfirmPasswordValid(false);
         setSubmitFailed(true);
         return false;
     }
 
-    const validateUsername = (username: string): boolean => {
-        return username.length > 3;
-    }
-
-    const validateEmail = (email: string): boolean => {
-        const eReg: RegExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return eReg.test(email.toLowerCase());
-    }
-
-    const validatePassword = (password: string): string => {
-        let invalidMessage: string = "";
-        if (password.length <= 8) {
-            invalidMessage = "Must be at least 8 characters";
-        } else if (!/[A-Za-z]/.test(password)) {
-            invalidMessage = "Must contain at least one letter";
-        } else if (!/[A-Z]/.test(password)) {
-            invalidMessage = "At least one letter must be uppercase";
-        } else if (!/\d/.test(password)) {
-            invalidMessage = "Must contain at least one number";
-        } else if (!/[.,!@#$%^&*]/.test(password)) {
-            invalidMessage = "Must contain at least one of .,!@#$%^&*";
-        }
-        return invalidMessage;
-    }
     // ========================================================================================================================
 
     return(
@@ -141,7 +111,7 @@ export default function Register() {
                             {!emailValid && <span className="form-label-alt text-error">Must be a valid email</span>}
                         </label>
                         {/* Email input field */}
-                        <input placeholder="Type here" className={"input max-w-full" + (!usernameValid && submitFailed ? " input-error" : "")} 
+                        <input placeholder="Type here" className={"input max-w-full" + (!emailValid && submitFailed ? " input-error" : "")} 
                         type="email" name="email" value={registerEmail} onChange={handleRegisterChange}/>
                         
                     </div>
@@ -152,7 +122,7 @@ export default function Register() {
                         </label>
                         <div className="form-control">
                             {/* Password input field */}
-                            <input placeholder="Type here" type="password" className={"input max-w-full" + (!usernameValid && submitFailed ? " input-error" : "")} 
+                            <input placeholder="Type here" type="password" className={"input max-w-full" + (passwordValidMessage && submitFailed ? " input-error" : "")} 
                             name="password" value={registerPassword} onChange={handleRegisterChange}/>
                         </div>
                     </div>
@@ -163,7 +133,7 @@ export default function Register() {
                         </label>
                         <div className="form-control">
                             {/* Confirm Password input field */}
-                            <input placeholder="Type here" type="password" className={"input max-w-full" + (!usernameValid && submitFailed ? " input-error" : "")} 
+                            <input placeholder="Type here" type="password" className={"input max-w-full" + (!confirmPasswordValid && submitFailed ? " input-error" : "")} 
                             name="confirmPassword" value={registerConfirmPassword} onChange={handleRegisterChange}/>
                         </div>
                     </div>

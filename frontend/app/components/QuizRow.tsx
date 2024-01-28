@@ -263,7 +263,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                         <div className="mb-4">{renderQuizTypeBadge(quiz.type)}</div>
                     </div>
                     <div className="px-4 mb-4">
-                        <button className="btn btn-primary w-full text-lg"
+                        <button className="btn btn-lg btn-primary w-full text-lg"
                         onClick={() => {
                             getShareableLink();
                             toggleModal(linkModalDomId);
@@ -272,7 +272,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                             Copy Shareable Link
                         </button>
                         <Link href={`/quiz/${quiz.id}`}>
-                            <button className="btn btn-sm w-full mt-2 font-semibold">Play Quiz</button>
+                            <button className="btn w-full mt-2 font-semibold">Play Quiz</button>
                         </Link>
                         <Link href={`/leaderboard/${quiz.id}`}>
                             <button className="btn btn-sm w-full mt-2">Quiz Leaderboard</button>

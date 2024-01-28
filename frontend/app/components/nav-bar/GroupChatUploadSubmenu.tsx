@@ -1,10 +1,12 @@
 import usePostGroupChatUpload from "@/app/hooks/api_access/group_chats/usePostGroupChatUpload";
-import useNavBar from "@/app/hooks/useNavBar";
+import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import Modal from "../Modal";
 import InfoIcon from "../icons/InfoIcon";
 import { toggleModal, renderModalResponseAlert } from "@/app/utilities/miscFunctions";
 import { ResponseStatus } from "@/app/interfaces";
 
+import AnimateHeight from "react-animate-height";
+import { Height } from "react-animate-height";
 import { useState } from "react";
 
 interface GroupChatUploadSubmenuProps {
@@ -14,7 +16,7 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
 
     // ----------- Hooks ------------------
     const postGroupChatUpload = usePostGroupChatUpload();
-    const {navBarState, setNavBarState, setNavBarExpanded, setRefetchDataCounter } = useNavBar();
+    const {setNavBarState, setNavBarExpanded, setRefetchDataCounter } = useNavBar();
 
     // ----------- State (Input) -----------
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -26,6 +28,7 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
     const [nameMissing, setNameMissing] = useState<boolean>(false);
     const [fileMissing, setFileMissing] = useState<boolean>(false);
+    const [helpHeight, setHelpHeight] = useState<Height>('auto');
 
     // ----------- Data Helpers -----------
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,26 +141,32 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
         );
     } else {
         subMenuContent = (<>
-            <div className="w-full text-3xl font-semibold mb-4">
+            <div className="w-full text-center text-3xl font-semibold mb-4">
                 Upload Group Chat
             </div>
-            <div className="text-gray-11 mb-4">
-                Export your group chat from WhatsApp as a text file and upload it here.
-                Once you have uploaded a group chat, you can create quizzes for it.
+            <AnimateHeight duration={500} height={helpHeight}>
+                <div className="text-gray-11 mb-4">
+                    Export your group chat from WhatsApp as a text file and upload it here.
+                    Once you have uploaded a group chat, you can create quizzes for it.
+                </div>
+                <div className="mb-4">
+                    <a className="text-lg text-primary font-semibold" 
+                    href="https://faq.whatsapp.com/1180414079177245/?helpref=uf_share" target="_blank">
+                        How to export your WhatsApp chat history
+                    </a>
+                </div>
+                <div className="mb-3 sm:mb-6 text-gray-11">
+                    Make sure to select <span className="text-white font-bold">"Without Media"</span> when exporting your chat.
+                </div>
+                <div className="sm:hidden mb-4 text-gray-9 text-sm">
+                    iPhone users may prefer to email their chat history to themselves and upload it using a PC.
+                </div>
+            </AnimateHeight>
+            <div className="divider divider-horizontal my-0 text-sm text-gray-8 font-semibold" 
+            onClick={() => setHelpHeight(helpHeight === 0 ? 'auto' : 0)}>
+                {helpHeight === 0 ? "Show" : "Hide"} Help
             </div>
-            <div className="mb-4">
-                <a className="text-lg text-primary font-semibold" 
-                href="https://faq.whatsapp.com/1180414079177245/?helpref=uf_share" target="_blank">
-                    How to export your WhatsApp chat history
-                </a>
-            </div>
-            <div className="mb-3 sm:mb-6 text-gray-11">
-                Make sure to select <span className="text-white font-bold">"Without Media"</span> when exporting your chat.
-            </div>
-            <div className="sm:hidden mb-6 text-gray-9 text-sm">
-                iPhone users may prefer to email their chat history to themselves and upload it using a PC.
-            </div>
-            <div className="flex gap-3 mb-4 pt-5 border-t border-gray-1">
+            <div className="flex gap-3 mb-4 pt-5">
                 <div className="w-2/3">
                     <label className="text-sm">Group Chat Name</label>
                     <input name="groupChatName" className={`input mt-[2px] max-w-none ${nameMissing ? "input-error" : ""}`} 

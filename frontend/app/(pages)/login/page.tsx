@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import usePostLogin from "@/app/hooks/api_access/authentication/usePostLogin";
+import useNavBar from "@/app/hooks/context_imports/useNavBar";
 
 export default function Login() {
 
     const postLogin = usePostLogin();
     const router = useRouter();
+    const { setRefetchDataCounter } = useNavBar();
 
     // Login form fields state
     const [loginUsername, setLoginUsername] = useState<string>("");
@@ -38,6 +40,7 @@ export default function Login() {
             if (!error) {
                 // If we successfully logged in, redirect to the dashboard
                 router.push("/dashboard");
+                setRefetchDataCounter(c => c + 1); // This will trigger a refetch of the data in the navbar
             } else {
                 // If there was an error
                 console.error(error);

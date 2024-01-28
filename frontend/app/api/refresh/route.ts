@@ -2,7 +2,7 @@ import { EXTERNAL_API_ROOT } from "@/app/constants";
 import { NextResponse } from "next/server";
 import Cookies from "universal-cookie";
 
-import buildAuthReponse from "@/app/utilities/BuildAuthResponse";
+import buildAuthReponse from "@/app/utilities/buildAuthResponse";
 
 /* 
     This server-side NextJS route is used as an HTTP proxy to the SpringBoot backend API.

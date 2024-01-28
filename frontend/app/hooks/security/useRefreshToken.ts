@@ -1,6 +1,6 @@
 import { INTERNAL_API_ROOT } from '@/app/constants';
 
-import useAuth from './useAuth';
+import useAuth from '../context_imports/useAuth';
 
 // A simple hook for refreshing the local access token using the internal API.
 // Returns the token and user id if successful, otherwise returns null.

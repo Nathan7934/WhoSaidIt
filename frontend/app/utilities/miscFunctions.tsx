@@ -23,19 +23,6 @@ export function renderQuizTypeBadge(type: string) {
         font-semibold relative bottom-[1px] whitespace-nowrap">Survival</span>);
 }
 
-// This function determines the appropriate animation class for an alert, given its response status.
-export const determineAlertAnimationClassName = (responseStatus: ResponseStatus) => {
-    const color = responseStatus.success ? " bg-green-2" : " bg-blue-2";
-    if (responseStatus.doAnimate) {
-        if (responseStatus.message === "") {
-            return " animate-alertExiting" + color;
-        } else {
-            return " animate-alertEntering" + color;
-        }
-    }
-    return " opacity-0";
-}
-
 // The next two functions are used to toggle the visibility of a modal, given its DOM id.
 export function toggleModal(modalId: string) {
     const modalCheckbox = document.getElementById(modalId) as HTMLInputElement;
@@ -104,6 +91,39 @@ export function renderQuizRows(groupChat: GroupChatInfo, setReloadCounter: React
     });
 }
 
+// ===================================== Response alert animations =====================================
+
+// This function determines the appropriate animation class for an alert, given its response status.
+const determineAlertAnimationClassName = (responseStatus: ResponseStatus) => {
+    const color = responseStatus.success ? " bg-green-2" : " bg-blue-2";
+    if (responseStatus.doAnimate) {
+        if (responseStatus.message === "") {
+            return " animate-alertExiting" + color;
+        } else {
+            return " animate-alertEntering" + color;
+        }
+    }
+    return " opacity-0";
+}
+
+export const renderResponseAlert = (responseStatus: ResponseStatus, positioning: string) => {
+    const success: boolean = responseStatus.success;
+    return (
+        <div className={`${positioning} z-50 p-2 rounded-2xl overflow-hidden 
+        ${determineAlertAnimationClassName(responseStatus)}`}>
+            <div className="relative">
+                {success
+                    ? <SuccessIcon className="w-[40px] h-[40px]" />
+                    : <AlertIcon className="w-[40px] h-[40px]" />
+                }
+                <div className="absolute left-[50px] top-[50%] translate-y-[-50%] whitespace-nowrap">
+                    {responseStatus.message}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export function renderModalResponseAlert(responseStatus: ResponseStatus) {
     const success: boolean = responseStatus.success;
         return (
@@ -120,6 +140,8 @@ export function renderModalResponseAlert(responseStatus: ResponseStatus) {
             </div>
         )
 }
+
+// =====================================================================================================
 
 // Formats the content of a message so that WhatsApp-style text markup is displayed correctly
 // (e.g. *bold*, _italic_)

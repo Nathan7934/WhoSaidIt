@@ -1,4 +1,4 @@
-import useAuth from "./useAuth";
+import useAuth from "../context_imports/useAuth";
 import { EXTERNAL_API_ROOT } from "@/app/constants";
 
 // Takes a URL Token extracted from a shareable link and attempts to validate it.

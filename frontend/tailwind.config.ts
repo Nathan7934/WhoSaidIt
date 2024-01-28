@@ -48,11 +48,11 @@ const config: Config = {
                 // MESSAGES: Keyframes for response status alerts
                 alertEntering: {
                     '0%': {
-                        width: '52px',
+                        width: '56px',
                         opacity: '0',
                     },
                     '25%': { opacity: '1' },
-                    '50%': { width: '52px' },
+                    '50%': { width: '56px' },
                     '100%': { width: '310px' },
                 },
                 alertExiting: {
@@ -60,11 +60,11 @@ const config: Config = {
                         width: '310px',
                         opacity: '1',
                     },
-                    '50%': { width: '52px' },
+                    '50%': { width: '56px' },
                     '75%': { opacity: '1' },
                     '100%': { 
                         opacity: '0',
-                        width: '52px',
+                        width: '56px',
                     },
                 },
 
