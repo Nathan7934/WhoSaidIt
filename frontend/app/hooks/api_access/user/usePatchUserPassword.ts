@@ -26,8 +26,10 @@ export default function usePatchUserPassword() {
                 if (response.status === 422) { // Server returns UNPROCESSABLE_ENTITY if current password is incorrect
                     return 'Current password is incorrect';
                 } else if (response.status >= 400 && response.status < 500) {
+                    console.error(`Client failed request: ${response.status}`);
                     return 'Client request rejected';
                 } else if (response.status >= 500) {
+                    console.error(`Server failed request: ${response.status}`);
                     return 'Server failed to process the request';
                 }
                 return 'Unknown error';

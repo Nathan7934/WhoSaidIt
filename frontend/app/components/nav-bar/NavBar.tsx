@@ -21,6 +21,7 @@ import LogoutIcon from "../icons/nav-bar/LogoutIcon";
 
 // Navbar submenus
 import GroupChatUploadSubmenu from "./GroupChatUploadSubmenu";
+import DashboardFocusSubmenu from "./DashboardFocusSubmenu";
 import ChangePasswordSubmenu from "./ChangePasswordSubmenu";
 import ChangeEmailSubmenu from "./ChangeEmailSubmenu";
 
@@ -49,7 +50,7 @@ export default function NavBar() {
     const [user, setUser] = useState<User | null>(null);
 
     // ----------- State (UI) -------------
-    const [isFullWidth, setIsFullWidth] = useState<boolean>(window.innerWidth < 768);
+    const [isFullWidth, setIsFullWidth] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [doAnimateExpansion, setDoAnimateExpansion] = useState<boolean>(false);
     const [doAnimateMenuOptionsTransition, setDoAnimateMenuOptionsTransition] = useState<boolean>(false);
@@ -301,7 +302,7 @@ export default function NavBar() {
                 break;
             case "FOCUS":
             case "FOCUS_EXITING":
-                subMenu = <>Focus</>; 
+                subMenu = <DashboardFocusSubmenu/>;
                 break;
             case "PASSWORD":
             case "PASSWORD_EXITING":
