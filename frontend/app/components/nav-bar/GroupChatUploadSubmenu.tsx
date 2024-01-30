@@ -10,7 +10,7 @@ import { Height } from "react-animate-height";
 import { useState } from "react";
 
 interface GroupChatUploadSubmenuProps {
-    userId: number;
+    userId: number | undefined;
 }
 export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmenuProps) {
 
@@ -58,6 +58,11 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
     }
 
     const handleUpload = async () => {
+        if (!userId) {
+            console.error("Error: No user signed in. This should not happen as the user must be signed in to see this page.");
+            return;
+        }
+
         if (!selectedFile || groupChatName.length === 0) {
             setFileMissing(!selectedFile);
             setNameMissing(groupChatName.length === 0);

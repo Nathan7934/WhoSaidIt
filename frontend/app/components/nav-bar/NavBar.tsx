@@ -22,6 +22,7 @@ import LogoutIcon from "../icons/nav-bar/LogoutIcon";
 // Navbar submenus
 import GroupChatUploadSubmenu from "./GroupChatUploadSubmenu";
 import ChangePasswordSubmenu from "./ChangePasswordSubmenu";
+import ChangeEmailSubmenu from "./ChangeEmailSubmenu";
 
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
@@ -185,7 +186,13 @@ export default function NavBar() {
     }
 
     const renderMainMenuOptions = () => {
-        if (!user) return null;
+        if (loading) {
+            return <div className="spinner-circle spinner-lg absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]" />;
+        }
+        if (!user) {
+            // TODO: Direct user to login/signup page
+            return <></>;
+        }
 
         return (
             <div className="flex flex-col w-full px-6">
@@ -286,17 +293,11 @@ export default function NavBar() {
     }
 
     const renderMenu = () => {
-        if (loading) return <></>; // TODO: Add loading animation
-        if (!user) {
-            // TODO: Direct user to login/signup page
-            return <></>;
-        }
-
         let subMenu: JSX.Element | null;
         switch (navBarState) {
             case "UPLOAD":
             case "UPLOAD_EXITING":
-                subMenu = <GroupChatUploadSubmenu userId={user.id} />; 
+                subMenu = <GroupChatUploadSubmenu userId={user?.id} />; 
                 break;
             case "FOCUS":
             case "FOCUS_EXITING":
@@ -304,14 +305,15 @@ export default function NavBar() {
                 break;
             case "PASSWORD":
             case "PASSWORD_EXITING":
-                subMenu = <ChangePasswordSubmenu username={user.username} />; 
+                subMenu = <ChangePasswordSubmenu/>; 
                 break;
             case "EMAIL":
             case "EMAIL_EXITING":
-                subMenu = <>Email</>; 
+                subMenu = <ChangeEmailSubmenu/>; 
                 break;
             default:
-                subMenu = null; break;
+                subMenu = null; 
+                break;
         }
 
         const getMenuAnimationClass = () => {

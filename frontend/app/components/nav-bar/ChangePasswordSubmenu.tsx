@@ -8,10 +8,7 @@ import { renderResponseAlert } from "@/app/utilities/miscFunctions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-interface ChangePasswordSubmenuProps {
-    username: string;
-}
-export default function ChangePasswordSubmenu({ username }: ChangePasswordSubmenuProps) {
+export default function ChangePasswordSubmenu() {
 
     // ----------- Hooks ------------------
     const patchUserPassword = usePatchUserPassword();
