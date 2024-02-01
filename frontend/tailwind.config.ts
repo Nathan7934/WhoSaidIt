@@ -15,6 +15,7 @@ const config: Config = {
                 'content': `calc(100vh - ${NAVBAR_HEIGHT}px)`
             },
             maxHeight: { 'content': `calc(100vh - ${NAVBAR_HEIGHT}px)`, },
+            minHeight: { 'content': `calc(100vh - ${NAVBAR_HEIGHT}px)`, },
             spacing: { 'navbar': `${NAVBAR_HEIGHT}px`, },
             keyframes: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows keyframes

@@ -662,8 +662,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
         return quizzes.map((quiz: TimeAttackQuiz | SurvivalQuiz, index: number) => {
             return (
-                <button key={quiz.id} className="bg-black py-2 rounded-2xl border border-gray-3 
-                drop-shadow-[0_0px_1px_rgba(255,255,255,0.85)] transition duration-300 ease-in-out lg:hover:bg-gray-3"
+                <button key={quiz.id} className="bg-black pt-2 pb-3 rounded-2xl border border-zinc-800 transition duration-300 ease-in-out lg:hover:bg-gray-3"
                 onClick={() => {
                     if (filterModal) {
                         setFilterQuizId(quiz.id);
@@ -671,7 +670,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                         updateMessagesInQuiz(quiz.id);
                     }
                 }}>
-                    <div className="flex-col">
+                    <div className="flex flex-col items-center">
                         <div className="lg:text-xl">
                             {quiz.quizName}
                         </div>

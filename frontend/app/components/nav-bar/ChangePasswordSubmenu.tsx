@@ -127,8 +127,10 @@ export default function ChangePasswordSubmenu() {
                         {!currentPasswordValid && <span className="form-label-alt text-error">Incorrect password</span>}
                     </label>
                     {/* Current password field */}
-                    <input placeholder="Type here" className={`input max-w-full ${!currentPasswordValid && submitFailed ? " input-error": ""}`}
-                    name="currentPassword" type="password" value={currentPassword} onChange={handleInputChange}/>
+                    <input placeholder="Type here" name="currentPassword" type="password" value={currentPassword} onChange={handleInputChange}
+                    className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                    ${!currentPasswordValid && submitFailed ? " input-error": ""}`}
+                    />
                 </div>
                 <div className="form-field mt-4">
                     <label className="form-label leading-4">
@@ -136,22 +138,24 @@ export default function ChangePasswordSubmenu() {
                         {newPasswordValidMessage && <span className="form-label-alt text-error">{newPasswordValidMessage}</span>}
                     </label>
                     {/* New password field */}
-                    <input placeholder="Type here" className={`input max-w-full ${newPasswordValidMessage && submitFailed ? " input-error": ""}`}
-                    name="newPassword" type="password" value={newPassword} onChange={handleInputChange} />
+                    <input placeholder="Type here" name="newPassword" type="password" value={newPassword} onChange={handleInputChange}
+                    className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                    ${newPasswordValidMessage && submitFailed ? " input-error": ""}`}/>
                 </div>
-                <div className="form-field mt-2">
+                <div className="form-field mt-1">
                     <label className="form-label leading-4">
                         Confirm New Password
                         {!confirmNewPasswordValid && <span className="form-label-alt text-error">Passwords must match</span>}
                     </label>
                     {/* Confirm new password field */}
-                    <input placeholder="Type here" className={`input max-w-full ${!confirmNewPasswordValid && submitFailed ? " input-error": ""}`}
-                    name="confirmNewPassword" type="password" value={confirmNewPassword} onChange={handleInputChange} />
+                    <input placeholder="Type here" name="confirmNewPassword" type="password" value={confirmNewPassword} onChange={handleInputChange}
+                    className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                    ${!confirmNewPasswordValid && submitFailed ? " input-error": ""}`}/>
                 </div>
                 <div className="form-field pt-6">
                     <div className="form-control justify-between">
-                        <button type="submit" className={`btn btn-lg w-full font-semibold
-                        ${changingPassword ? " btn-outline-primary" : " btn-primary"}`}>
+                        <button type="submit" className={`btn btn-lg w-full font-medium
+                        ${changingPassword ? " btn-outline-primary" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
                             {changingPassword ? 
                                 <div className="spinner-dot-pulse">
                                     <div className="spinner-pulse-dot"></div>

@@ -1,4 +1,4 @@
-import { ResponseStatus, GroupChatInfo, TimeAttackEntry, SurvivalEntry } from "../interfaces";
+import { ResponseStatus, GroupChatInfo, TimeAttackEntry, SurvivalEntry, TimeAttackQuiz, SurvivalQuiz } from "../interfaces";
 import QuizRow from "../components/QuizRow";
 import SuccessIcon from "../components/icons/SuccessIcon";
 import AlertIcon from "../components/icons/AlertIcon";
@@ -12,15 +12,61 @@ export const isTimeAttackEntry = (entry: TimeAttackEntry | SurvivalEntry): entry
 export const isSurvivalEntry = (entry: TimeAttackEntry | SurvivalEntry): entry is SurvivalEntry => {
     return entry.type === "SURVIVAL";
 }
+export const isTimeAttackQuiz = (quiz: TimeAttackQuiz | SurvivalQuiz): quiz is TimeAttackQuiz => {
+    return quiz.type === "TIME_ATTACK";
+}
 
 // This function renders a badge for a quiz type.
 export function renderQuizTypeBadge(type: string) {
     if (type === "TIME_ATTACK") {
-        return (<span className="py-[2px] px-2 bg-blue-4 rounded-lg text-blue-12 text-sm
-            font-semibold relative bottom-[1px] whitespace-nowrap">Time Attack</span>);
+        return (
+            <div className="flex w-min rounded-[9px] bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 text-blue-50">
+                <div className="grow bg-black m-[1px] py-[2px] px-3 rounded-lg text-sm whitespace-nowrap">
+                    Time Attack
+                </div>
+            </div>
+        );
     }
-    return (<span className="py-[2px] px-2 bg-red-4 rounded-lg text-red-12 text-sm
-        font-semibold relative bottom-[1px] whitespace-nowrap">Survival</span>);
+    return (
+        <div className="flex w-min rounded-[9px] bg-gradient-to-r from-purple-400/90 via-pink-300/90 to-purple-400/90 text-violet-50">
+            <div className="grow bg-black m-[1px] py-[2px] px-3 rounded-lg text-sm whitespace-nowrap">
+                Survival
+            </div>
+        </div>
+    );
+}
+
+// This function renders the rows for a list of quizzes, given a group chat.
+export function renderQuizRows(groupChat: GroupChatInfo, setReloadCounter: React.Dispatch<React.SetStateAction<number>>) {
+    const quizzes = groupChat.quizzes;
+
+    if (quizzes.length < 1) {
+        return (
+            <div className="flex flex-col gap-2 px-4 justify-center w-full h-36 lg:h-[240px] border border-dashed 
+            rounded-lg border-zinc-700 text-center">
+                <div className="text-lg text-zinc-400">
+                    Nothing here
+                </div>
+                <div className="text-sm text-zinc-600">
+                    Create a new quiz to get started
+                </div>
+            </div>
+        )
+    }
+
+    return quizzes.map((quiz, index) => {
+        let dropdownPosition: ("dropdown-menu-left" | "dropdown-menu-left-bottom" | "dropdown-menu-left-top") = "dropdown-menu-left";
+        if (quizzes.length !== 1) {
+            if (index === 0) dropdownPosition = "dropdown-menu-left-bottom";
+            else if (index === quizzes.length - 1) dropdownPosition = "dropdown-menu-left-top";
+        }
+        return (
+            <div key={quiz.id} className={`border-zinc-800 pt-2 pb-4 ${index !== quizzes.length - 1 ? "border-b" : ""}`}>
+                <QuizRow groupChatId={groupChat.id} quiz={quiz} setReloadCounter={setReloadCounter}
+                dropdownPosition={dropdownPosition} />
+            </div>
+        ); 
+    });
 }
 
 // The next two functions are used to toggle the visibility of a modal, given its DOM id.
@@ -56,39 +102,6 @@ export function formatDateLong(date: Date): string {
     const year: string = date.getFullYear().toString();
     const ordinalSuffix = getOrdinalSuffix(date.getDate());
     return `${month} ${day}${ordinalSuffix}, ${year}`;
-}
-
-// This function renders the rows for a list of quizzes, given a group chat.
-export function renderQuizRows(groupChat: GroupChatInfo, setReloadCounter: React.Dispatch<React.SetStateAction<number>>) {
-    const quizzes = groupChat.quizzes;
-
-    if (quizzes.length < 1) {
-        return (
-            <div className="flex flex-col gap-4 px-4 justify-center w-full h-36 lg:h-[240px] border-2 border-dashed 
-            rounded-lg border-gray-6 text-center">
-                <div className="text-xl text-gray-11">
-                    Nothing here.
-                </div>
-                <div className="text-gray-9">
-                    Create a new quiz to get started.
-                </div>
-            </div>
-        )
-    }
-
-    return quizzes.map((quiz, index) => {
-        let dropdownPosition: ("dropdown-menu-left" | "dropdown-menu-left-bottom" | "dropdown-menu-left-top") = "dropdown-menu-left";
-        if (quizzes.length !== 1) {
-            if (index === 0) dropdownPosition = "dropdown-menu-left-bottom";
-            else if (index === quizzes.length - 1) dropdownPosition = "dropdown-menu-left-top";
-        }
-        return (
-            <div key={quiz.id} className={`border-gray-6 py-[6px] ${index !== quizzes.length - 1 ? "border-b" : ""}`}>
-                <QuizRow groupChatId={groupChat.id} quiz={quiz} setReloadCounter={setReloadCounter}
-                dropdownPosition={dropdownPosition} />
-            </div>
-        ); 
-    });
 }
 
 // ===================================== Response alert animations =====================================

@@ -18,6 +18,8 @@ import FocusIcon from "../icons/nav-bar/FocusIcon";
 import PasswordIcon from "../icons/nav-bar/PasswordIcon";
 import EmailIcon from "../icons/nav-bar/EmailIcon";
 import LogoutIcon from "../icons/nav-bar/LogoutIcon";
+import CreateQuizIcon from "../icons/nav-bar/CreateQuizIcon";
+import ShareIcon from "../icons/nav-bar/ShareIcon";
 
 // Navbar submenus
 import GroupChatUploadSubmenu from "./GroupChatUploadSubmenu";
@@ -30,17 +32,17 @@ import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useHandleLogout from "@/app/hooks/security/useHandleLogout";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
 export default function NavBar() {
     
     // ----------- Hooks ------------------
     const router = useRouter();
+    const pathname = usePathname();
 
     // Extract NavBar state from global context
-    const { navBarHidden, navBarExpanded, navBarState, refetchDataCounter, 
-        setNavBarHidden, setNavBarExpanded, setNavBarState, setRefetchDataCounter } = useNavBar();
+    const { navBarExpanded, navBarState, refetchDataCounter, setNavBarExpanded, setNavBarState, setRefetchDataCounter } = useNavBar();
 
     // API access
     const getActiveUser = useGetActiveUser();
@@ -50,6 +52,8 @@ export default function NavBar() {
     const [user, setUser] = useState<User | null>(null);
 
     // ----------- State (UI) -------------
+    const [doDisplayNavBar, setDoDisplayNavBar] = useState<boolean>(true);
+
     const [isFullWidth, setIsFullWidth] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [doAnimateExpansion, setDoAnimateExpansion] = useState<boolean>(false);
@@ -59,6 +63,14 @@ export default function NavBar() {
 
     const [loggingOut, setLoggingOut] = useState<boolean>(false);
     const [logoutResponseStatus, setLogoutResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
+
+    // ----------- Determine if rendered -----------
+    // We do not want the Navbar to render on certain pages. As of now, '/quiz' is the only page where the Navbar should not render.
+    useEffect(() => {
+        const doDisplay = !pathname.includes("/quiz");
+        setDoDisplayNavBar(doDisplay);
+        if (!doDisplay) setDoAnimateExpansion(false);
+    }, [pathname]);
 
     // ----------- Data Retrieval ---------
     useEffect(() => {
@@ -146,6 +158,8 @@ export default function NavBar() {
 
     // =============== RENDER FUNCTIONS ===============
 
+    if (!doDisplayNavBar) return <></>; // Do not render Navbar if not on a page where it should be displayed
+
     const renderLogoutConfirmationModal = () => {
         let modalContent: JSX.Element;
         if (logoutResponseStatus.doAnimate) {
@@ -190,26 +204,74 @@ export default function NavBar() {
         if (loading) {
             return <div className="spinner-circle spinner-lg absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]" />;
         }
-        if (!user) {
-            // TODO: Direct user to login/signup page
-            return <></>;
+        if (!user) { // Encourage user to register
+            const createAccountClicked = () => {
+                setNavBarExpanded(false);
+                router.push("/register");
+            }
+            return (
+                <div className="flex flex-col px-2 items-center">
+                    <div className="mt-8 text-3xl font-semibold">
+                        Welcome, Guest
+                    </div>
+                    <div className="mt-1 text-xl text-zinc-50 font-extralight">
+                        You are not logged in
+                    </div>
+                    <div className="mt-8 text-center text-zinc-50 text-lg font-medium">
+                        With an account, you'll be able to:
+                    </div>
+                    <div className="flex flex-col gap-4 items-center mt-4 text-lg text-gray-12 font-light">
+                        <div className="flex rounded-2xl bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 noselect">
+                            <div className="grow flex items-center px-4 py-3 bg-black rounded-2xl m-[1px]">
+                                <UploadIcon className="w-7 h-7 text-indigo-100 ml-auto" />
+                                <div className="ml-3 text-lg font-normal mr-auto text-zinc-50">
+                                    Upload Group Chats
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex rounded-2xl bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 noselect">
+                            <div className="grow flex items-center px-4 py-3 bg-black rounded-2xl m-[1px]">
+                                <CreateQuizIcon className="w-7 h-7 text-indigo-100" />
+                                <div className="ml-3 text-lg font-normal text-zinc-50">
+                                    Create Custom Quizzes
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex rounded-2xl bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 noselect">
+                            <div className="grow flex items-center px-4 py-3 bg-black rounded-2xl m-[1px]">
+                                <ShareIcon className="w-7 h-7 text-indigo-100" />
+                                <div className="ml-3 text-lg font-normal text-zinc-50">
+                                    Share with Friends
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-10 text-lg text-zinc-50">
+                        To get started, register and sign up
+                    </div>
+                    <button className="mt-3 text-xl py-3 px-8 bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-600
+                    rounded-2xl font-medium" onClick={() => createAccountClicked()}>
+                        Create Account
+                    </button>
+                </div>
+            )
         }
 
         return (
             <div className="flex flex-col w-full px-6">
                 <div className="flex my-6 items-center">
-                    <UserIcon className="w-14 h-14 text-gray-12" />
+                    <UserIcon className="w-14 h-14 text-zinc-50" />
                     <div className="ml-2">
-                        <div className="text-2xl font-semibold text-gray-12">
+                        <div className="text-2xl font-semibold text-zinc-50">
                             {user.username}
                         </div>
-                        <div className="text-sm font-medium text-gray-11">
+                        <div className="text-sm text-zinc-400">
                             {user.email}
                         </div>
                     </div>
                 </div>
                 <div className="font-bold text-xl">Group Chats</div>
-                <div className="flex flex-col gap-4 ml-3 mt-4 text-lg text-gray-12 font-light">
+                <div className="flex flex-col gap-4 ml-3 mt-4 text-lg text-zinc-50 font-light">
                     <div className="flex items-center">
                         <GroupChatIcon className="w-5 h-5" />
                         <Link href="/group-chats">
@@ -382,7 +444,7 @@ export default function NavBar() {
 
     return (<>
         {/* Navbar Header */}
-        <div className={`fixed flex top-0 left-0 right-0 h-navbar items-center bg-zinc-950 border-b border-gray-5 z-50
+        <div className={`fixed flex top-0 left-0 right-0 h-navbar items-center bg-zinc-950 border-b border-zinc-800 z-50
         shadow-[0_0px_15px_5px_rgba(0,0,0,0.8)]`}>
             <div className="hidden md:inline-block ml-8 text-3xl font-semibold">
                 WhoSaidIt

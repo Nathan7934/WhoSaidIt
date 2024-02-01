@@ -94,8 +94,8 @@ export default function DashboardFocusSubmenu() {
             const isChecked: boolean = user.focusedGroupChatId === groupChat.id;
             return (
                 <div key={groupChat.id} onClick={() => handleFocusChange(groupChat.id)}
-                className={`flex items-center w-full py-4 px-4 bg-zinc-950 rounded-xl border border-gray-3 transition-colors duration-200
-                ${isChecked ? " border-[rgb(0,114,245)]" : ""}`}>
+                className={`flex items-center w-full py-4 px-4 bg-zinc-950 rounded-xl border transition-colors duration-300
+                ${isChecked ? " border-[rgb(0,114,245)]" : " border-gray-3"}`}>
                     <div className="grow text-lg font-semibold whitespace-nowrap text-ellipsis overflow-hidden">
                         {groupChat.groupChatName}
                     </div>
@@ -112,7 +112,7 @@ export default function DashboardFocusSubmenu() {
 
     return (<>
         <div className="flex flex-col px-5 max-h-content overflow-y-scroll">
-            <div className="w-full mt-8 text-4xl font-semibold text-center">
+            <div className="w-full mt-8 text-3xl font-semibold text-center">
                 Dashboard Focus
             </div>
             <div className="mt-6 text-sm text-center text-gray-12">

@@ -15,7 +15,7 @@ const DEFAULT_NUM_QUESTIONS: number = 20;
 const DEFAULT_INITIAL_QUESTION_SCORE: number = 500;
 const DEFAULT_PENALTY_PER_SECOND: number = 50;
 const DEFAULT_WRONG_ANSWER_PENALTY: number = 200;
-const DEFAULT_NUMBER_OF_SKIPS: number = 0;
+const DEFAULT_NUMBER_OF_SKIPS: number = 3;
 
 interface CreateQuizModalProps {
     groupChatId: number;
@@ -44,17 +44,13 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
 
     // ----------- State (UI) -------------
     const [creating, setCreating] = useState<boolean>(false);
-    const [nameMissing, setNameMissing] = useState<boolean>(false);
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
     const [advancedOptionsHeight, setAdvancedOptionsHeight] = useState<Height>(0);
 
     // ----------- Data Helpers -----------
 
     const createQuiz = async () => {
-        if (quizName.length === 0) {
-            setNameMissing(true);
-            return;
-        }
+        if (quizName.length === 0) return;
 
         setCreating(true);
         let quizConfig: PostSurvivalQuiz | PostTimeAttackQuiz;
@@ -179,33 +175,33 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
                 <div className="flex gap-4">
                     <div className="grow">
                         <label className="form-label mb-[2px]">Num. questions</label>
-                        <input name="numberOfQuestions" className="input input-sm focus:input-primary w-full max-w-none" 
-                        type="number" value={numberOfQuestions} onChange={handleInputChange} />
+                        <input name="numberOfQuestions" type="number" value={numberOfQuestions} onChange={handleInputChange}
+                        className="input input-sm w-full max-w-none border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                     </div>
                     <div className="grow">
                         <label className="form-label mb-[2px] whitespace-nowrap">Initial question score</label>
-                        <input name="initialQuestionScore" className="input input-sm focus:input-primary w-full max-w-none" 
-                        type="number" value={initialQuestionScore} onChange={handleInputChange} />
+                        <input name="initialQuestionScore" type="number" value={initialQuestionScore} onChange={handleInputChange}
+                        className="input input-sm w-full max-w-none border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                     </div>
                 </div>
                 <div className="flex gap-4">
                     <div className="grow">
                         <label className="form-label mb-[2px]">Penalty per second</label>
-                        <input name="penaltyPerSecond" className="input input-sm focus:input-primary w-full max-w-none" 
-                        type="number" value={penaltyPerSecond} onChange={handleInputChange} />
+                        <input name="penaltyPerSecond" type="number" value={penaltyPerSecond} onChange={handleInputChange}
+                        className="input input-sm w-full max-w-none border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                     </div>
                     <div className="grow">
                         <label className="form-label mb-[2px]">Incorrect penalty</label>
-                        <input name="wrongAnswerPenalty" className="input input-sm focus:input-primary w-full max-w-none" 
-                        type="number" value={wrongAnswerPenalty} onChange={handleInputChange} />
+                        <input name="wrongAnswerPenalty" type="number" value={wrongAnswerPenalty} onChange={handleInputChange}
+                        className="input input-sm w-full max-w-none border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                     </div>
                 </div>
             </div>)
             : (<div className="flex">
                 <div className="grow">
                     <label className="form-label mb-[2px]">Number of Skips</label>
-                    <input name="numberOfSkips" className="input input-sm focus:input-primary w-full max-w-none" 
-                    type="number" value={numberOfSkips} onChange={handleInputChange} />
+                    <input name="numberOfSkips" type="number" value={numberOfSkips} onChange={handleInputChange}
+                    className="input input-sm w-full max-w-none border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                 </div>
             </div>);
 
@@ -222,50 +218,52 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
         return (
             <Modal domId={`info-modal-${groupChatId}`} title="Defining Your Quiz" maxWidth="400px" margin="24px" darkOverlay>
                 <div className="mx-4 mb-4">
-                    <div className="text-gray-11 mb-3">
+                    <div className="text-zinc-400 mb-4 font-extralight">
                         You can create two types of quizzes:
                     </div>
-                    <div className="mb-2">
-                        <span className="text-blue-9 font-bold">Time Attack</span> - Answer a set number of questions as quickly as possible 
+                    <div className="mb-2 font-light text-zinc-200">
+                        <span className="text-blue-400 font-semibold">Time Attack</span> - Answer a set number of questions as quickly as possible 
                         to get the highest score.
                     </div>
-                    <div className="mb-3">
-                        <span className="text-red-9 font-bold">Survival</span> - Compete for the longest streak of correct answers.
+                    <div className="mb-4 font-light text-zinc-200">
+                        <span className="text-purple-400 font-semibold">Survival</span> - Compete for the longest streak consecutive correct answers.
                     </div>
-                    <div className="text-gray-8 text-sm mb-2">
+                    <div className="text-zinc-400 text-sm mb-2 font-extralight">
                         Once created, you may specify questions while viewing a group chat's messages.
                     </div>
-                    <div className="divider mt-0 mb-1" />
-                    <div className="text-gray-11 mb-3">
+                    {/* FOR NOW, I CONSIDER THIS TO BE TOO MUCH INFORMATION */}
+                    {/*  */}
+                    {/* <div className="divider mt-0 mb-1" />
+                    <div className="text-zinc-400 mb-3 font-extralight">
                         Each quiz type has optional settings you may configure:
                     </div>
                     <div className="max-h-[225px] overflow-y-scroll pr-1">
                         <div className="mb-3">
-                            <span className="text-blue-9">(TA)</span> <span className="font-semibold">Num. Questions</span> 
-                            <span className="text-gray-11"> - The number of questions in your quiz 
-                            <span className="text-gray-7"> (default: {DEFAULT_NUM_QUESTIONS})</span></span> 
+                        <span className="text-blue-400">(TA)</span> <span className="font-medium text-zinc-100">Num. Questions</span> 
+                            <span className="text-zinc-300 font-light"> - The number of questions in your quiz 
+                            <span className="text-zinc-700"> (default: {DEFAULT_NUM_QUESTIONS})</span></span> 
                         </div>
                         <div className="mb-3">
-                            <span className="text-blue-9">(TA)</span> <span className="font-semibold">Initial question score</span> 
-                            <span className="text-gray-11"> - The max earnable points for a question, counts down over time 
-                            <span className="text-gray-7"> (default: {DEFAULT_INITIAL_QUESTION_SCORE})</span></span> 
+                            <span className="text-blue-400">(TA)</span> <span className="font-semibold">Initial question score</span> 
+                            <span className="text-zinc-300 font-light"> - The max earnable points for a question, counts down over time 
+                            <span className="text-zinc-700"> (default: {DEFAULT_INITIAL_QUESTION_SCORE})</span></span> 
                         </div>
                         <div className="mb-3">
-                            <span className="text-blue-9">(TA)</span> <span className="font-semibold">Penalty per sec.</span> 
-                            <span className="text-gray-11"> - Score lost per second. How much is speed valued? 
-                            <span className="text-gray-7"> (default: {DEFAULT_PENALTY_PER_SECOND})</span></span> 
+                            <span className="text-blue-400">(TA)</span> <span className="font-semibold">Penalty per sec.</span> 
+                            <span className="text-zinc-300 font-light"> - Score lost per second. How much is speed valued? 
+                            <span className="text-zinc-700"> (default: {DEFAULT_PENALTY_PER_SECOND})</span></span> 
                         </div>
                         <div className="mb-3">
-                            <span className="text-blue-9">(TA)</span> <span className="font-semibold">Incorrect penalty</span> 
-                            <span className="text-gray-11"> - The score deducted for wrong answers. Set to '0' to disable penalties. 
-                            <span className="text-gray-7"> (default: {DEFAULT_WRONG_ANSWER_PENALTY})</span></span> 
+                            <span className="text-blue-400">(TA)</span> <span className="font-semibold">Incorrect penalty</span> 
+                            <span className="text-zinc-300 font-light"> - The score deducted for wrong answers. Set to '0' to disable penalties. 
+                            <span className="text-zinc-700"> (default: {DEFAULT_WRONG_ANSWER_PENALTY})</span></span> 
                         </div>
                         <div>
-                            <span className="text-red-9">(S)</span> <span className="font-semibold">Number of skips</span> 
-                            <span className="text-gray-11"> - Set this value to allow players to skip questions they don't know 
-                            <span className="text-gray-7"> (default: {DEFAULT_NUMBER_OF_SKIPS})</span></span> 
+                            <span className="text-purple-400">(S)</span> <span className="font-semibold">Number of skips</span> 
+                            <span className="text-zinc-300 font-light"> - Set this value to allow players to skip questions they don't know 
+                            <span className="text-zinc-700"> (default: {DEFAULT_NUMBER_OF_SKIPS})</span></span> 
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </Modal>
         );
@@ -289,42 +287,42 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
         );
     } else {
         modalContent = (<>
-            <div className="text-gray-11/70 font-light mr-1 w-full text-center">
+            <div className="text-zinc-600 mr-1 mb-1 mt-1 w-full text-center font-medium">
                 Create a new quiz for:
             </div>
             <div className="text-2xl font-semibold w-full text-center">
                 "{groupChatName}"
             </div>
-            <div className="grid grid-cols-2 mb-4 mt-3 text-center max-w-[350px] mx-auto">
-                <div className={`relative w-full py-[10px] text-lg border-r border-y-2 border-l-2 rounded-l-xl overflow-hidden hover:cursor-pointer 
-                transition duration-300 ${quizType === TIME_ATTACK ? 'text-blue-12 border-blue-11' : 'text-gray-11/50 border-gray-3'}`}
+            <div className="grid grid-cols-2 mb-6 mt-3 text-center max-w-[350px] mx-auto">
+                <div className={`relative w-full py-[10px] text-lg border-2 rounded-l-xl overflow-hidden hover:cursor-pointer 
+                transition duration-300 ${quizType === TIME_ATTACK ? 'text-blue-50 border-blue-300' : 'text-zinc-600 border-zinc-800'}`}
                 onClick={() => setQuizType(TIME_ATTACK)}>
                     <span className="relative z-50">Time Attack</span>
-                    <div className={`absolute right-0 top-0 bottom-0 bg-blue-5 overflow-hidden z-30
+                    <div className={`absolute right-0 top-0 bottom-0 bg-blue-500/25 overflow-hidden z-30
                     ${quizType === TIME_ATTACK ? " animate-quizTypeSelectionEntering" : " animate-quizTypeSelectionExiting"}`} />
                 </div>
-                <div className={`relative w-full py-[10px] text-lg border-l border-y-2 border-r-2 rounded-r-xl overflow-hidden hover:cursor-pointer 
-                transition duration-300 ${quizType === SURVIVAL ? 'text-red-12 border-red-11' : 'text-gray-11/50 border-gray-3'}`}
+                <div className={`relative w-full py-[10px] text-lg border-2 rounded-r-xl overflow-hidden hover:cursor-pointer 
+                transition duration-300 ${quizType === SURVIVAL ? 'text-purple-50 border-purple-400' : 'text-zinc-600 border-zinc-800'}`}
                 onClick={() => setQuizType(SURVIVAL)}>
                     <span className="relative z-50">Survival</span>
-                    <div className={`absolute left-0 top-0 bottom-0 bg-red-5 overflow-hidden z-30
+                    <div className={`absolute left-0 top-0 bottom-0 bg-purple-500/25 overflow-hidden z-30
                     ${quizType === SURVIVAL ? " animate-quizTypeSelectionEntering" : " animate-quizTypeSelectionExiting"}`} />
                 </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
                 <div>
-                    <label className="form-label mb-[2px]">Quiz Name</label>
-                    <input name="quizName" className={`input w-full max-w-none ${nameMissing ? "input-error" : "focus:input-primary"}`} 
-                    placeholder="Enter name" value={quizName} onChange={handleInputChange} />
+                    <label className="form-label mb-1">Quiz Name</label>
+                    <input name="quizName" placeholder="Enter name" value={quizName} onChange={handleInputChange}
+                    className="input w-full max-w-none border-[1px] bg-black border-zinc-800 placeholder-zinc-600"/>
                 </div>
                 <div className="sm:grow">
-                    <label className="form-label mb-[2px]">Description</label>
-                    <input name="quizDescription" className="input focus:input-primary w-full max-w-none" placeholder="(Max 200 Chars)" 
-                    value={description} onChange={handleInputChange} />
+                    <label className="form-label mb-1">Description</label>
+                    <input name="quizDescription" placeholder="(Max 200 Chars)" value={description} onChange={handleInputChange}
+                    className="input w-full max-w-none border-[1px] bg-black border-zinc-800 placeholder-zinc-600" />
                 </div>
             </div>
             <div className="flex w-full mt-2">
-                <div className="text-sm text-gray-7 mx-auto transition-colors duration-300 hover:cursor-pointer sm:hover:text-gray-11 noselect"
+                <div className="text-sm text-zinc-700 mx-auto transition-colors duration-300 hover:cursor-pointer sm:hover:text-gray-11 noselect"
                 onClick={() => setAdvancedOptionsHeight(advancedOptionsHeight === 'auto' ? 0 : 'auto')}>
                     More options ({advancedOptionsHeight === 'auto' ? '-' : '+'})
                 </div>
@@ -334,18 +332,19 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
                 <button className="hidden sm:inline-block grow btn max-w-[200px]" onClick={() => toggleModal(modalDomId)}>
                     Cancel
                 </button>
-                <button className="grow btn btn-primary" onClick={() => createQuiz()}>
+                <button className="grow btn btn-lg bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 font-normal" 
+                onClick={() => createQuiz()}>
                     Create Quiz
                 </button>
                 <button className="self-center" onClick={() => toggleModal(`info-modal-${groupChatId}`)}>
-                    <InfoIcon className="w-7 h-7 ml-[6px] text-blue-7 transition duration-400 sm:hover:text-blue-9" />
+                    <InfoIcon className="w-7 h-7 ml-[6px] text-purple-400/75" />
                 </button>
             </div>
         </>);
     }
 
     return(<>
-        <Modal domId={modalDomId} title="Quiz Configuration" maxWidth="600px" margin="8px" darkOverlay>
+        <Modal domId={modalDomId} maxWidth="600px" margin="8px" darkOverlay>
             <div className="mx-4 mb-4">
                 {modalContent}
             </div>

@@ -1,10 +1,13 @@
 "use client";
 
+import usePostLogin from "@/app/hooks/api_access/authentication/usePostLogin";
+import useNavBar from "@/app/hooks/context_imports/useNavBar";
+import UserSmallIcon from "@/app/components/icons/nav-bar/UserSmallIcon";
+import PasswordIcon from "@/app/components/icons/nav-bar/PasswordIcon";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import usePostLogin from "@/app/hooks/api_access/authentication/usePostLogin";
-import useNavBar from "@/app/hooks/context_imports/useNavBar";
 
 export default function Login() {
 
@@ -59,20 +62,27 @@ export default function Login() {
                 </div>
                 <form className="form-group px-4 sm:px-0" onSubmit={loginSubmit}>
                     <div className="form-field">
-                        <label className="form-label">Username</label>
+                        <label className="form-label">
+                            <div className="flex items-end">
+                                <UserSmallIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
+                                Username
+                            </div>
+                        </label>
                         {/* Username input field */}
-                        <input placeholder="Type here" className="input max-w-full" 
-                        name="username" value={loginUsername} onChange={handleLoginChange}/>
-                        {/* <label className="form-label">
-                        <span className="form-label-alt">Please enter a valid email.</span>
-                        </label> */}
+                        <input placeholder="Type here" name="username" value={loginUsername} onChange={handleLoginChange}
+                        className="input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                     </div>
                     <div className="form-field">
-                        <label className="form-label">Password</label>
+                        <label className="form-label">
+                            <div className="flex items-end">
+                                <PasswordIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
+                                Password
+                            </div>
+                        </label>
                         <div className="form-control">
                             {/* Password input field */}
-                            <input placeholder="Type here" type="password" className="input max-w-full" 
-                            name="password" value={loginPassword} onChange={handleLoginChange}/>
+                            <input placeholder="Type here" type="password" name="password" value={loginPassword} onChange={handleLoginChange}
+                            className="input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                         </div>
                     </div>
                     <div className="form-field">
@@ -82,13 +92,17 @@ export default function Login() {
                                 <a href="#">Remember me</a>
                             </div>
                             <label className="form-label">
-                                <a className="link link-underline-hover link-primary text-sm">Forgot your password?</a>
+                                <a className="link link-underline-hover text-sm font-semibold
+                                text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                                    Forgot your password?
+                                </a>
                             </label>
                         </div>
                     </div>
                     <div className="form-field pt-5">
                         <div className="form-control justify-between">
-                            <button type="submit" className={"btn w-full" + (loginLoading ? " btn-outline-primary" : " btn-primary")}>
+                            <button type="submit" className={`btn w-full 
+                            ${loginLoading ? " btn-outline border-zinc-700 bg-black" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
                                 {loginLoading ? 
                                     <div className="spinner-dot-pulse">
                                         <div className="spinner-pulse-dot"></div>
@@ -100,7 +114,10 @@ export default function Login() {
                     </div>
                     <div className="form-field">
                         <div className="form-control justify-center">
-                            <Link href="/register" className="link link-underline-hover link-primary text-sm">Don't have an account yet? Sign up.</Link>
+                            <Link href="/register" className="link link-underline-hover text-sm font-semibold
+                            text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                                Don't have an account yet? Sign up.
+                            </Link>
                         </div>
                     </div>
                     {/* Login error alert */}

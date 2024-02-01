@@ -433,7 +433,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 <AnimateHeight duration={500} height={landingActionsHeight}>
                     <div className={`flex flex-col w-full items-center pt-8 
                     ${landingActionsVisible ? " animate__animated animate__fadeIn" : "invisible"}`}>
-                        <div className={`text-3xl font-bold text-transparent bg-clip-text text-center bg-gradient-to-r
+                        <div className={`text-3xl font-bold text-transparent bg-clip-text text-center bg-gradient-to-r px-10
                         ${isTimeAttack(quizInfo) ? " from-blue-400 via-blue-300 to-blue-400" : " from-purple-400 via-pink-400 to-purple-400"}`}>
                             {quizInfo.quizName}
                         </div>
@@ -543,7 +543,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 message = currentMessage;
             }
             return (
-                <div className={`absolute flex left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] bg-zinc-950 rounded-xl border border-zinc-500 px-3
+                <div className={`absolute flex left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] bg-zinc-950 rounded-xl border border-blue-500 px-3
                 ${!isNext ? gameState === "QUESTION_STARTING" ? getCardAnimClass() : "" : ""} ${isTimeAttack(quizInfo) ? "pt-5 pb-8" : "py-5"}`}>
                     <div className="grow px-2 w-full h-full text-xl font-medium overflow-y-scroll overflow-x-hidden">
                         {applyTextMarkup(message.content)}
@@ -562,8 +562,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             ${pageState === "QUIZ_ENDING" ? " animate__fadeOut" : " animate__fadeIn animate__duration-500ms"}`}>
                 <AnimatedScoreCounter type={isTimeAttack(quizInfo) ? "score" : "streak"} score={score} scoreGained={scoreGained} 
                 delay={isTimeAttack(quizInfo) ? 1000 : 2000} duration={800} isAnimated={isTimeAttack(quizInfo)} />
-                <div className="relative w-full h-[320px] sm:h-[350px] mt-4 mb-4 sm:my-6 bg-zinc-950 rounded-xl border border-zinc-500 
-                shadow-[1px_1px_0px_0px_rgb(113,113,122)]">
+                <div className="relative w-full h-[320px] sm:h-[350px] mt-4 mb-4 sm:my-6 bg-zinc-950 rounded-xl border border-blue-500 
+                ">
                     {/* We render the next message underneath the current message */}
                     {renderQuestionCard(true)}
                     {/* Current message */}

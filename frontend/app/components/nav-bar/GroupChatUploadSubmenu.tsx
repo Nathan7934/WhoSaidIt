@@ -4,6 +4,7 @@ import Modal from "../Modal";
 import InfoIcon from "../icons/InfoIcon";
 import { toggleModal, renderModalResponseAlert } from "@/app/utilities/miscFunctions";
 import { ResponseStatus } from "@/app/interfaces";
+import WhatsAppIcon from "../icons/WhatsAppIcon";
 
 import AnimateHeight from "react-animate-height";
 import { Height } from "react-animate-height";
@@ -146,42 +147,45 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
         );
     } else {
         subMenuContent = (<>
-            <div className="w-full text-center text-3xl font-semibold mb-4">
+            <div className="w-full text-center text-2xl font-semibold mb-3">
                 Upload Group Chat
             </div>
             <AnimateHeight duration={500} height={helpHeight}>
-                <div className="text-gray-11 mb-4">
-                    Export your group chat from WhatsApp as a text file and upload it here.
+                <div className="text-zinc-400 mb-4">
+                    Export your <span className="text-zinc-200 font-semibold">WhatsApp<WhatsAppIcon className="w-5 h-5 inline-block mx-1" /></span>
+                    group chat as a <span className="text-zinc-200 font-semibold">.txt file</span> and upload it here.
                     Once you have uploaded a group chat, you can create quizzes for it.
                 </div>
                 <div className="mb-4">
-                    <a className="text-lg text-primary font-semibold" 
+                    <a className="text-xl text-primary font-semibold text-transparent bg-clip-text
+                    bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400" 
                     href="https://faq.whatsapp.com/1180414079177245/?helpref=uf_share" target="_blank">
-                        How to export your WhatsApp chat history
+                        How to export your chat history
                     </a>
                 </div>
-                <div className="mb-3 sm:mb-6 text-gray-11">
-                    Make sure to select <span className="text-white font-bold">"Without Media"</span> when exporting your chat.
+                <div className="mb-3 sm:mb-6 text-zinc-400">
+                    Make sure to select <span className="text-zinc-200 font-semibold">"Without Media"</span> when exporting your chat.
                 </div>
-                <div className="sm:hidden mb-4 text-gray-9 text-sm">
+                <div className="sm:hidden mb-4 text-zinc-600 text-sm">
                     iPhone users may prefer to email their chat history to themselves and upload it using a PC.
                 </div>
             </AnimateHeight>
-            <div className="divider divider-horizontal my-0 text-sm text-gray-8 font-semibold" 
+            <div className="divider divider-horizontal my-0 text-sm text-zinc-500 font-medium" 
             onClick={() => setHelpHeight(helpHeight === 0 ? 'auto' : 0)}>
                 {helpHeight === 0 ? "Show" : "Hide"} Help
             </div>
             <div className="flex gap-3 mb-4 pt-5">
                 <div className="w-2/3">
-                    <label className="text-sm">Group Chat Name</label>
-                    <input name="groupChatName" className={`input mt-[2px] max-w-none ${nameMissing ? "input-error" : ""}`} 
-                    type="text" placeholder="Enter name" value={groupChatName} onChange={handleInputChange}/>
+                    <label className="text-sm ml-1">Group Chat Name</label>
+                    <input name="groupChatName" type="text" placeholder="Enter name" value={groupChatName} onChange={handleInputChange}
+                    className={`input mt-[2px] max-w-none focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                    ${nameMissing ? "input-error" : ""}`}/>
                 </div>
                 <div className="w-1/3 flex-col">
                     <label className="text-sm">Min. Chars.</label>
                     <div className="flex">
-                        <input name="minChars" className="input mt-[2px]" type="number" 
-                        value={`${minChars}`} onChange={handleInputChange}/>
+                        <input name="minChars" type="number" value={`${minChars}`} onChange={handleInputChange}
+                        className="input mt-[2px] focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                         <button className="self-center" onClick={() => toggleModal("min-chars-info-modal")}>
                             <InfoIcon className="w-6 h-6 ml-[6px] text-blue-7 transition duration-400 sm:hover:text-blue-9" />
                         </button>
@@ -191,7 +195,8 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
             <div className="flex flex-wrap justify-center">
                 <input className={`input-file grow max-w-none mb-2 ${fileMissing ? "input-file-error" : ""}`} 
                 type="file" accept=".txt" onChange={handleFileChange} />
-                <button className="grow btn btn-primary" onClick={handleUpload}>
+                <button className="grow btn bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" 
+                onClick={handleUpload}>
                     Upload
                 </button>
             </div>

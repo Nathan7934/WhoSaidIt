@@ -107,8 +107,9 @@ export default function ChangeEmailSubmenu() {
                         {!passwordValid && <span className="form-label-alt text-error">Incorrect password</span>}
                     </label>
                     {/* Current password field */}
-                    <input placeholder="Type here" className={`input max-w-full ${!passwordValid && submitFailed ? " input-error": ""}`}
-                    name="password" type="password" value={password} onChange={handleInputChange}/>
+                    <input placeholder="Type here" name="password" type="password" value={password} onChange={handleInputChange}
+                    className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                    ${!passwordValid && submitFailed ? " input-error": ""}`}/>
                 </div>
                 <div className="form-field mt-4">
                     <label className="form-label leading-4">
@@ -116,8 +117,9 @@ export default function ChangeEmailSubmenu() {
                         {!newEmailValid && <span className="form-label-alt text-error">Must be a valid email</span>}
                     </label>
                     {/* New password field */}
-                    <input placeholder="Type here" className={`input max-w-full ${!newEmailValid && submitFailed ? " input-error": ""}`}
-                    name="newEmail" value={newEmail} onChange={handleInputChange} />
+                    <input placeholder="Type here" name="newEmail" value={newEmail} onChange={handleInputChange}
+                    className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                    ${!newEmailValid && submitFailed ? " input-error": ""}`}/>
                 </div>
                 <div className="form-field mt-2">
                     <label className="form-label leading-4">
@@ -125,13 +127,14 @@ export default function ChangeEmailSubmenu() {
                         {!confirmNewEmailValid && <span className="form-label-alt text-error">Emails must match</span>}
                     </label>
                     {/* Confirm new password field */}
-                    <input placeholder="Type here" className={`input max-w-full ${!confirmNewEmailValid && submitFailed ? " input-error": ""}`}
-                    name="confirmNewEmail" value={confirmNewEmail} onChange={handleInputChange} />
+                    <input placeholder="Type here" name="confirmNewEmail" value={confirmNewEmail} onChange={handleInputChange}
+                    className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                    ${!confirmNewEmailValid && submitFailed ? " input-error": ""}`}/>
                 </div>
                 <div className="form-field pt-6">
                     <div className="form-control justify-between">
-                        <button type="submit" className={`btn btn-lg w-full font-semibold
-                        ${changingEmail ? " btn-outline-primary" : " btn-primary"}`}>
+                        <button type="submit" className={`btn btn-lg w-full font-medium
+                        ${changingEmail ? " btn-outline-primary" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
                             {changingEmail ? 
                                 <div className="spinner-dot-pulse">
                                     <div className="spinner-pulse-dot"></div>

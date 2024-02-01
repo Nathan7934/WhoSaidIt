@@ -58,6 +58,17 @@ details > summary.list-none::marker {
                                     supported by Chrome, Edge, Opera and Firefox */
 }
 
+/* ========== Custom gradients ========== */
+.button-gradient {
+    background-image: linear-gradient(
+        to right,
+        #4764EE 0%,       
+        #6366f1 50%,
+        #7644EE 100%
+    );
+}
+
+
 /* ========== Additional classes for Animate.css ========== */
 .animate__animated.animate__duration-100ms { --animate-duration: 100ms; }
 .animate__animated.animate__duration-150ms { --animate-duration: 150ms; }

@@ -8,6 +8,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import UserSmallIcon from "@/app/components/icons/nav-bar/UserSmallIcon";
+import EmailIcon from "@/app/components/icons/nav-bar/EmailIcon";
+import PasswordIcon from "@/app/components/icons/nav-bar/PasswordIcon";
+
 export default function Register() {
 
     const postRegistration = usePostRegistration();
@@ -88,58 +92,75 @@ export default function Register() {
 
     // ========================================================================================================================
 
-    return(
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[50%] sm:top-[40%] translate-y-[-50%]">
-                <div className="flex flex-col items-center">
+    return(<>
+        <div className="w-full h-navbar" /> {/* Navbar spacer */}
+        <main className="flex flex-col min-h-content max-h-content overflow-y-scroll items-center justify-center">
+            <div className="relative bottom-3 mx-auto flex w-full max-w-sm flex-col">
+                <div className="flex flex-col items-center mb-8">
                     <h1 className="text-3xl font-semibold">Register</h1>
-                    <p className="text-sm mt-1">Enter your credentials to create an account</p>
+                    <p className="text-sm mt-1">Enter your information to create an account</p>
                 </div>
-                <form className="form-group px-4 sm:px-0" onSubmit={registerSubmit}>
-                    <div className="form-field">
+                <form className="form-group gap-[10px] px-4 sm:px-0" onSubmit={registerSubmit}>
+                    <div className="form-field gap-1">
                         <label className="form-label">
-                            Username
+                            <div className="flex items-end">
+                                <UserSmallIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
+                                Username
+                            </div>
                             {!usernameValid && <span className="form-label-alt text-error">Must be at least 4 characters</span>}
                         </label>
                         {/* Username input field */}
-                        <input placeholder="Type here" className={"input max-w-full" + (!usernameValid && submitFailed ? " input-error" : "")} 
-                        name="username" value={registerUsername} onChange={handleRegisterChange}/>
+                        <input placeholder="Type here" name="username" value={registerUsername} onChange={handleRegisterChange}
+                        className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                        ${!usernameValid && submitFailed ? " input-error" : ""}`}/>
                     </div>
-                    <div className="form-field">
+                    <div className="form-field gap-1">
                         <label className="form-label">
-                            Email address
+                            <div className="flex items-end">
+                                <EmailIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[1px]" />
+                                Email Address
+                            </div>
                             {!emailValid && <span className="form-label-alt text-error">Must be a valid email</span>}
                         </label>
                         {/* Email input field */}
-                        <input placeholder="Type here" className={"input max-w-full" + (!emailValid && submitFailed ? " input-error" : "")} 
-                        type="email" name="email" value={registerEmail} onChange={handleRegisterChange}/>
-                        
+                        <input placeholder="Type here" type="email" name="email" value={registerEmail} onChange={handleRegisterChange}
+                        className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                        ${!emailValid && submitFailed ? " input-error" : ""}`}/>
                     </div>
-                    <div className="form-field mt-5">
+                    <div className="form-field mt-5 gap-1">
                         <label className="form-label">
-                            Password
+                            <div className="flex items-end">
+                                <PasswordIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
+                                Password
+                            </div>
                             {passwordValidMessage && <span className="form-label-alt text-error">{passwordValidMessage}</span>}
                         </label>
                         <div className="form-control">
                             {/* Password input field */}
-                            <input placeholder="Type here" type="password" className={"input max-w-full" + (passwordValidMessage && submitFailed ? " input-error" : "")} 
-                            name="password" value={registerPassword} onChange={handleRegisterChange}/>
+                            <input placeholder="Type here" type="password"  name="password" value={registerPassword} onChange={handleRegisterChange}
+                            className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                            ${passwordValidMessage && submitFailed ? " input-error" : ""}`}/>
                         </div>
                     </div>
-                    <div className="form-field">
+                    <div className="form-field gap-1">
                         <label className="form-label">
-                            Confirm Password
+                            <div className="flex items-end">
+                                <PasswordIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
+                                Confirm Password
+                            </div>
                             {!confirmPasswordValid && <span className="form-label-alt text-error">Passwords must match</span>}
                         </label>
                         <div className="form-control">
                             {/* Confirm Password input field */}
-                            <input placeholder="Type here" type="password" className={"input max-w-full" + (!confirmPasswordValid && submitFailed ? " input-error" : "")} 
-                            name="confirmPassword" value={registerConfirmPassword} onChange={handleRegisterChange}/>
+                            <input placeholder="Type here" type="password" name="confirmPassword" value={registerConfirmPassword} onChange={handleRegisterChange}
+                            className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
+                            ${!confirmPasswordValid && submitFailed ? " input-error" : ""}`}/>
                         </div>
                     </div>
                     <div className="form-field pt-5">
                         <div className="form-control justify-between">
-                            <button type="submit" className={"btn w-full" + (registerLoading ? " btn-outline-primary" : " btn-primary")}>
+                            <button type="submit" className={`btn w-full 
+                            ${registerLoading ? " btn-outline bg-black" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
                                 {registerLoading ? 
                                     <div className="spinner-dot-pulse">
                                         <div className="spinner-pulse-dot"></div>
@@ -151,7 +172,10 @@ export default function Register() {
                     </div>
                     <div className="form-field">
                         <div className="form-control justify-center">
-                            <Link href="/login" className="link link-underline-hover link-primary text-sm">Already have an account? Sign in.</Link>
+                            <Link href="/login" className="link link-underline-hover text-blue-500 text-sm font-semibold
+                            text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                                Already have an account? Sign in.
+                            </Link>
                         </div>
                     </div>
                     {/* Registration error alert */}
@@ -169,5 +193,5 @@ export default function Register() {
                 </form>
             </div>
         </main>
-    );
+    </>);
 }

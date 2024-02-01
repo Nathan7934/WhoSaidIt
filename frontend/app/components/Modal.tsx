@@ -20,7 +20,7 @@ export default function Modal({ domId, title = "", maxWidth, margin, darkOverlay
         <input className="modal-state" id={domId} type="checkbox" />
         <div className="modal" style={{paddingLeft: modalMargin, paddingRight: modalMargin}}>
             <label className={`modal-overlay ${darkOverlay ? "bg-black/70" : ""}`} htmlFor={domId}></label>
-            <div className="modal-content flex flex-col w-full p-0 bg-zinc-950 border-[1px] border-gray-3"
+            <div className="modal-content flex flex-col w-full p-0 bg-[#050507] border-[1px] border-gray-3"
             style={{maxWidth: modalMaxWidth}}>
                 <div className="flex w-full mt-1">
                     {title !== "" &&
