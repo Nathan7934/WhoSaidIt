@@ -216,9 +216,9 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
         // TODO: May want to separate this from the component, since duplicates will be rendered for each group chat.
         // Perfomance loss should be negligible, but it's still not ideal.
         return (
-            <Modal domId={`info-modal-${groupChatId}`} title="Defining Your Quiz" maxWidth="400px" margin="24px" darkOverlay>
+            <Modal domId={`info-modal-${groupChatId}`} title="Choose Quiz Mode" maxWidth="400px" margin="24px" darkOverlay>
                 <div className="mx-4 mb-4">
-                    <div className="text-zinc-400 mb-4 font-extralight">
+                    <div className="text-zinc-500 mb-4 font-light">
                         You can create two types of quizzes:
                     </div>
                     <div className="mb-2 font-light text-zinc-200">
@@ -226,10 +226,10 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
                         to get the highest score.
                     </div>
                     <div className="mb-4 font-light text-zinc-200">
-                        <span className="text-purple-400 font-semibold">Survival</span> - Compete for the longest streak consecutive correct answers.
+                        <span className="text-purple-400 font-semibold">Survival</span> - Compete for the longest streak of correct answers.
                     </div>
-                    <div className="text-zinc-400 text-sm mb-2 font-extralight">
-                        Once created, you may specify questions while viewing a group chat's messages.
+                    <div className="text-zinc-500 text-sm mb-2 font-light">
+                        Once created, you may customize which messages appear in a quiz by selecting from the group chat's messages
                     </div>
                     {/* FOR NOW, I CONSIDER THIS TO BE TOO MUCH INFORMATION */}
                     {/*  */}

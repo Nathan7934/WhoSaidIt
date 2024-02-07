@@ -141,6 +141,10 @@ export default function NavBar() {
 
     useEffect(() => {
         setIsHomeButton(navBarState === "DEFAULT" || navBarState.includes("EXITING"));
+        if (navBarState === "DEFAULT") setDoAnimateMenuOptionsTransition(false);
+        else if (navBarState === "UPLOAD" || navBarState === "FOCUS" || navBarState === "PASSWORD" || navBarState === "EMAIL") {
+            setDoAnimateMenuOptionsTransition(true);
+        }
     }, [navBarState]);
 
     // Ensures that the desktop navbar overlay does not render when the navbar is collapsed
@@ -214,10 +218,10 @@ export default function NavBar() {
                     <div className="mt-8 text-3xl font-semibold">
                         Welcome, Guest
                     </div>
-                    <div className="mt-1 text-xl text-zinc-50 font-extralight">
+                    <div className="mt-1 text-xl text-zinc-50 font-light">
                         You are not logged in
                     </div>
-                    <div className="mt-8 text-center text-zinc-50 text-lg font-medium">
+                    <div className="mt-8 text-center text-zinc-50 font-medium">
                         With an account, you'll be able to:
                     </div>
                     <div className="flex flex-col gap-4 items-center mt-4 text-lg text-gray-12 font-light">
@@ -246,10 +250,10 @@ export default function NavBar() {
                             </div>
                         </div>
                     </div>
-                    <div className="mt-10 text-lg text-zinc-50">
+                    <div className="mt-10 text-zinc-50">
                         To get started, register and sign up
                     </div>
-                    <button className="mt-3 text-xl py-3 px-8 bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-600
+                    <button className="mt-3 text-xl py-3 px-8 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600
                     rounded-2xl font-medium" onClick={() => createAccountClicked()}>
                         Create Account
                     </button>
@@ -280,7 +284,7 @@ export default function NavBar() {
                                 setNavBarExpanded(false);
                                 setTimeout(() => {
                                     setNavBarState("DEFAULT");
-                                    setDoAnimateMenuOptionsTransition(false);
+                                    // setDoAnimateMenuOptionsTransition(false);
                                 }, 150); // Wait for menu to close before resetting state
                             }}>
                                 Manage Group Chats
@@ -291,7 +295,7 @@ export default function NavBar() {
                         <UploadIcon className="w-5 h-5" />
                         <div className="ml-3 md:hover:font-semibold md:hover:text-white noselect cursor-pointer"
                         onClick={() => {
-                            setDoAnimateMenuOptionsTransition(true);
+                            // setDoAnimateMenuOptionsTransition(true);
                             setNavBarState("UPLOAD");
                         }}>
                             Upload New
@@ -301,7 +305,7 @@ export default function NavBar() {
                         <FocusIcon className="w-5 h-5" />
                         <div className="ml-3 md:hover:font-semibold md:hover:text-white noselect cursor-pointer"
                         onClick={() => {
-                            setDoAnimateMenuOptionsTransition(true);
+                            // setDoAnimateMenuOptionsTransition(true);
                             setNavBarState("FOCUS");
                         }}>
                             Change Dashboard Focus
@@ -314,7 +318,7 @@ export default function NavBar() {
                         <PasswordIcon className="w-5 h-5" />
                         <div className="ml-3 md:hover:font-semibold md:hover:text-white noselect cursor-pointer"
                         onClick={() => {
-                            setDoAnimateMenuOptionsTransition(true);
+                            // setDoAnimateMenuOptionsTransition(true);
                             setNavBarState("PASSWORD");
                         }}>
                             Change Password
@@ -324,7 +328,7 @@ export default function NavBar() {
                         <EmailIcon className="w-5 h-5" />
                         <div className="ml-3 md:hover:font-semibold md:hover:text-white noselect cursor-pointer"
                         onClick={() => {
-                            setDoAnimateMenuOptionsTransition(true);
+                            // setDoAnimateMenuOptionsTransition(true);
                             setNavBarState("EMAIL");
                         }}>
                             Change Email

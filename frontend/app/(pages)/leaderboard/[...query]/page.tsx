@@ -6,7 +6,7 @@ import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
 import useAuth from "@/app/hooks/context_imports/useAuth";
 
 import { TimeAttackEntry, SurvivalEntry, TimeAttackQuiz, SurvivalQuiz } from "@/app/interfaces";
-import { isTimeAttackEntry, isSurvivalEntry } from "@/app/utilities/miscFunctions";
+import { isTimeAttackEntry, isSurvivalEntry, isTimeAttackQuiz } from "@/app/utilities/miscFunctions";
 import StarIcon from "@/app/components/icons/StarIcon";
 import StreakIcon from "@/app/components/icons/StreakIcon";
 
@@ -14,6 +14,7 @@ import AnimateHeight from "react-animate-height";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Leaderboard({ params }: { params: { query: string[]}}) {
@@ -30,6 +31,8 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
     // Security
     const { auth } = useAuth();
     const validateUrlToken = useValidateUrlToken();
+    // This is the jwt that is used to authenticate the user if they are not logged in. It is retrieved from the urlToken.
+    const [shareableToken, setShareableToken] = useState<string | null>(null);
 
     // ----------- State (Data) -----------
     const [leaderboard, setLeaderboard] = useState<Array<TimeAttackEntry | SurvivalEntry>>([]);
@@ -52,6 +55,8 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
                     console.error("Error authenticating user, redirecting to root");
                     router.push("/");
                     return;
+                } else {
+                    setShareableToken(shareableToken);
                 }
             }
 
@@ -80,7 +85,7 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
     }
 
     const renderPodium = () => {
-        if (loading) return(<div className="flex flex-col justify-center w-full h-32 mt-[90px]" />);
+        if (loading || !quiz) return(<div className="flex flex-col justify-center w-full h-32 mt-[90px]" />);
 
         const first = leaderboard[0];
         const second = leaderboard[1];
@@ -88,10 +93,10 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
         return (
             <div className="flex w-full">
                 <div className="flex items-end mx-auto w-64 sm:w-96 h-32 sm:h-40 mt-[90px]">
-                    <div className="relative grow rounded-t-xl text-center z-10 animate-podiumGrowThird
-                    bg-gradient-to-b from-blue-4 from-70% to-blue-1">
-                        <span className="relative top-2 text-4xl font-extrabold text-blue-8
-                        animate__animated animate__fadeIn animate__delay-1s">
+                    <div className={`relative grow rounded-t-xl text-center z-10 animate-podiumGrowThird
+                    bg-gradient-to-b from-70% ${isTimeAttackQuiz(quiz) ? " from-blue-4 to-blue-1" : " from-purple-4 to-purple-1"}`}>
+                        <span className={`relative top-2 text-4xl font-extrabold animate__animated animate__fadeIn animate__delay-1s 
+                        ${isTimeAttackQuiz(quiz) ? " text-blue-8" : " text-purple-8"}`}>
                             3
                         </span>
                         {leaderboard.length > 2 &&
@@ -110,10 +115,10 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
                             </div>
                         }
                     </div>
-                    <div className="relative w-[35%] h-full rounded-t-xl drop-shadow-xl text-center z-30 animate-podiumGrowFirst
-                    bg-gradient-to-b from-blue-10 from-70% to-blue-3">
-                        <span className="relative top-2 text-5xl font-extrabold text-blue-7 
-                        animate__animated animate__fadeIn animate__delay-1s">
+                    <div className={`relative w-[35%] h-full rounded-t-xl drop-shadow-xl text-center z-30 animate-podiumGrowFirst
+                    bg-gradient-to-b from-70% ${isTimeAttackQuiz(quiz) ? " from-blue-10 to-blue-3" : " from-purple-400 to-purple-400/40"}`}>
+                        <span className={`relative top-2 text-5xl font-extrabold animate__animated animate__fadeIn animate__delay-1s
+                        ${isTimeAttackQuiz(quiz) ? " text-blue-7" : " text-purple-900"}`}>
                             1
                         </span>
                         {leaderboard.length > 0 &&
@@ -131,10 +136,10 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
                             </div>
                         }
                     </div>
-                    <div className="relative grow rounded-t-xl text-center z-10 animate-podiumGrowSecond
-                    bg-gradient-to-b from-blue-4 from-80% to-blue-1">
-                        <span className="relative top-2 text-4xl font-extrabold text-blue-8 
-                        animate__animated animate__fadeIn animate__delay-1s">
+                    <div className={`relative grow rounded-t-xl text-center z-10 animate-podiumGrowSecond
+                    bg-gradient-to-b from-80% ${isTimeAttackQuiz(quiz) ? " from-blue-4 to-blue-1" : " from-purple-4 to-purple-1"}`}>
+                        <span className={`relative top-2 text-4xl font-extrabold animate__animated animate__fadeIn animate__delay-1s
+                        ${isTimeAttackQuiz(quiz) ? " text-blue-8" : " text-purple-8"}`}>
                             2
                         </span>
                         {leaderboard.length > 1 &&
@@ -166,9 +171,10 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
         );
 
         if (leaderboard.length === 0) return (
-            <div className="w-full flex-col h-52 mt-2 py-20 px-8 border-dashed border-2 border-gray-5 rounded-xl 
-            text-gray-10 text-center text-2xl font-light">
-                No entries yet!
+            <div className="w-full flex-col h-52 mt-2 py-16 px-8 border-dashed border-2 border-zinc-800 rounded-xl 
+            text-zinc-700 text-center text-xl font-light mb-[80px] sm:mb-6">
+                No entries yet!<br/>
+                <span className="text-sm">Play the quiz and submit your score</span>
             </div>
         );
 
@@ -264,12 +270,14 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
                 }
                 {renderPodium()}
                 {renderLeaderboardEntries()}
-                {!loading && 
+                {!loading && quiz &&
                 <div className="fixed bottom-0 sm:relative w-full flex bg-gradient-to-t from-black">
-                    <button className="mx-auto mb-4 py-3 px-5 rounded-xl bg-black/90 border border-blue-400 text-xl
-                    text-blue-50 font-semibold backdrop-blur-sm">
-                        Start New Attempt
-                    </button>
+                    <Link href={`/quiz/${quizId}${shareableToken ? `/${urlToken}` : ""}`} className="mx-auto mb-4">
+                        <button className={`py-3 px-5 rounded-xl bg-black/90 border text-xl
+                        text-blue-50 font-semibold backdrop-blur-sm ${isTimeAttackQuiz(quiz) ? " border-blue-400" : " border-purple-400"}`}>
+                            Start New Attempt
+                        </button>
+                    </Link>
                 </div>
             }
             </div>

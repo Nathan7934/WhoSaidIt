@@ -47,8 +47,7 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
             let touchStartPosition: TouchPosition = { x: 0, y: 0 };
 
             const handleTouchStart = (event: TouchEvent) => {
-                if (mobileDOMref.current && mobileDOMref.current.contains(event.target as Node)
-                ) {
+                if (mobileDOMref.current && mobileDOMref.current.contains(event.target as Node)) {
                     if (holdTimeout.current) {
                         clearTimeout(holdTimeout.current);
                     }
@@ -75,7 +74,9 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
                     }, MOBILE_HOLD_DURATION);
                 } else {
                     // If the user touches outside of the message row, collapse the message
-                    setHeight(0);
+
+                    // For now, I've decided I want the user to be able to expand multiple messages at once
+                    // setHeight(0);
                 }
             };
             
@@ -222,19 +223,19 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
     if (isMobile) { // Mobile layout
         return (
             <div ref={mobileDOMref} className={`flex flex-col relative px-1 py-2 overflow-hidden 
-            transition-colors duration-100 ${selectedMessageIds.includes(message.id) ? "bg-blue-6/40" : ""}`}>
+            transition-colors duration-100 ${selectedMessageIds.includes(message.id) ? "bg-blue-500/10" : ""}`}>
                 {/* div for hold wave effect */}
                 <div ref={holdWaveDOMref} className="absolute w-[0%] translate-x-[-50%] translate-y-[-50%] 
-                bg-blue-6 pointer-events-none rounded-[50%] aspect-square" />
+                bg-blue-600/20 pointer-events-none rounded-[50%] aspect-square" />
                 <div className="flex z-10">
                     <div className="mr-2 whitespace-nowrap overflow-x-hidden text-ellipsis noselect">
                         {message.sender.name}
                     </div>
-                    <div className="ml-auto text-gray-7 text-sm self-center noselect">
+                    <div className="ml-auto text-zinc-700 text-sm self-center noselect">
                         {formatDate(message.timestamp)}
                     </div>
                 </div>
-                <div className="flex mt-1 text-gray-11">
+                <div className="flex mt-1 text-zinc-400">
                     <div className={`grow relative overflow-hidden ${hasOverflow ? "cursor-pointer" : "cursor-default"}`}
                     onClick={() => {if (!isMobile) setHeight(height === 0 ? 'auto' : 0)}}>
                         <span className={`absolute max-w-full overflow-hidden text-ellipsis noselect ${contentWrapped ? "" : "whitespace-nowrap"}`}>
@@ -251,13 +252,13 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
         );
     } else { // Desktop layout
         return (
-            <div className="flex py-2 border-b border-gray-6">
+            <div className="flex py-2">
                 <div className="flex-none w-[35px]">
-                    <input type="checkbox" className="checkbox ml-1 relative top-[2px]"
+                    <input type="checkbox" className="checkbox ml-1 relative top-[2px] bg-zinc-950 border-zinc-700"
                     onChange={(e) => messageSelectionChanged(e.target.checked)}
                     checked={selectedMessageIds.includes(message.id)}/>
                 </div>
-                <div className="flex-none w-[150px] pr-2 whitespace-nowrap overflow-x-hidden text-ellipsis text-gray-11">
+                <div className="flex-none w-[150px] pr-2 whitespace-nowrap overflow-x-hidden text-ellipsis text-zinc-400">
                     {message.sender.name}
                 </div>    
                 <div className={`grow relative overflow-hidden ${hasOverflow ? "cursor-pointer" : "cursor-default"}`}
@@ -270,7 +271,7 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
                         {message.content} {/* This is a hack to get the height of the message cell to expand properly. */}
                     </AnimateHeight>
                 </div>
-                <div className="flex-none w-[145px] ml-5 text-gray-9 whitespace-nowrap">
+                <div className="flex-none w-[145px] ml-5 text-zinc-700 whitespace-nowrap">
                     {formatDate(message.timestamp)}
                 </div>
             </div>

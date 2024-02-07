@@ -41,7 +41,7 @@ details > summary.list-none::marker {
     background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #252525;
+    background: #27272a;
 }
 ::-webkit-scrollbar-thumb:hover {
     background: rgb(58, 58, 58);
@@ -90,3 +90,12 @@ details > summary.list-none::marker {
 .animate__animated.animate__delay-700ms { animation-delay: 700ms; }
 .animate__animated.animate__delay-800ms { animation-delay: 800ms; }
 .animate__animated.animate__delay-900ms { animation-delay: 900ms; }
+
+/* Override Ripple-UI pseudo element coloring */
+.input-file::-webkit-file-upload-button,.input-file::file-selector-button {
+    background: linear-gradient(
+        to right,
+        #2563eb 0%,       
+        #3e52e8 100%
+    );
+}

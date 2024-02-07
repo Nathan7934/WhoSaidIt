@@ -255,7 +255,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
         const messageRows = messages.map((message: Message, index: number) => {
             return (
-                <div key={message.id} className="border-gray-6 border-b">
+                <div key={message.id} className="border-zinc-800 border-b">
                     <MessageRow message={message} isMobile={isMobile} selectedMessageIds={selectedMessageIds} 
                     setSelectedMessageIds={setSelectedMessageIds}/>
                 </div>
@@ -265,7 +265,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         return (
             <div className="w-full">
                 {/* Table header */}
-                <div className="flex py-2 bg-gray-3 rounded-md border border-gray-6">
+                <div className="flex py-2 bg-zinc-900 rounded-md border border-zinc-800">
                     <div className="flex-none hidden lg:inline-block w-[35px]"></div>
                     <div className="flex-none hidden lg:inline-block w-[150px]">Sender</div>
                     <div className="grow text-center lg:text-left">Message<span className="lg:hidden">s</span></div>
@@ -274,14 +274,17 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 {/* Table rows */}
                 {messages.length > 0 ? 
                     messageRows : 
-                    <div className="w-full flex-col mt-4 py-6 px-8 border-dashed border-2 border-gray-5 rounded-xl 
-                    text-gray-10 text-center text-xl">
+                    <div className="w-full flex-col mt-4 py-12 px-3 border-dashed border border-zinc-800 rounded-xl 
+                    text-zinc-500 text-center text-xl">
                         No messages found
-                        {filterQuizId && 
-                            <div className="text-sm text-gray-8 mt-2">
-                                This quiz will use all messages in the group chat
+                        {filterQuizId && <>
+                            <div className="text-sm text-zinc-600 mt-2">
+                                This quiz will pull messages from the group chat.
                             </div>
-                        }
+                            <div className="text-sm font-medium text-zinc-500 mt-3">
+                                To add messages to the quiz, filter by messages in "Group Chat" and select them.
+                            </div>
+                        </>}
                     </div>
                 }
                 <div className="mt-4 mb-2">
@@ -337,7 +340,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         const corePageButtons: Array<JSX.Element> = [];
         for (let i = startPage; i <= endPage; i++) {
             corePageButtons.push(
-                <button key={i} className={`btn ${i === pageNumber ? "btn-active" : ""}`}
+                <button key={i} className={`btn ${i === pageNumber ? " btn-primary" : ""}`}
                 onClick={() => handlePageChange(i)}>
                     {i}
                 </button>
@@ -356,7 +359,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                         <Image className="" src="/chevron-left.svg" alt="<" width={18} height={18} />
                     </button>
                     {totalPages > 0 && 
-                        <button className={`btn ${pageNumber === 1 ? "btn-active" : ""}`} 
+                        <button className={`btn ${pageNumber === 1 ? " btn-primary" : ""}`} 
                         onClick={() => handlePageChange(1)}>
                             1
                         </button>
@@ -365,7 +368,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                     {corePageButtons}
                     {!nearEnd && <button disabled className="btn">...</button>}
                     {totalPages > 1 &&
-                        <button className={`btn ${pageNumber === totalPages ? "btn-active" : ""}`} 
+                        <button className={`btn ${pageNumber === totalPages ? " btn-primary" : ""}`} 
                         onClick={() => handlePageChange(totalPages)}>
                             {totalPages}
                         </button>
@@ -378,7 +381,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                 </div>
                 
             </div>
-            <div className="w-full mt-2 text-center text-xs text-gray-7 font-extralight noselect">
+            <div className="w-full mt-2 text-center text-xs text-zinc-700 font-extralight noselect">
                 {pageInfoText}
             </div>
         </>);
@@ -386,11 +389,11 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
     const renderQueryFilterControls = () => {
         return (
-            <fieldset className="px-[6px] lg:px-3 pb-3 pt-1 border border-gray-3 w-full rounded-lg lg:w-auto">
-                <legend className="text-gray-11">Query Filters</legend>
+            <fieldset className="px-[6px] lg:px-3 pb-3 pt-1 border border-zinc-900 w-full rounded-lg lg:w-auto">
+                <legend className="text-zinc-300">Query Filters</legend>
                 <div className="flex mx">
                     {renderParticipantFilterDropdown()}
-                    <div className="self-center mx-[6px] lg:mx-2 text-lg text-gray-8">
+                    <div className="self-center mx-[6px] lg:mx-2 text-lg text-zinc-600">
                         in
                     </div>
                     {renderQuizFilterDropdown()}
@@ -415,14 +418,15 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             }
 
             return (
-                <select className="select relative pr-7 text-ellipsis overflow-hidden text-sm"
+                <select className="select relative pr-7 text-ellipsis overflow-hidden text-sm bg-zinc-950 border-zinc-700 border-[1px]"
                 onMouseDown={(e) => {e.preventDefault()}} onClick={() => toggleModal('participant-modal')}>
                     <option>{getSelectedParticipantName()}</option>
-                </select>                
+                </select>
             );
         }
         return (
-            <select className="select sm:w-48 pr-7 text-ellipsis transition duration-300 ease-in-out hover:border-gray-8" 
+            <select className="select sm:w-48 pr-7 bg-zinc-950 border-zinc-700 border-[1px] text-ellipsis overflow-hidden
+            transition duration-300 ease-in-out hover:border-zinc-400" 
             onChange={selectionChanged} defaultValue={participantId ? participantId : ""} >
                 <option value={""}>All Messages</option>
                 {participants.map((participant: Participant) => {
@@ -452,14 +456,15 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             }
 
             return (
-                <select className="select relative pr-7 text-ellipsis overflow-hidden text-sm"
+                <select className="select relative pr-7 text-ellipsis overflow-hidden text-sm bg-zinc-950 border-zinc-700 border-[1px]"
                 onMouseDown={(e) => {e.preventDefault()}} onClick={() => toggleModal('quiz-modal')}>
                     <option>{getSelectedQuizName()}</option>
                 </select>
             );
         }
         return (
-            <select className="select sm:w-48 pr-7 text-ellipsis transition duration-300 ease-in-out hover:border-gray-8" 
+            <select className="select sm:w-48 pr-7 bg-zinc-950 border-zinc-700 border-[1px] text-ellipsis overflow-hidden 
+            transition duration-300 ease-in-out hover:border-zinc-400" 
             onChange={selectionChanged} defaultValue={quizId ? quizId : ""}>
                 <option value={""}>Group Chat</option>
                 {quizzes.map((quiz: TimeAttackQuiz | SurvivalQuiz) => {
@@ -489,18 +494,18 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         }
 
         return(
-            <div className={`fixed flex top-navbar left-0 right-0 translate-y-[-100%] bg-zinc-950/90 backdrop-blur-sm border-b border-gray-3 z-40
+            <div className={`fixed flex top-navbar left-0 right-0 translate-y-[-100%] bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-800 z-40
             ${determineAnimationClass()}`}>
                 <div className="self-center ml-4 text-lg font-semibold">
                     {selectedMessageIds.length} Selected
                 </div>
                 <div className="ml-auto mr-2 py-2">
                     {!filterQuizId &&
-                        <button className="btn btn-solid mr-1" onClick={() => toggleModal('delete-modal')}>
+                        <button className="btn btn-solid bg-zinc-800 mr-1" onClick={() => toggleModal('delete-modal')}>
                             Delete
                         </button>
                     }
-                    <button className="btn btn-primary" onClick={() => toggleModal('add-remove-modal')}>
+                    <button className="btn bg-blue-600" onClick={() => toggleModal('add-remove-modal')}>
                         {filterQuizId ? "Remove from Quiz" : "Add to Quiz"}
                     </button>
                 </div>
@@ -529,14 +534,14 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             </>);
         } else if (filterQuizId) {
             modalContent = (<>
-                <div className="mx-auto mb-4 text-lg text-gray-11">
+                <div className="mx-auto mb-4 text-lg text-zinc-500 font-medium">
                     Are you sure?
                 </div>
                 <div className="flex gap-2 px-6 mb-4">
-                    <button className="btn grow" onClick={() => toggleModal("add-remove-modal")}>
+                    <button className="btn grow bg-zinc-800" onClick={() => toggleModal("add-remove-modal")}>
                         Cancel
                     </button>
-                    <button className="btn btn-solid-error grow" onClick={() => updateMessagesInQuiz(filterQuizId)}>
+                    <button className="btn bg-red-4 grow" onClick={() => updateMessagesInQuiz(filterQuizId)}>
                         Remove
                     </button>
                 </div>
@@ -569,22 +574,22 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             </>)
             : (<>
                 <div className="mx-auto mb-5 text-center">
-                    <div className="mb-2 text-2xl text-gray-11">
+                    <div className="mb-2 text-2xl text-zinc-400">
                         Are you sure?
                     </div>
-                    <div className="mb-2 px-4 max-w-[300px] text-sm text-gray-9 font-light">
+                    <div className="mb-2 px-4 max-w-[300px] text-sm text-zinc-500 font-light">
                         Deleting {singular ? "a message" : "messages"} from the group chat will also remove 
                         {singular ? " it" : " them"} from all quizzes.
                     </div>
-                    <div className="text-gray-10 font-semibold">
+                    <div className="text-zinc-400 font-semibold">
                         This cannot be undone.
                     </div>
                 </div>
                 <div className="flex gap-2 px-6 mb-4">
-                    <button className="btn grow" onClick={() => toggleModal("delete-modal")}>
+                    <button className="btn grow bg-black border border-zinc-800" onClick={() => toggleModal("delete-modal")}>
                         Cancel
                     </button>
-                    <button className="btn btn-error grow" onClick={() => deleteSelectedMessages()}>
+                    <button className="btn grow bg-black border border-zinc-800" onClick={() => deleteSelectedMessages()}>
                         Delete
                     </button>
                 </div>
@@ -594,7 +599,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     }
 
     const renderMobileParticipantFilterModal = () => {
-        const modalTitle: string = "Messages to Display";
+        const modalTitle: string = "Participant Filter";
         const modalContent: JSX.Element = messagesLoading
         ? (<>
             <div className="mx-auto mb-4 text-lg text-gray-11">
@@ -605,7 +610,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             </div>
         </>)
         : (<>
-            <button className="btn btn-primary mx-6 mb-2"
+            <button className="btn bg-blue-600 mx-6 mb-2"
             onClick={() => setFilterParticipantId(null)}>
                 All Messages
             </button>
@@ -623,7 +628,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     }
 
     const renderMobileQuizFilterModal = () => {
-        const modalTitle: string = "Messages to Display";
+        const modalTitle: string = "Quiz Filter";
         const modalContent: JSX.Element = messagesLoading
         ? (<>
             <div className="mx-auto mb-4 text-lg text-gray-11">
@@ -634,11 +639,11 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             </div>
         </>)
         : (<>
-            <button className="btn btn-primary mx-6 mb-2"
+            <button className="btn bg-blue-600 mx-6 mb-2"
             onClick={() => setFilterQuizId(null)}>
                 Group Chat
             </button>
-            <div className="w-full text-center text-sm text-gray-9 mb-2">
+            <div className="w-full text-center text-sm text-zinc-500 mb-2">
                 Or view quiz messages:
             </div>
             <div className="mx-6 mb-4 max-h-[350px] px-2 overflow-y-scroll">
@@ -654,7 +659,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     const renderQuizModalButtons = (filterModal: boolean) => {
         if (quizzes.length === 0) {
             return (
-                <div className="w-64 mb-4 py-6 mx-auto border-dashed border-2 border-gray-5 rounded-xl text-gray-9 text-center">
+                <div className="w-64 mb-4 py-6 mx-auto border-dashed border-2 border-zinc-800 rounded-xl text-zinc-400 text-center">
                     No quizzes found
                 </div>
             );
@@ -686,7 +691,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     const renderParticipantModalButtons = () => {
         return participants.map((participant: Participant) => {
             return (
-                <button key={participant.id} className="btn btn-sm"
+                <button key={participant.id} className="btn btn-sm bg-zinc-900"
                 onClick={() => setFilterParticipantId(participant.id)}>
                     {participant.name}
                 </button>
@@ -707,10 +712,10 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         <div className="w-full h-navbar" /> {/* Navbar spacer */}
         <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
             <div className="relative w-[97%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-3 lg:mt-5">
-                <div className="w-full p-2 mb-3 lg:p-8 bg-zinc-950 rounded-xl border border-gray-7 overflow-x-hidden">
+                <div className="w-full p-2 mb-3 lg:p-8 bg-[#050507] rounded-xl border border-zinc-800 overflow-x-hidden">
                     <div className="flex mb-2">
-                        <div className="text-3xl mb-3 lg:mb-5 mt-2 lg:mt-0 mx-auto lg:mx-0 text-center lg:text-left">
-                            <span className="text-2xl lg:text-3xl">Messages for</span> <br className="lg:hidden" /> {stableDataLoading ? "..." : `"${groupChatName}"`}
+                        <div className="text-3xl mb-3 lg:mb-5 mt-4 lg:mt-0 mx-auto lg:mx-0 text-center lg:text-left">
+                            {stableDataLoading ? "..." : `"${groupChatName}"`}
                         </div>
                         {/* HTTP Response alert */}
                         {!isMobile && renderMessageResponseAlert()}
@@ -719,19 +724,19 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                         {renderQueryFilterControls()}
                         {/* Desktop selection action controls */}
                         {!isMobile &&
-                            <fieldset className="ml-auto px-3 pb-3 pt-1 border border-gray-3 rounded-lg ">
-                                <legend className={`text-gray-11 transition duration-300 ease-in-out 
+                            <fieldset className="ml-auto px-3 pb-3 pt-1 border border-zinc-900 rounded-lg ">
+                                <legend className={`text-zinc-400 transition duration-300 ease-in-out 
                                 ${selectedMessageIds.length === 0 ? "opacity-25" : ""}`}>
                                     Selection Actions
                                 </legend>
                                 {!filterQuizId &&
-                                    <button className="btn mr-2 font-semibold transition duration-300 ease-in-out 
-                                    disabled:opacity-25 hover:bg-gray-4" 
+                                    <button className="btn mr-2 font-semibold transition duration-300 ease-in-out bg-zinc-900
+                                    disabled:opacity-25 hover:bg-zinc-700" 
                                     disabled={selectedMessageIds.length === 0} onClick={() => toggleModal("delete-modal")}>
                                         Delete
                                     </button>
                                 }
-                                <button className="btn transition duration-300 ease-in-out disabled:opacity-25 hover:bg-gray-4" 
+                                <button className="btn transition duration-300 ease-in-out bg-zinc-900 disabled:opacity-25 hover:bg-zinc-700" 
                                 disabled={selectedMessageIds.length === 0} onClick={() => toggleModal("add-remove-modal")}>
                                     {filterQuizId ? "Remove from Quiz" : "Add to Quiz"}
                                 </button>

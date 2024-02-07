@@ -174,7 +174,7 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
             onClick={() => setHelpHeight(helpHeight === 0 ? 'auto' : 0)}>
                 {helpHeight === 0 ? "Show" : "Hide"} Help
             </div>
-            <div className="flex gap-3 mb-4 pt-5">
+            <div className="flex gap-3 mb-5 pt-5">
                 <div className="w-2/3">
                     <label className="text-sm ml-1">Group Chat Name</label>
                     <input name="groupChatName" type="text" placeholder="Enter name" value={groupChatName} onChange={handleInputChange}
@@ -187,14 +187,16 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
                         <input name="minChars" type="number" value={`${minChars}`} onChange={handleInputChange}
                         className="input mt-[2px] focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                         <button className="self-center" onClick={() => toggleModal("min-chars-info-modal")}>
-                            <InfoIcon className="w-6 h-6 ml-[6px] text-blue-7 transition duration-400 sm:hover:text-blue-9" />
+                            <InfoIcon className="w-6 h-6 ml-[6px] text-zinc-500 transition duration-400 sm:hover:text-blue-9" />
                         </button>
                     </div>
                 </div>
             </div>
             <div className="flex flex-wrap justify-center">
-                <input className={`input-file grow max-w-none mb-2 ${fileMissing ? "input-file-error" : ""}`} 
-                type="file" accept=".txt" onChange={handleFileChange} />
+                <div className="flex grow bg-white mb-3 rounded-[13px] bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+                    <input className={`input-file m-[1px] grow max-w-none  border-none bg-black`} 
+                    type="file" accept=".txt" onChange={handleFileChange} />
+                </div>
                 <button className="grow btn bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" 
                 onClick={handleUpload}>
                     Upload

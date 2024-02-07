@@ -146,7 +146,7 @@ export default function Dashboard() {
                             <Link href={`/participants/${focusedGroupChat.id}`}>
                                 <div className="flex mt-2 sm:mt-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-indigo-500 to-purple-400 mr-[2px]
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
-                                    <button className="grow m-[1px] bg-black btn btn-sm md:btn-md w-full rounded-lg sm:rounded-xl">
+                                    <button className="grow m-[1px] bg-black btn btn-sm sm:btn-md w-full rounded-lg sm:rounded-xl">
                                         Manage Participants
                                     </button>
                                 </div>
@@ -206,7 +206,7 @@ export default function Dashboard() {
                     </button>
                 </div>
                 <div className="flex">
-                    <div className="relative top-[1px] grow m-[1px] min-h-[416px] h-max rounded-b-lg shadow-md bg-black overflow-x-hidden">
+                    <div className="relative top-[1px] grow m-[1px] min-h-[416px] h-max rounded-b-lg shadow-md bg-black overflow-hidden">
                         {renderLeaderboards()}
                     </div>
                 </div>
@@ -278,7 +278,9 @@ export default function Dashboard() {
                     {leaderboard.length === 0 || isTimeAttackEntry(leaderboard[0]) ? "Score" : "Streak"}
                 </div>
             </div>
-            {leaderboardEntries}
+            <div className="max-h-[310px] overflow-y-scroll">
+                {leaderboardEntries}
+            </div>
         </>);
     }
 

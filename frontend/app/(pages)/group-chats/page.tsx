@@ -2,6 +2,7 @@
 
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
+import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import { User, GroupChatInfo } from "@/app/interfaces";
 import { toggleModal } from "@/app/utilities/miscFunctions";
 import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
@@ -16,6 +17,7 @@ export default function ManageGroupChats() {
     const router = useRouter();
     const getActiveUser = useGetActiveUser();
     const getGroupChatsInfo = useGetGroupChatsInfo();
+    const { setNavBarState, setNavBarExpanded, refetchDataCounter, setRefetchDataCounter } = useNavBar();
 
     // ----------- State (Data) -----------
     const [activeUser, setActiveUser] = useState<User | null>(null);
@@ -23,9 +25,6 @@ export default function ManageGroupChats() {
 
     // ----------- State (UI) -------------
     const [loading, setLoading] = useState<boolean>(true);
-
-    // Used to trigger a re-fetch for the page data when the user uploads a new group chat
-    const [reloadCounter, setReloadCounter] = useState<number>(0); 
 
     // ----------- Data Retrieval ---------
     useEffect(() => {
@@ -36,11 +35,11 @@ export default function ManageGroupChats() {
                 setActiveUser(activeUser);
                 setGroupChats(groupChatsInfo);
 
-                // We will expand the first group chat by default.
-                const firstGcCheckbox = document.getElementById(`toggle-${groupChatsInfo[0].id}`) as HTMLInputElement;
-                if (firstGcCheckbox) {
-                    firstGcCheckbox.checked = true;
-                }
+                // We will expand the first group chat by default (Disabled for a less jarring UX)
+                // const firstGcCheckbox = document.getElementById(`toggle-${groupChatsInfo[0].id}`) as HTMLInputElement;
+                // if (firstGcCheckbox) {
+                //     firstGcCheckbox.checked = true;
+                // }
 
                 setLoading(false);
             } else {
@@ -49,7 +48,7 @@ export default function ManageGroupChats() {
             }
         }
         getPageData();
-    }, [reloadCounter]);
+    }, [refetchDataCounter]);
 
     // =============== RENDER FUNCTIONS ===============
 
@@ -64,11 +63,8 @@ export default function ManageGroupChats() {
 
         if (groupChats.length === 0) {
             return (
-                <div className="w-full mt-8 bg-zinc-950 py-24 px-5 rounded-xl border border-gray-7 text-center">
-                    <div className="text-2xl font-light text-gray-10">You haven't uploaded any group chats yet</div>
-                    <div className="flex mt-5">
-                        <button className="btn btn-primary mx-auto">Upload New Group Chat</button>
-                    </div>
+                <div className="w-full mt-10 py-20 px-5 rounded-xl border border-zinc-800 border-dashed text-center">
+                    <div className="text-lg font-light text-gray-10">You haven't uploaded any group chats yet</div>
                 </div>
             );
         }
@@ -76,7 +72,7 @@ export default function ManageGroupChats() {
         const groupChatRows: JSX.Element[] = [];
         for (const groupChat in groupChats) {
             groupChatRows.push(
-                <GroupChatInfoRow key={groupChats[groupChat].id} groupChat={groupChats[groupChat]} setReloadCounter={setReloadCounter}/>
+                <GroupChatInfoRow key={groupChats[groupChat].id} groupChat={groupChats[groupChat]} setReloadCounter={setRefetchDataCounter}/>
             );
         }
 
@@ -96,14 +92,18 @@ export default function ManageGroupChats() {
     return (<>
         <div className="w-full h-navbar" /> {/* Navbar spacer */}
         <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
-            <div className="w-[97%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] 3xl:w-[40%] mt-4 sm:mt-24">
+            <div className="w-[97%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] 3xl:w-[40%] mt-4 sm:mt-24 mb-[75px]">
                 {!loading && 
                     <div className="w-full px-2 flex flex-col md:flex-row mb-6 md:mb-4 justify-center">
-                        <div className="text-3xl md:text-4xl text-center font-bold mb-3">
+                        <div className="text-3xl md:text-3xl text-center font-semibold mb-2">
                             Your Group Chats
                         </div>
-                        <button className="w-56 btn btn-primary btn-md mr-auto md:mr-0 ml-auto" 
-                        onClick={() => toggleModal("upload-modal")}>
+                        <button className="w-56 btn btn-md mr-auto md:mr-0 ml-auto text-[16px]
+                        bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" 
+                        onClick={() => {
+                            setNavBarState("UPLOAD");
+                            setNavBarExpanded(true);
+                        }}>
                             Upload New
                         </button>
                     </div>
@@ -111,19 +111,18 @@ export default function ManageGroupChats() {
                 <div className="max-w-[1000px]">
                     {renderGroupChats()}
                 </div>
-                {!loading && 
-                    <div className="flex w-full mt-8 mb-4">
-                        <div className="flex flex-wrap justify-center gap-1 max-w-[300px] mx-auto text-center text-gray-9 font-light text-xs">
-                            <div>Chats: <span className="font-base text-gray-11">{groupChats.length}</span></div>
-                            <div className="ml-2">Messages: <span className="font-base text-gray-11">{totalMessages}</span></div>
-                            <div className="ml-2">Participants: <span className="font-base text-gray-11">{totalParticipants}</span></div>
-                            <div className="ml-2">Quizzes: <span className="font-base text-gray-11">{totalQuizzes}</span></div>
-                        </div>
-                    </div>
-                }
             </div>
-            {/* FIXED POSITION ELEMENTS */}
-            {activeUser && <GroupChatUploadModal userId={activeUser.id} modalDomId="upload-modal" setReloadCounter={setReloadCounter} />}
+            {!loading && 
+                <div className="fixed bottom-0 left-0 right-0 flex py-[10px] bg-zinc-950 border-t border-zinc-800 z-50 backdrop-blur-md
+                shadow-[0_-5px_15px_1px_rgba(0,0,0,0.5)]">
+                    <div className="flex flex-wrap justify-center gap-1 max-w-[300px] mx-auto text-center text-zinc-400 font-light text-xs">
+                        <div>Chats: <span className="font-base text-zinc-200">{groupChats.length}</span></div>
+                        <div className="ml-2">Messages: <span className="font-base text-zinc-200">{totalMessages}</span></div>
+                        <div className="ml-2">Participants: <span className="font-base text-zinc-200">{totalParticipants}</span></div>
+                        <div className="ml-2">Quizzes: <span className="font-base text-zinc-200">{totalQuizzes}</span></div>
+                    </div>
+                </div>
+            }
         </main>
     </>)
 }

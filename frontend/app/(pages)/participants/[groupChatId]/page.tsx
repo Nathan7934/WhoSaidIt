@@ -188,7 +188,7 @@ export default function Participants({ params }: { params: { groupChatId: string
     const renderParticipantRows = () => {
         return participants.map((participant: Participant, index: number) => {
             return (
-                <div key={index} className={`flex items-center justify-between w-full py-4 sm:py-3 px-3 sm:px-1 border border-gray-6 
+                <div key={index} className={`flex items-center justify-between w-full py-4 sm:py-3 px-3 sm:px-1 border border-zinc-800 
                 rounded-md sm:rounded-none my-[6px] sm:my-0 drop-shadow-md sm:drop-shadow-none bg-black sm:bg-inherit
                 ${index < participants.length - 1 ? " sm:border-b sm:border-t-0 sm:border-x-0" : " sm:border-none"}`}>
                     <div className="flex items-center">
@@ -201,14 +201,14 @@ export default function Participants({ params }: { params: { groupChatId: string
                             transition duration-400 ease-in-out sm:group-hover:text-gray-10">
                                 ({participant.numberOfMessages})
                             </div>
-                            <MessagesIcon className="ml-1 w-6 h-6 text-gray-7 transition duration-400 
+                            <MessagesIcon className="ml-1 w-6 h-6 text-zinc-700 transition duration-400 
                             ease-in-out sm:group-hover:text-gray-11" />
                         </Link>
                         <button onClick={() => {
                             setDeletingParticipant(participant);
                             toggleModal("delete-modal");
                         }}>
-                            <DeleteIcon className="relative bottom-[1px] ml-3 w-5 h-5 text-gray-7 
+                            <DeleteIcon className="relative bottom-[1px] ml-3 w-5 h-5 text-zinc-700 
                             transition duration-400 ease-in-out sm:hover:text-red-5 hover:cursor-pointer" />
                         </button>
                     </div>
@@ -237,7 +237,7 @@ export default function Participants({ params }: { params: { groupChatId: string
                 <button onClick={() => updateParticipantName()} disabled={alteringParticipant}>
                     {alteringParticipant
                         ? <div className="spinner-simple w-5 h-5 mr-[6px]" />
-                        : <CheckmarkIcon className="relative bottom-[1px] w-5 h-5 mr-[6px] text-blue-8" />
+                        : <CheckmarkIcon className="relative bottom-[1px] w-5 h-5 mr-[6px] text-blue-700" />
                     }
                 </button>
                 <form className="mr-1" 
@@ -245,13 +245,13 @@ export default function Participants({ params }: { params: { groupChatId: string
                     e.preventDefault();
                     updateParticipantName();
                 }}>
-                    <input ref={nameInputRef} className="input input-primary" value={editingParticipant.name} onChange={editFieldChanged} />
+                    <input ref={nameInputRef} className="input border-blue-700" value={editingParticipant.name} onChange={editFieldChanged} />
                 </form>
             </>);
         }
         return (<>
             <button onClick={() => editClicked(participant)}>
-                <EditIcon className="relative bottom-[1px] w-5 h-5 mr-3 text-gray-7 transition 
+                <EditIcon className="relative bottom-[1px] w-5 h-5 mr-3 text-zinc-700 transition 
                 duration-400 ease-in-out sm:hover:text-gray-11 hover:cursor-pointer" />
             </button>
             <div className="sm:text-lg font-light sm:font-normal overflow-x-hidden text-ellipsis whitespace-nowrap">
@@ -273,21 +273,21 @@ export default function Participants({ params }: { params: { groupChatId: string
             </>)
             : (<>
                 <div className="mx-auto mb-5 text-center">
-                    <div className="mb-2 text-2xl text-gray-11">
+                    <div className="mb-2 text-2xl text-zinc-400">
                         Are you sure?
                     </div>
-                    <div className="mb-2 px-4 max-w-[300px] text-sm text-gray-9 font-light">
+                    <div className="mb-2 px-4 max-w-[300px] text-sm text-zinc-500 font-light">
                         Deleting a participant will also delete all of their messages.
                     </div>
-                    <div className="text-gray-10 font-semibold">
+                    <div className="text-zinc-400 font-semibold">
                         This cannot be undone.
                     </div>
                 </div>
                 <div className="flex gap-2 px-6 mb-4">
-                    <button className="btn grow" onClick={() => toggleModal("delete-modal")}>
+                    <button className="btn bg-black border border-zinc-800 grow" onClick={() => toggleModal("delete-modal")}>
                         Cancel
                     </button>
-                    <button className="btn btn-error grow" onClick={() => deleteSelectedParticipant()}>
+                    <button className="btn bg-black border border-zinc-800 grow" onClick={() => deleteSelectedParticipant()}>
                         Delete
                     </button>
                 </div>
@@ -316,18 +316,20 @@ export default function Participants({ params }: { params: { groupChatId: string
     return (<>
         <div className="w-full h-navbar" /> {/* Navbar spacer */}
         <main className="relative flex flex-col items-center justify-between h-content">
-            <div className="absolute top-[50%] translate-y-[-50%] w-[97%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] 3xl:w-[30%]">
-                <div className="flex flex-col w-full p-2 sm:p-8 bg-zinc-950 rounded-xl border border-gray-7 overflow-hidden">
+            <div className="absolute top-[50%] translate-y-[-50%] w-[97%] md:w-[80%] lg:w-[70%] xl:w-[60%] 2xl:w-[50%] 3xl:w-[40%]">
+                <div className="flex flex-col w-full p-2 sm:p-8 bg-[#050507] rounded-xl border border-zinc-800 overflow-hidden">
                     <div className="text-3xl mb-6 sm:mb-5 mt-4 sm:mt-0 mx-auto sm:mx-0 text-center sm:text-left">
                         <span className="hidden sm:inline-block">Participants for<br/></span> 
                         {loading ? <div className=" inline-block ml-3 skeleton w-48 h-8 rounded-xl" /> : <span> "{groupChatName}"</span>}
                     </div>
-                    <div className="hidden sm:block text-gray-9 mb-6 px-1 max-w-[650px]">
+                    <div className="hidden sm:block text-zinc-600 mb-6 px-1 max-w-[650px]">
                         Here you can see the participants of a group chat, edit their names, or delete them and all their messages
                         from the group chat.
                     </div>
-                    <div className="w-full py-2 bg-gray-2 text-lg rounded-t-md border border-gray-6 text-center">
-                        Manage Participants
+                    <div className="flex rounded-t-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
+                        <div className="grow m-[1px] py-2 bg-black text-lg rounded-t-md text-center">
+                            Manage Participants
+                        </div>
                     </div>
                     {loading 
                         ? <div className={`skeleton w-full h-[350px]`} />
@@ -335,13 +337,16 @@ export default function Participants({ params }: { params: { groupChatId: string
                             {renderParticipantRows()}
                         </div>
                     }
-                    <div className="mb-3 w-full py-[6px] bg-gray-2 rounded-b-md border border-gray-6 text-center text-sm font-light" >
-                        Total: 
-                        {loading 
-                            ? <div className="relative top-[1px] inline-block skeleton ml-1 w-5 h-3 rounded-lg" /> 
-                            : <span> {participants.length}</span>
-                        }
+                    <div className="flex mb-3 rounded-b-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
+                        <div className="grow m-[1px] py-[6px] bg-black rounded-b-md border border-zinc-800 text-center text-sm font-light" >
+                            Total: 
+                            {loading 
+                                ? <div className="relative top-[1px] inline-block skeleton ml-1 w-5 h-3 rounded-lg" /> 
+                                : <span> {participants.length}</span>
+                            }
+                        </div>
                     </div>
+                    
                 </div>
             </div>
             {/* FIXED POSITION ELEMENTS */}

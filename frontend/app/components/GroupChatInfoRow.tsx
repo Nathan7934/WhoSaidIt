@@ -22,7 +22,7 @@ export default function GroupChatInfoRow({ groupChat, setReloadCounter }: GroupC
     return (<>
         <div className="accordion">
             <input type="checkbox" id={`toggle-${groupChat.id}`} className="accordion-toggle" />
-            <label htmlFor={`toggle-${groupChat.id}`} className="accordion-title bg-zinc-950">
+            <label htmlFor={`toggle-${groupChat.id}`} className="accordion-title bg-[#050507]">
                 <span className="font-light text-lg sm:text-xl">{groupChat.groupChatName}</span>
                 <div className="mt-1">
                     <span className="badge badge-outline mr-2">
@@ -41,23 +41,34 @@ export default function GroupChatInfoRow({ groupChat, setReloadCounter }: GroupC
                     <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z" />
                 </svg>
             </span>
-            <div className="accordion-content text-content2 bg-[#09090bb9]">
+            <div className="accordion-content text-content2 bg-[#070606b9]">
                 <div className="min-h-0">
-                    <div className="mb-3 text-lg text-gray-9 font-light">
+                    <div className="mb-3 text-lg text-zinc-300 font-light">
                         Quizzes for this chat:
                     </div>
                     {renderQuizRows(groupChat, setReloadCounter)}
-                    <div className="sm:flex sm:flex-grow sm:items-end mt-6 sm:mt-3">
-                        <button className="btn btn-primary btn-sm mr-2 w-full sm:w-auto"
+                    <div className="sm:flex sm:flex-grow sm:items-end justify-center lg:justify-start mt-6 sm:mt-3">
+                        <button className="btn sm:btn-sm mr-2 w-full sm:w-auto bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500
+                        text-base sm:text-sm font-medium rounded-lg px-4 relative bottom-[1px]"
                         onClick={() => toggleModal(`create-quiz-modal-${groupChat.id}`)}>
                             Create New Quiz
                         </button>
-                        <div className="flex">
+                        <div className="flex items-end">
                             <Link href={`/messages/${groupChat.id}`} className="grow sm:flex-none mr-2">
-                                <button className="btn btn-sm mt-2 sm:mt-0 w-full">View Messages</button>
+                                <div className="flex mt-2 sm:mt-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500
+                                md:from-blue-500 md:via-indigo-500 md:to-purple-500">
+                                    <button className="grow m-[1px] bg-black btn btn-sm w-full rounded-lg sm:rounded-xl">
+                                        View Messages
+                                    </button>
+                                </div>
                             </Link>
                             <Link href={`/participants/${groupChat.id}`}>
-                                <button className="btn btn-sm mt-2 sm:mt-0">Manage Participants</button>
+                                <div className="flex mt-2 sm:mt-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-indigo-500 to-purple-400 mr-[2px]
+                                md:from-blue-500 md:via-indigo-500 md:to-purple-500">
+                                    <button className="grow m-[1px] bg-black btn btn-sm w-full rounded-lg sm:rounded-xl">
+                                        Manage Participants
+                                    </button>
+                                </div>
                             </Link>
                         </div>
                     </div>

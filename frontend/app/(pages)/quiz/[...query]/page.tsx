@@ -440,7 +440,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         <div className="mt-2 text-gray-12 text-2xl">
                             {isTimeAttack(quizInfo) ? "Time Attack Quiz" : "Survival Quiz"}
                         </div>
-                        <button className={`mt-10 py-3 bg-gradient-to-r rounded-2xl w-[280px] font-semibold text-2xl active:scale-[98%] transition duration-100 ease-in-out
+                        <button className={`mt-10 py-3 bg-gradient-to-r rounded-2xl w-[280px] font-medium text-2xl active:scale-[98%] transition duration-100 ease-in-out
                             ${isTimeAttack(quizInfo)
                                 ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
                                 : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`
@@ -470,46 +470,56 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             const options: Array<JSX.Element> = participantOptions.map((participant) => {
                 const isCorrect = participant.id === currentMessage.sender.id;
                 const isSelected = selectedParticipant?.id === participant.id;
-                let extraStyling: string;
+                const correctAnswerBg = isTimeAttack(quizInfo) 
+                    ? " bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600" 
+                    : " bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500";
+                let bgStyling: string;
+                let animationClass: string;
                 switch (gameState) {
                     case "QUESTION_STARTING":
-                        extraStyling = `animate__animated animate__flipOutX animate__duration-500ms 
-                        ${selectedParticipant && isCorrect ? " bg-green-400 border-green-400" : !isCorrect && isSelected ? " bg-red-400 border-red-400" : " bg-zinc-950"}`; 
+                        animationClass = " animate__animated animate__flipOutX animate__duration-500ms";
+                        bgStyling = `${selectedParticipant && isCorrect 
+                            ? correctAnswerBg : !isCorrect && isSelected 
+                            ? " bg-zinc-900" : " bg-zinc-950"}`; 
                         break;
                     case "QUESTION":
-                        extraStyling = " bg-zinc-950 animate__animated animate__flipInX animate__duration-500ms"; 
+                        animationClass = " animate__animated animate__flipInX animate__duration-500ms";
+                        bgStyling = " bg-zinc-950"; 
                         break;
                     case "CORRECT_ANSWER":
-                        extraStyling = isCorrect ? " bg-green-400 border-green-400 animate-correctAnswer" : " bg-zinc-950"; 
+                        animationClass = isCorrect ? " animate-correctAnswer" : "";
+                        bgStyling = isCorrect ? correctAnswerBg : " bg-zinc-950"; 
                         break;
                     case "INCORRECT_ANSWER":
-                        extraStyling = isCorrect 
-                            ? " bg-green-400 border-green-400" 
-                            : isSelected ? " bg-red-400 border-red-400 animate-incorrectAnswer" : " bg-zinc-950"; 
+                        animationClass = !isCorrect && isSelected ? " animate-incorrectAnswer" : "";
+                        bgStyling = isCorrect ? correctAnswerBg : isSelected ? " bg-zinc-900" : " bg-zinc-950"; 
                         break;
                 }
                 return (
-                    <button key={participant.id} 
-                    className={`w-full py-[10px] my-1 rounded-xl font-semibold text-lg border border-zinc-800
-                    ${extraStyling}`} onClick={() => {
-                        if (gameState === "QUESTION") {
-                            setSelectedParticipant(participant);
-                            if (isCorrect) {
-                                gameStateDispatch({ type: "correct_answer" });
-                            } else {
-                                gameStateDispatch({ type: "incorrect_answer" });
+                    <div key={participant.id}
+                    className={`w-full flex my-1 rounded-xl bg-gradient-to-r ${animationClass}
+                    ${isTimeAttack(quizInfo) ? " from-blue-500 via-blue-400 to-blue-500" : " from-purple-500 via-pink-500 to-purple-500"}`}>
+                        <button className={`grow py-[10px] m-[1px] rounded-xl font-semibold text-lg ${bgStyling}`}
+                        onClick={() => {
+                            if (gameState === "QUESTION") {
+                                setSelectedParticipant(participant);
+                                if (isCorrect) {
+                                    gameStateDispatch({ type: "correct_answer" });
+                                } else {
+                                    gameStateDispatch({ type: "incorrect_answer" });
+                                }
                             }
-                        }
-                    }}>
-                        {participant.name} {isCorrect ? "(*)" : ""} {/* TODO: Remove correct answer indicator for production */}
-                    </button>
+                        }}>
+                            {participant.name} {isCorrect ? "(*)" : ""} {/* TODO: Remove correct answer indicator for production */}
+                        </button>
+                    </div>
                 );
             });
             // Add the skip button if it's a Survival Quiz
             if (!isTimeAttack(quizInfo)) {
                 const styling: string = skipsUsed >= quizInfo.numberOfSkips 
-                    ? " text-gray-3 border border-dashed border-zinc-900 cursor-default" 
-                    : " bg-zinc-950/30 text-gray-11 border border-zinc-900";
+                    ? " text-zinc-800 border border-dashed border-zinc-900 cursor-default" 
+                    : " bg-zinc-950/30 text-zinc-300 border border-zinc-900";
                 options.push(
                     <button key="skip" className={`w-[50%] py-[10px] mx-auto mt-2 mb-1 rounded-2xl text-lg animate__animated animate__duration-500ms ${styling}
                     ${gameState === "QUESTION_STARTING" ? " animate__flipOutX" : " animate__flipInX"}
@@ -543,16 +553,19 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 message = currentMessage;
             }
             return (
-                <div className={`absolute flex left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] bg-zinc-950 rounded-xl border border-blue-500 px-3
-                ${!isNext ? gameState === "QUESTION_STARTING" ? getCardAnimClass() : "" : ""} ${isTimeAttack(quizInfo) ? "pt-5 pb-8" : "py-5"}`}>
-                    <div className="grow px-2 w-full h-full text-xl font-medium overflow-y-scroll overflow-x-hidden">
-                        {applyTextMarkup(message.content)}
-                    </div>
-                    {isTimeAttack(quizInfo) && (
-                        <div className="absolute bottom-[6px] right-3 text-center text-sm font-light text-gray-7">
-                            {isNext ? questionNumber + 1 : questionNumber}/{quizInfo.numberOfQuestions}
+                <div className={`absolute flex left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] rounded-xl bg-gradient-to-r overflow-hidden
+                ${!isNext ? gameState === "QUESTION_STARTING" ? getCardAnimClass() : "" : ""}
+                ${isTimeAttack(quizInfo) ? " from-blue-500 via-blue-400 to-blue-500" : " from-purple-500 via-pink-500 to-purple-500"}`}>
+                    <div className={`grow flex h-[318px] sm:h-[348px] bg-zinc-950 m-[1px] rounded-xl px-3 ${isTimeAttack(quizInfo) ? "pt-5 pb-8" : "py-5"}`}>
+                        <div className="grow px-2 w-full h-full text-xl font-medium overflow-y-scroll overflow-x-hidden">
+                            {applyTextMarkup(message.content)}
                         </div>
-                    )}
+                        {isTimeAttack(quizInfo) && (
+                            <div className="absolute bottom-[6px] right-3 text-center text-sm font-light text-zinc-700">
+                                {isNext ? questionNumber + 1 : questionNumber}/{quizInfo.numberOfQuestions}
+                            </div>
+                        )}
+                    </div>
                 </div>
             )
         }
@@ -562,8 +575,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             ${pageState === "QUIZ_ENDING" ? " animate__fadeOut" : " animate__fadeIn animate__duration-500ms"}`}>
                 <AnimatedScoreCounter type={isTimeAttack(quizInfo) ? "score" : "streak"} score={score} scoreGained={scoreGained} 
                 delay={isTimeAttack(quizInfo) ? 1000 : 2000} duration={800} isAnimated={isTimeAttack(quizInfo)} />
-                <div className="relative w-full h-[320px] sm:h-[350px] mt-4 mb-4 sm:my-6 bg-zinc-950 rounded-xl border border-blue-500 
-                ">
+                <div className={`relative w-full h-[320px] sm:h-[350px] mt-4 mb-4 sm:my-6 bg-zinc-950 rounded-xl border 
+                ${isTimeAttack(quizInfo) ? " border-blue-500" : " border-purple-500"}`}>
                     {/* We render the next message underneath the current message */}
                     {renderQuestionCard(true)}
                     {/* Current message */}
@@ -644,7 +657,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         Post your {isTimeAttack(quizInfo) ? "score" : "streak"} to the leaderboard<br/>
                         and compare with your friends!
                     </div>
-                    <div className="flex flex-col mt-4 mb-5 mx-6">
+                    <form className="flex flex-col mt-4 mb-5 mx-6" onSubmit={() => submitLeaderboardEntry()}>
                         <label className="w-full text-center mb-1 text-lg font-bold">
                             Enter Name
                         </label>
@@ -654,9 +667,9 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                             : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`}
                         >
                             <input className="input input-lg grow bg-black border-2 border-transparent text-lg text-center placeholder-white"
-                            value={playerName} onChange={playerNameChanged} />
+                            id="submitName" value={playerName} onChange={playerNameChanged} />
                         </div>
-                    </div>
+                    </form>
                     <div className="flex mx-6 mb-6">
                         <button className={`py-2 bg-gradient-to-r rounded-xl w-[280px] font-semibold text-xl
                             ${isTimeAttack(quizInfo)
@@ -681,6 +694,21 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             setPlayerName(e.target.value);
         }
 
+        const getLeaderboardButtonStyling = (): string => {
+            let styling: string;
+            if (scoreSubmitted) {
+                styling = `py-3 text-xl rounded-2xl font-medium bg-gradient-to-r 
+                ${isTimeAttack(quizInfo)
+                    ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100"
+                    : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100"
+                }`;
+            } else {
+                styling = `py-[10px] bg-zinc-950 font-semibold border rounded-xl
+                ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}`;
+            }
+            return styling;
+        }
+
         renderContent = (<>
             <div className={`flex flex-col items-center w-full animate__animated animate__duration-500ms
             ${pageState === "RESULTS" ? " animate__fadeIn" : " animate__fadeOut"}`}>
@@ -696,17 +724,15 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     <div className={`flex flex-col pt-3 w-full items-center 
                     ${resultsActionsVisible ? " animate__animated animate__fadeIn" : " invisible"}`}>
                         {!scoreSubmitted &&
-                            <button className={`py-2 bg-gradient-to-r rounded-xl w-[280px] font-semibold text-xl
+                            <button className={`py-[12px] bg-gradient-to-r rounded-xl w-[280px] text-2xl font-medium
                             ${isTimeAttack(quizInfo)
-                                ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
-                                : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`}
+                                ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100"
+                                : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100"}`}
                             onClick={() => { toggleModal("leaderboard-submit-modal") }}>
                                 Submit
                             </button>
                         }
-                        <button className={`mt-3  w-[280px]  font-semibold bg-zinc-950 border
-                        ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}
-                        ${scoreSubmitted ? " py-[14px] text-xl rounded-2xl" : " py-[10px] rounded-xl"}`}
+                        <button className={`mt-3  w-[280px] ${getLeaderboardButtonStyling()}`}
                         onClick={() => { leaderboardClicked() }}>
                             Leaderboard
                         </button>

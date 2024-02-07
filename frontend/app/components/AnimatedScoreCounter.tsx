@@ -87,8 +87,15 @@ export default function AnimatedScoreCounter(
         return (
             <div className="absolute flex left-[100%] top-0 bottom-0 items-center
             animate__animated animate__bounceIn animate__duration-500ms">
-                <div className={`ml-2 text-2xl font-semibold
-                ${displayScoreGained < 0 ? " text-red-500" : " text-green-500"}`}>
+                <div className={`ml-2 text-2xl font-bold
+                ${displayScoreGained < 0 
+                    ? " text-zinc-600" 
+                    : ` text-transparent bg-clip-text w-full bg-gradient-to-r
+                    ${type === "score" 
+                        ? " from-blue-400 via-blue-300 to-blue-400" 
+                        : " from-purple-400 via-pink-400 to-purple-400"
+                    }`
+                }`}>
                     {displayScoreGained > 0 ? "+" : ""}{displayScoreGained}
                 </div>
             </div>
@@ -102,7 +109,7 @@ export default function AnimatedScoreCounter(
             {type === "streak" && <StreakIcon className={`${isLarge ? "w-8 h-8" : "w-7 h-7"} mr-[6px]`} />}
             <div className={`font-semibold
             ${isLarge ? " text-6xl" : " text-5xl"} 
-            ${displayScore < 0 ? " text-red-500" : ""}`}>
+            ${displayScore < 0 ? " text-zinc-600" : ""}`}>
                 {displayScore}
             </div>
             {renderScoreGained()}
