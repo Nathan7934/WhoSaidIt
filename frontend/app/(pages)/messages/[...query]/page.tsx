@@ -265,7 +265,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         return (
             <div className="w-full">
                 {/* Table header */}
-                <div className="flex py-2 bg-zinc-900 rounded-md border border-zinc-800">
+                <div className="flex py-2 bg-zinc-800 rounded-md border border-zinc-700">
                     <div className="flex-none hidden lg:inline-block w-[35px]"></div>
                     <div className="flex-none hidden lg:inline-block w-[150px]">Sender</div>
                     <div className="grow text-center lg:text-left">Message<span className="lg:hidden">s</span></div>
@@ -287,7 +287,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                         </>}
                     </div>
                 }
-                <div className="mt-4 mb-2">
+                <div className="mt-4 mb-5">
                     {renderPaginationControls()}
                 </div>
             </div>
@@ -310,9 +310,9 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         const pageNumber = paginationConfig.pageNumber + 1; // API is 0-indexed, while UI is 1-indexed
         const pageSize = paginationConfig.pageSize;
         const { totalPages, totalMessages } = pageInfo;
-    
+
         const coreButtons = isMobile ? 3 : 5; // Total core page buttons
-    
+
         // Determine visibility of ellipses and adjust page ranges
         let nearStart = pageNumber <= 3;
         let nearEnd = pageNumber >= totalPages - 2;
@@ -335,12 +335,12 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             startPage = isMobile ? pageNumber : pageNumber - 1;
             endPage = isMobile ? pageNumber : pageNumber + 1;
         }
-    
+
         // Generate core page buttons
         const corePageButtons: Array<JSX.Element> = [];
         for (let i = startPage; i <= endPage; i++) {
             corePageButtons.push(
-                <button key={i} className={`btn ${i === pageNumber ? " btn-primary" : ""}`}
+                <button key={i} className={`w-[38px] ${i === pageNumber ? " bg-blue-600" : " bg-zinc-800"}`}
                 onClick={() => handlePageChange(i)}>
                     {i}
                 </button>
@@ -351,30 +351,32 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         const startNumber = (pageNumber - 1) * paginationConfig.pageSize + 1;
         const endNumber = Math.min(startNumber + pageSize - 1, totalMessages);
         const pageInfoText = `${startNumber}-${endNumber} of ${totalMessages}`;
-    
+
         return (<>
             <div className="flex">
                 <div className="pagination pagination-compact mx-auto relative">
-                    <button className="btn" onClick={() => handlePageChange(pageNumber - 1)} disabled={pageNumber === 1}>
-                        <Image className="" src="/chevron-left.svg" alt="<" width={18} height={18} />
+                    <button className="bg-zinc-800 w-[38px] py-[10px] rounded-l-xl disabled:opacity-50" 
+                    onClick={() => handlePageChange(pageNumber - 1)} disabled={pageNumber === 1}>
+                        <Image className="mx-auto" src="/chevron-left.svg" alt="<" width={18} height={18} />
                     </button>
                     {totalPages > 0 && 
-                        <button className={`btn ${pageNumber === 1 ? " btn-primary" : ""}`} 
+                        <button className={`w-[38px] ${pageNumber === 1 ? " bg-blue-600" : " bg-zinc-800"}`} 
                         onClick={() => handlePageChange(1)}>
                             1
                         </button>
                     }
-                    {!nearStart && <button disabled className="btn">...</button>}
+                    {!nearStart && <button disabled className="w-[38px] bg-zinc-800 opacity-50">...</button>}
                     {corePageButtons}
-                    {!nearEnd && <button disabled className="btn">...</button>}
+                    {!nearEnd && <button disabled className="w-[38px] bg-zinc-800 opacity-50">...</button>}
                     {totalPages > 1 &&
-                        <button className={`btn ${pageNumber === totalPages ? " btn-primary" : ""}`} 
+                        <button className={`w-[38px] ${pageNumber === totalPages ? " bg-blue-600" : " bg-zinc-800"}`} 
                         onClick={() => handlePageChange(totalPages)}>
                             {totalPages}
                         </button>
                     }
-                    <button className="btn" onClick={() => handlePageChange(pageNumber + 1)} disabled={pageNumber >= totalPages}>
-                        <Image className="rotate-180" src="/chevron-left.svg" alt=">" width={18} height={18} />
+                    <button className="w-[38px] rounded-r-xl bg-zinc-800 disabled:opacity-50" 
+                    onClick={() => handlePageChange(pageNumber + 1)} disabled={pageNumber >= totalPages}>
+                        <Image className="mx-auto rotate-180" src="/chevron-left.svg" alt=">" width={18} height={18} />
                     </button>
                     {messagesLoading && <div className="spinner-circle absolute w-5 h-5 lg:w-7 lg:h-7 
                     right-[-28px] lg:right-[-38px] top-[50%] translate-y-[-50%]" />}
@@ -680,7 +682,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                             {quiz.quizName}
                         </div>
                         <div className="mt-[4px]">
-                            {renderQuizTypeBadge(quiz.type)}
+                            {renderQuizTypeBadge(quiz.type, true)}
                         </div>
                     </div>
                 </button>
@@ -711,11 +713,11 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     return (<>
         <div className="w-full h-navbar" /> {/* Navbar spacer */}
         <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
-            <div className="relative w-[97%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-3 lg:mt-5">
+            <div className="relative w-[97%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-5">
                 <div className="w-full p-2 mb-3 lg:p-8 bg-[#050507] rounded-xl border border-zinc-800 overflow-x-hidden">
                     <div className="flex mb-2">
-                        <div className="text-3xl mb-3 lg:mb-5 mt-4 lg:mt-0 mx-auto lg:mx-0 text-center lg:text-left">
-                            {stableDataLoading ? "..." : `"${groupChatName}"`}
+                        <div className="text-3xl mb-3 lg:mb-5 mt-4 lg:mt-0 mx-auto lg:mx-0 text-center lg:text-left font-semibold">
+                            {stableDataLoading ? "..." : groupChatName}
                         </div>
                         {/* HTTP Response alert */}
                         {!isMobile && renderMessageResponseAlert()}

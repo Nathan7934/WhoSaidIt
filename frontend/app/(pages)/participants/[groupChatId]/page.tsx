@@ -188,29 +188,30 @@ export default function Participants({ params }: { params: { groupChatId: string
     const renderParticipantRows = () => {
         return participants.map((participant: Participant, index: number) => {
             return (
-                <div key={index} className={`flex items-center justify-between w-full py-4 sm:py-3 px-3 sm:px-1 border border-zinc-800 
-                rounded-md sm:rounded-none my-[6px] sm:my-0 drop-shadow-md sm:drop-shadow-none bg-black sm:bg-inherit
-                ${index < participants.length - 1 ? " sm:border-b sm:border-t-0 sm:border-x-0" : " sm:border-none"}`}>
-                    <div className="flex items-center">
-                        {renderParticipantEditableName(participant)}
-                    </div>
-                    <div className="flex items-center">
-                        <Link href={`/messages/${groupChatId}/nfq/${participant.id}`} 
-                        className="group flex items-center hover:cursor-pointer">
-                            <div className="ml-1 w-7 text-right text-sm text-gray-7 font-light 
-                            transition duration-400 ease-in-out sm:group-hover:text-gray-10">
-                                ({participant.numberOfMessages})
-                            </div>
-                            <MessagesIcon className="ml-1 w-6 h-6 text-zinc-700 transition duration-400 
-                            ease-in-out sm:group-hover:text-gray-11" />
-                        </Link>
-                        <button onClick={() => {
-                            setDeletingParticipant(participant);
-                            toggleModal("delete-modal");
-                        }}>
-                            <DeleteIcon className="relative bottom-[1px] ml-3 w-5 h-5 text-zinc-700 
-                            transition duration-400 ease-in-out sm:hover:text-red-5 hover:cursor-pointer" />
-                        </button>
+                <div className="my-[6px] drop-shadow-md p-[1px] rounded-md bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
+                    <div key={index} className={`flex items-center justify-between w-full py-4 sm:py-3 px-3 
+                    rounded-md bg-black`}>
+                        <div className="flex items-center">
+                            {renderParticipantEditableName(participant)}
+                        </div>
+                        <div className="flex items-center">
+                            <Link href={`/messages/${groupChatId}/nfq/${participant.id}`} 
+                            className="group flex items-center hover:cursor-pointer">
+                                <div className="ml-1 w-7 text-right text-sm text-zinc-400 font-light 
+                                transition duration-400 ease-in-out sm:group-hover:text-gray-10">
+                                    ({participant.numberOfMessages})
+                                </div>
+                                <MessagesIcon className="ml-1 w-6 h-6 text-zinc-400 transition duration-400 
+                                ease-in-out sm:group-hover:text-gray-11" />
+                            </Link>
+                            <button onClick={() => {
+                                setDeletingParticipant(participant);
+                                toggleModal("delete-modal");
+                            }}>
+                                <DeleteIcon className="relative bottom-[1px] ml-3 w-5 h-5 text-zinc-400 
+                                transition duration-400 ease-in-out sm:hover:text-red-5 hover:cursor-pointer" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             );
@@ -251,10 +252,10 @@ export default function Participants({ params }: { params: { groupChatId: string
         }
         return (<>
             <button onClick={() => editClicked(participant)}>
-                <EditIcon className="relative bottom-[1px] w-5 h-5 mr-3 text-zinc-700 transition 
+                <EditIcon className="relative bottom-[1px] w-5 h-5 mr-3 text-zinc-400 transition 
                 duration-400 ease-in-out sm:hover:text-gray-11 hover:cursor-pointer" />
             </button>
-            <div className="sm:text-lg font-light sm:font-normal overflow-x-hidden text-ellipsis whitespace-nowrap">
+            <div className="sm:text-lg font-medium sm:font-normal overflow-x-hidden text-ellipsis whitespace-nowrap">
                 {participant.name}
             </div>
         </>);
@@ -318,16 +319,16 @@ export default function Participants({ params }: { params: { groupChatId: string
         <main className="relative flex flex-col items-center justify-between h-content">
             <div className="absolute top-[50%] translate-y-[-50%] w-[97%] md:w-[80%] lg:w-[70%] xl:w-[60%] 2xl:w-[50%] 3xl:w-[40%]">
                 <div className="flex flex-col w-full p-2 sm:p-8 bg-[#050507] rounded-xl border border-zinc-800 overflow-hidden">
-                    <div className="text-3xl mb-6 sm:mb-5 mt-4 sm:mt-0 mx-auto sm:mx-0 text-center sm:text-left">
+                    <div className="text-3xl mb-6 sm:mb-5 mt-4 sm:mt-0 mx-auto sm:mx-0 text-center sm:text-left font-semibold">
                         <span className="hidden sm:inline-block">Participants for<br/></span> 
-                        {loading ? <div className=" inline-block ml-3 skeleton w-48 h-8 rounded-xl" /> : <span> "{groupChatName}"</span>}
+                        {loading ? <div className=" inline-block ml-3 skeleton w-48 h-8 rounded-xl" /> : <span> {groupChatName}</span>}
                     </div>
                     <div className="hidden sm:block text-zinc-600 mb-6 px-1 max-w-[650px]">
                         Here you can see the participants of a group chat, edit their names, or delete them and all their messages
                         from the group chat.
                     </div>
-                    <div className="flex rounded-t-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
-                        <div className="grow m-[1px] py-2 bg-black text-lg rounded-t-md text-center">
+                    <div className="p-[1px] rounded-t-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
+                        <div className="w-full py-2 bg-black text-lg rounded-t-md text-center">
                             Manage Participants
                         </div>
                     </div>
@@ -337,8 +338,8 @@ export default function Participants({ params }: { params: { groupChatId: string
                             {renderParticipantRows()}
                         </div>
                     }
-                    <div className="flex mb-3 rounded-b-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
-                        <div className="grow m-[1px] py-[6px] bg-black rounded-b-md border border-zinc-800 text-center text-sm font-light" >
+                    <div className="p-[1px] mb-3 rounded-b-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
+                        <div className="w-full py-[6px] bg-black rounded-b-md border border-zinc-800 text-center text-sm" >
                             Total: 
                             {loading 
                                 ? <div className="relative top-[1px] inline-block skeleton ml-1 w-5 h-3 rounded-lg" /> 

@@ -17,23 +17,37 @@ export const isTimeAttackQuiz = (quiz: TimeAttackQuiz | SurvivalQuiz): quiz is T
 }
 
 // This function renders a badge for a quiz type.
-export function renderQuizTypeBadge(type: string) {
+export function renderQuizTypeBadge(type: string, forceBadge: boolean = false) {
     if (type === "TIME_ATTACK") {
-        return (
-            <div className="flex w-min rounded-[9px] bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 text-blue-50">
+        return (<>
+            {/* Desktop */}
+            <div className={`${forceBadge ? "flex " : "hidden sm:flex "}
+            w-min rounded-[9px] bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 text-blue-50`}>
                 <div className="grow bg-black m-[1px] py-[2px] px-3 rounded-lg text-sm whitespace-nowrap">
                     Time Attack
                 </div>
             </div>
-        );
+            {/* Mobile */}
+            <div className={`${forceBadge ? "hidden " : " sm:hidden"}
+            font-extrabold w-min text-transparent bg-clip-text whitespace-nowrap bg-gradient-to-r from-blue-200 to-blue-300`}>
+                Time Attack
+            </div>
+        </>);
     }
-    return (
-        <div className="flex w-min rounded-[9px] bg-gradient-to-r from-purple-400/90 via-pink-300/90 to-purple-400/90 text-violet-50">
+    return (<>
+        {/* Desktop */}
+        <div className={`${forceBadge ? "flex " : "hidden sm:flex "} 
+        w-min rounded-[9px] bg-gradient-to-r from-purple-400/90 via-pink-300/90 to-purple-400/90 text-violet-50`}>
             <div className="grow bg-black m-[1px] py-[2px] px-3 rounded-lg text-sm whitespace-nowrap">
                 Survival
             </div>
         </div>
-    );
+        {/* Mobile */}
+        <div className={`${forceBadge ? "hidden " : " sm:hidden"}
+        font-extrabold w-min text-transparent bg-clip-text whitespace-nowrap bg-gradient-to-r from-purple-200 to-purple-300`}>
+            Survival
+        </div>
+    </>);
 }
 
 // This function renders the rows for a list of quizzes, given a group chat.
@@ -61,7 +75,8 @@ export function renderQuizRows(groupChat: GroupChatInfo, setReloadCounter: React
             else if (index === quizzes.length - 1) dropdownPosition = "dropdown-menu-left-top";
         }
         return (
-            <div key={quiz.id} className={`border-zinc-800 pt-2 pb-4 ${index !== quizzes.length - 1 ? "border-b" : ""}`}>
+            <div key={quiz.id} className={`my-3 sm:my-0 sm:pt-2 sm:pb-4 border-zinc-800 
+            ${index !== quizzes.length - 1 ? "sm:border-b" : ""}`}>
                 <QuizRow groupChatId={groupChat.id} quiz={quiz} setReloadCounter={setReloadCounter}
                 dropdownPosition={dropdownPosition} />
             </div>
@@ -108,7 +123,7 @@ export function formatDateLong(date: Date): string {
 
 // This function determines the appropriate animation class for an alert, given its response status.
 const determineAlertAnimationClassName = (responseStatus: ResponseStatus) => {
-    const color = responseStatus.success ? " bg-green-2" : " bg-blue-2";
+    const color = responseStatus.success ? " bg-blue-2" : " bg-purple-2";
     if (responseStatus.doAnimate) {
         if (responseStatus.message === "") {
             return " animate-alertExiting" + color;
@@ -116,18 +131,18 @@ const determineAlertAnimationClassName = (responseStatus: ResponseStatus) => {
             return " animate-alertEntering" + color;
         }
     }
-    return " opacity-0";
+    return " hidden";
 }
 
 export const renderResponseAlert = (responseStatus: ResponseStatus, positioning: string) => {
     const success: boolean = responseStatus.success;
     return (
-        <div className={`${positioning} z-50 p-2 rounded-2xl overflow-hidden 
+        <div className={`${positioning} z-50 p-2 rounded-2xl overflow-hidden backdrop-blur-lg
         ${determineAlertAnimationClassName(responseStatus)}`}>
             <div className="relative">
                 {success
-                    ? <SuccessIcon className="w-[40px] h-[40px]" />
-                    : <AlertIcon className="w-[40px] h-[40px]" />
+                    ? <SuccessIcon className="text-blue-500 w-[40px] h-[40px]" />
+                    : <AlertIcon className="text-purple-500 w-[40px] h-[40px]" />
                 }
                 <div className="absolute left-[50px] top-[50%] translate-y-[-50%] whitespace-nowrap">
                     {responseStatus.message}
@@ -137,17 +152,17 @@ export const renderResponseAlert = (responseStatus: ResponseStatus, positioning:
     );
 }
 
-export function renderModalResponseAlert(responseStatus: ResponseStatus) {
+export function renderModalResponseAlert(responseStatus: ResponseStatus, noTitle: boolean = false) {
     const success: boolean = responseStatus.success;
         return (
-            <div className="my-6 sm:my-12">
-                <div className={`mx-auto mb-[2px] text-lg sm:text-xl text-center ${success ? "text-green-12" : "text-blue-12"}`}>
+            <div className={`${noTitle ? " mb-6 mt-4 sm:mb-12 sm:mt-10" : " my-6 sm:my-12"}`}>
+                <div className={`mx-auto mb-[2px] text-lg sm:text-xl text-center ${success ? "text-blue-50" : "text-purple-50"}`}>
                     {responseStatus.message}
                 </div>
                 <div className="flex justify-center animate__animated animate__fadeIn">
                     {success
-                        ? <SuccessIcon className="w-12 h-12 sm:w-14 sm:h-14" />
-                        : <AlertIcon className="w-12 h-12 sm:w-14 sm:h-14" />
+                        ? <SuccessIcon className="text-blue-500 w-12 h-12 sm:w-14 sm:h-14" />
+                        : <AlertIcon className="text-purple-500 w-12 h-12 sm:w-14 sm:h-14" />
                     }
                 </div>
             </div>

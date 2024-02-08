@@ -55,17 +55,17 @@ export default function GroupChatInfoRow({ groupChat, setReloadCounter }: GroupC
                         </button>
                         <div className="flex items-end">
                             <Link href={`/messages/${groupChat.id}`} className="grow sm:flex-none mr-2">
-                                <div className="flex mt-2 sm:mt-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500
+                                <div className="py-[1px] px-[2px] mt-2 sm:mt-0 rounded-[9px] sm:rounded-[13px] bg-gradient-to-r from-blue-500 to-indigo-500
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
-                                    <button className="grow m-[1px] bg-black btn btn-sm w-full rounded-lg sm:rounded-xl">
+                                    <button className="bg-black btn btn-sm w-full rounded-lg sm:rounded-xl">
                                         View Messages
                                     </button>
                                 </div>
                             </Link>
                             <Link href={`/participants/${groupChat.id}`}>
-                                <div className="flex mt-2 sm:mt-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-indigo-500 to-purple-400 mr-[2px]
+                                <div className="py-[1px] px-[2px] mt-2 sm:mt-0 rounded-[9px] sm:rounded-[13px] bg-gradient-to-r from-indigo-500 to-purple-400
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
-                                    <button className="grow m-[1px] bg-black btn btn-sm w-full rounded-lg sm:rounded-xl">
+                                    <button className="bg-black btn btn-sm w-full rounded-lg sm:rounded-xl">
                                         Manage Participants
                                     </button>
                                 </div>

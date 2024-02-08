@@ -118,7 +118,7 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
                     <div className={`relative w-[35%] h-full rounded-t-xl drop-shadow-xl text-center z-30 animate-podiumGrowFirst
                     bg-gradient-to-b from-70% ${isTimeAttackQuiz(quiz) ? " from-blue-10 to-blue-3" : " from-purple-400 to-purple-400/40"}`}>
                         <span className={`relative top-2 text-5xl font-extrabold animate__animated animate__fadeIn animate__delay-1s
-                        ${isTimeAttackQuiz(quiz) ? " text-blue-7" : " text-purple-900"}`}>
+                        ${isTimeAttackQuiz(quiz) ? " text-blue-7" : " text-purple-7"}`}>
                             1
                         </span>
                         {leaderboard.length > 0 &&
@@ -180,13 +180,13 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
 
         const entries: Array<JSX.Element> = leaderboard.map((entry, index) => {
             return (
-                <div key={index} className={`w-full py-[10px] ${index === 0 ? "" : "border-t border-gray-2"}`}
+                <div key={index} className={`w-full py-[10px] ${index === 0 ? "" : "border-t border-zinc-900"}`}
                 onClick={() => setExpandedEntry(expandedEntry === index ? -1 : index)}>
                     <div className="flex">
-                        <div className="w-12 text-center text-gray-9 text-lg">
+                        <div className="w-12 text-center text-zinc-500 text-lg">
                             {index + 1}
                         </div>
-                        <div className="grow text-lg font-light whitespace-nowrap text-ellipsis">
+                        <div className="grow text-lg font-light text-zinc-50 whitespace-nowrap text-ellipsis">
                             {entry.playerName}
                         </div>
                         <div className="flex w-24">

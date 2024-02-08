@@ -83,7 +83,7 @@ export default function Dashboard() {
 
     // =============== RENDER FUNCTIONS ===============
 
-    const renderLatestGroupChat = () => {
+    const renderFocusedGroupChat = () => {
 
         if (loading) return (<div className="skeleton h-[495px] w-full mt-8 py-7 px-5 rounded-xl border border-gray-7 opacity-25" />);
 
@@ -125,7 +125,7 @@ export default function Dashboard() {
                             Quizzes for this chat:
                         </div>
                     </div>
-                    <div className="mb-6 pr-1 md:pr-6 pl-[6px] md:pl-1 max-h-[320px] overflow-y-scroll">
+                    <div className="mb-6 md:pr-6 md:pl-1 max-h-[320px] overflow-y-scroll">
                         {renderQuizRows(focusedGroupChat, setRefetchDataCounter)}
                     </div>
                     <div className="sm:flex sm:flex-grow sm:items-end justify-center lg:justify-start">
@@ -136,17 +136,17 @@ export default function Dashboard() {
                         </button>
                         <div className="flex items-end">
                             <Link href={`/messages/${focusedGroupChat.id}`} className="grow sm:flex-none mr-2">
-                                <div className="flex mt-2 sm:mt-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500
+                                <div className="p-[1px] mt-2 sm:mt-0 rounded-[9px] sm:rounded-[13px] bg-gradient-to-r from-blue-500 to-indigo-500
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
-                                    <button className="grow m-[1px] bg-black btn btn-sm sm:btn-md w-full rounded-lg sm:rounded-xl">
+                                    <button className="w-full bg-black py-[6px] sm:py-[7px] px-3 rounded-lg sm:rounded-xl">
                                         View Messages
                                     </button>
                                 </div>
                             </Link>
                             <Link href={`/participants/${focusedGroupChat.id}`}>
-                                <div className="flex mt-2 sm:mt-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-indigo-500 to-purple-400 mr-[2px]
+                                <div className="p-[1px] mt-2 sm:mt-0 rounded-[9px] sm:rounded-[13px] bg-gradient-to-r from-indigo-500 to-purple-400 mr-[2px]
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
-                                    <button className="grow m-[1px] bg-black btn btn-sm sm:btn-md w-full rounded-lg sm:rounded-xl">
+                                    <button className="w-full bg-black py-[6px] sm:py-[7px] px-3 rounded-lg sm:rounded-xl">
                                         Manage Participants
                                     </button>
                                 </div>
@@ -366,9 +366,9 @@ export default function Dashboard() {
                         Your Dashboard
                     </div>
                 </div> */}
-                {renderLatestGroupChat()}
+                {renderFocusedGroupChat()}
                 <div className="hidden lg:block">
-                    <div className="divider divider-horizontal mt-10 mb-6 text-gray-9 font-light">Older Group Chats</div>
+                    <div className="divider divider-horizontal mt-10 mb-6 text-gray-9 font-light">Other Group Chats</div>
                     {renderOlderGroupChats()}
                 </div>
             </div>

@@ -273,7 +273,7 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
 
     let modalContent: JSX.Element;
     if (responseStatus.doAnimate) {
-        modalContent = renderModalResponseAlert(responseStatus);
+        modalContent = renderModalResponseAlert(responseStatus, true);
     } else if (creating) {
         modalContent = (
             <div className="my-6 sm:my-12">

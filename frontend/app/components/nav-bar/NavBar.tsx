@@ -167,7 +167,7 @@ export default function NavBar() {
     const renderLogoutConfirmationModal = () => {
         let modalContent: JSX.Element;
         if (logoutResponseStatus.doAnimate) {
-            modalContent = renderModalResponseAlert(logoutResponseStatus);
+            modalContent = renderModalResponseAlert(logoutResponseStatus, true);
         } else if (loggingOut) {
             modalContent = (
                 <div className="my-6 sm:my-12">

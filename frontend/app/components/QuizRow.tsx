@@ -5,7 +5,6 @@ import { TimeAttackQuiz, SurvivalQuiz, ResponseStatus } from "../interfaces";
 import { renderQuizTypeBadge, renderModalResponseAlert, isTimeAttackQuiz, toggleModal, isModalOpen } from "../utilities/miscFunctions";
 import Modal from "./Modal";
 import MoreIcon from "./icons/MoreIcon";
-import LinkIcon from "./icons/LinkIcon";
 import ShareIcon from "./icons/nav-bar/ShareIcon";
 
 import Link from "next/link";
@@ -119,7 +118,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
     const renderQuizLinkModal = () => {
         let modalContent: JSX.Element;
         if (responseStatus.doAnimate) {
-            modalContent = renderModalResponseAlert(responseStatus);
+            modalContent = renderModalResponseAlert(responseStatus, true);
         } else if (generatingLink) {
             modalContent = (
                 <div className="my-6 sm:my-12">
@@ -173,7 +172,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
     const renderDeleteQuizModal = () => {
         let modalContent: JSX.Element;
         if (responseStatus.doAnimate) {
-            modalContent = renderModalResponseAlert(responseStatus);
+            modalContent = renderModalResponseAlert(responseStatus, true);
         } else if (deleting) {
             modalContent = (
                 <div className="my-6 sm:my-12">
@@ -216,6 +215,54 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
         );
     }
 
+    const renderMobileOptionsModal = () => {
+        return (
+            <Modal domId={mobileActionsModalDomId}>
+                <div className="flex flex-col items-center px-4 text-center mt-4 mb-2">
+                    <h2 className="text-xl text-white mb-1">{quiz.quizName}</h2>
+                    <div className="mb-4">{renderQuizTypeBadge(quiz.type, true)}</div>
+                </div>
+                <div className="px-4 mb-4">
+                    <button className={`btn btn-lg w-full text-lg bg-gradient-to-r font-medium
+                    ${isTimeAttackQuiz(quiz) ? " from-blue-600 via-blue-500 to-blue-600 text-blue-50" : " from-purple-500/75 via-pink-400/75 to-purple-500/75 text-pink-50"}`}
+                    onClick={() => {
+                        getShareableLink();
+                        toggleModal(linkModalDomId);
+                        toggleModal(mobileActionsModalDomId);
+                    }}>
+                        Copy Shareable Link
+                    </button>
+                    <Link href={`/quiz/${quiz.id}`}>
+                        <div className={`flex w-full mt-2 rounded-xl bg-gradient-to-r
+                        ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500 text-blue-50" : " from-purple-400/75 via-pink-300/75 to-purple-400/75 text-pink-50"}`}>
+                            <button className="btn grow m-[1px] text-lg bg-black font-medium">Play Quiz</button>
+                        </div>
+                    </Link>
+                    <Link href={`/leaderboard/${quiz.id}`}>
+                        <div className={`flex w-full mt-2 rounded-xl bg-gradient-to-r
+                        ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500 text-blue-50" : " from-purple-400/75 via-pink-300/75 to-purple-400/75 text-pink-50"}`}>
+                            <button className="btn grow m-[1px] bg-black font-semibold">Quiz Leaderboard</button>
+                        </div>
+                    </Link>
+                    <Link href={`/messages/${groupChatId}/${quiz.id}`}>
+                        <div className={`flex w-full mt-2 rounded-xl bg-gradient-to-r
+                        ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500 text-blue-50" : " from-purple-400/75 via-pink-300/75 to-purple-400/75 text-pink-50"}`}>
+                            <button className="btn grow m-[1px] bg-black font-semibold">Add Messages to Quiz</button>
+                        </div>
+                    </Link>
+                    <button className="btn btn-sm w-full mt-[6px] bg-black border border-zinc-900 text-zinc-500 font-light
+                    rounded-xl"
+                    onClick={() => {
+                        toggleModal(deleteModalDomId);
+                        toggleModal(mobileActionsModalDomId);
+                    }}>
+                        Delete Quiz
+                    </button>
+                </div>
+            </Modal>
+        );
+    }
+
     // =============== MAIN RENDER ===============
 
     return (<>
@@ -251,6 +298,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                     </div>
                 </div>
             </div>
+            {/* If we wanted a date to be shown, we'd uncomment this */}
             {/* <span className="tooltip tooltip-right w-min" data-tooltip="date created">
                 <label className="col-span-2 text-sm text-gray-9 self-center whitespace-nowrap mr-1">
                     {formatDateLong(quiz.createdDate)}
@@ -258,58 +306,20 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
             </span> */}
         </div>
         {/* --------------- MOBILE LAYOUT --------------- */}
-        <div className="flex sm:hidden">
-            <div className="flex flex-col">
-                <div className="text-lg font-semibold">{quiz.quizName}</div>
-                {/* <div className="text-xs text-gray-9">{formatDateLong(quiz.createdDate)}</div> */}
-                <div className="mt-1">{renderQuizTypeBadge(quiz.type)}</div>
-            </div>
-            {/* Options modal */}
-            <div className="ml-auto mr-1 self-center">
-                <label htmlFor={mobileActionsModalDomId}><MoreIcon className="relative top-1 text-zinc-400 w-[26px] h-[26px]" /></label>
-                <Modal domId={mobileActionsModalDomId}>
-                    <div className="flex flex-col items-center px-4 text-center mt-4 mb-2">
-                        <h2 className="text-xl text-white mb-1">{quiz.quizName}</h2>
-                        <div className="mb-4">{renderQuizTypeBadge(quiz.type)}</div>
-                    </div>
-                    <div className="px-4 mb-4">
-                        <button className={`btn btn-lg w-full text-lg bg-gradient-to-r font-medium
-                        ${isTimeAttackQuiz(quiz) ? " from-blue-600 via-blue-500 to-blue-600 text-blue-50" : " from-purple-500/75 via-pink-400/75 to-purple-500/75 text-pink-50"}`}
-                        onClick={() => {
-                            getShareableLink();
-                            toggleModal(linkModalDomId);
-                            toggleModal(mobileActionsModalDomId);
-                        }}>
-                            Copy Shareable Link
-                        </button>
-                        <Link href={`/quiz/${quiz.id}`}>
-                            <div className={`flex w-full mt-2 rounded-xl bg-gradient-to-r
-                            ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500 text-blue-50" : " from-purple-400/75 via-pink-300/75 to-purple-400/75 text-pink-50"}`}>
-                                <button className="btn grow m-[1px] text-lg bg-black font-medium">Play Quiz</button>
-                            </div>
-                        </Link>
-                        <Link href={`/leaderboard/${quiz.id}`}>
-                            <div className={`flex w-full mt-2 rounded-xl bg-gradient-to-r
-                            ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500 text-blue-50" : " from-purple-400/75 via-pink-300/75 to-purple-400/75 text-pink-50"}`}>
-                                <button className="btn grow m-[1px] bg-black font-semibold">Quiz Leaderboard</button>
-                            </div>
-                        </Link>
-                        <Link href={`/messages/${groupChatId}/${quiz.id}`}>
-                            <div className={`flex w-full mt-2 rounded-xl bg-gradient-to-r
-                            ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500 text-blue-50" : " from-purple-400/75 via-pink-300/75 to-purple-400/75 text-pink-50"}`}>
-                                <button className="btn grow m-[1px] bg-black font-semibold">Add Messages to Quiz</button>
-                            </div>
-                        </Link>
-                        <button className="btn btn-sm w-full mt-[6px] bg-black border border-zinc-900 text-zinc-500 font-light
-                        rounded-xl"
-                        onClick={() => {
-                            toggleModal(deleteModalDomId);
-                            toggleModal(mobileActionsModalDomId);
-                        }}>
-                            Delete Quiz
-                        </button>
-                    </div>
-                </Modal>
+        <div className={`sm:hidden p-[1px] rounded-2xl bg-gradient-to-r hover:cursor-pointer
+        ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500" : " from-purple-400 via-purple-300 to-purple-400"}`}
+        onClick={() => toggleModal(mobileActionsModalDomId)}>
+            <div className="flex rounded-2xl py-3 px-4 bg-black">
+                <div className="flex flex-col">
+                    <div className="text-xl font-light text-white">{quiz.quizName}</div>
+                    {/* <div className="text-xs text-gray-9">{formatDateLong(quiz.createdDate)}</div> */}
+                    <div className="mt-[2px]">{renderQuizTypeBadge(quiz.type)}</div>
+                </div>
+                {/* Options modal */}
+                <div className="ml-auto self-center">
+                    <MoreIcon className=" text-zinc-400 w-[26px] h-[26px]" />
+                    {renderMobileOptionsModal()}
+                </div>
             </div>
         </div>
         {/* FIXED POSITION ELEMENTS */}

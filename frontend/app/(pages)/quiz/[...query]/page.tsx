@@ -16,7 +16,7 @@ import AnimateHeight from "react-animate-height";
 import { Height } from "react-animate-height";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState, useReducer, useRef } from "react";
 
 // The page state is used to determine what to render on the level of the page.
 // Transitional states are used for animations, etc.
@@ -92,6 +92,10 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const [quizStartTime, setQuizStartTime] = useState<Date>(new Date());
     const [questionStartTime, setQuestionStartTime] = useState<Date>(new Date());
     const [totalTimeTaken, setTotalTimeTaken] = useState<number | null>(null); // In milliseconds
+
+    // Sound effect refs
+    const correctAudioRef = useRef<HTMLAudioElement>(new Audio("/correct.mp3"));
+    const incorrectAudioRef = useRef<HTMLAudioElement>(new Audio("/incorrect.mp3"));
 
     // ----- Data Retrieval/Authentication & Initial animation triggers -----
     useEffect(() => {
@@ -224,7 +228,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         return options;
     }
 
-    // ----- UI HELPERS -----
+    // ----- UI/UX HELPERS -----
 
     const executeEventSequence = (sequence: { action: () => void, delay: number }[]) => {
         let index = 0;
@@ -237,6 +241,15 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             }, event.delay);
         };
         executeNext();
+    }
+
+    const playSoundEffect = (audioRef: React.RefObject<HTMLAudioElement>) => {
+        if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch((error) => {
+                console.error("Error playing sound effect: ", error);
+            });
+        }
     }
 
     // ----- STATE CHANGE HANDLERS/REDUCERS -----
@@ -316,6 +329,9 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     setScore(score + 1);
                 }
 
+                if (navigator.vibrate) navigator.vibrate(200); // Vibrate on correct answer (if supported by the device)
+                playSoundEffect(correctAudioRef);
+
                 setTimeout(() => {
                     if (isTimeAttack(quizInfo) && questionNumber >= quizInfo.numberOfQuestions) {
                         // If Time Attack, quiz ends if it's the last question.
@@ -332,6 +348,9 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     setScoreGained(-wrongAnswerPenalty);
                     setScore(score - wrongAnswerPenalty);
                 }
+
+                if (navigator.vibrate) navigator.vibrate(400); // Vibrate on incorrect answer (if supported by the device)
+                playSoundEffect(incorrectAudioRef);
 
                 setTimeout(() => {
                     if (!isTimeAttack(quizInfo) || questionNumber >= quizInfo.numberOfQuestions) {
@@ -440,7 +459,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         <div className="mt-2 text-gray-12 text-2xl">
                             {isTimeAttack(quizInfo) ? "Time Attack Quiz" : "Survival Quiz"}
                         </div>
-                        <button className={`mt-10 py-3 bg-gradient-to-r rounded-2xl w-[280px] font-medium text-2xl active:scale-[98%] transition duration-100 ease-in-out
+                        <button className={`mt-10 py-3 bg-gradient-to-r rounded-2xl w-[280px] sm:w-[350px] font-medium text-2xl active:scale-[98%] transition duration-100 ease-in-out
                             ${isTimeAttack(quizInfo)
                                 ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
                                 : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`
@@ -448,12 +467,12 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                             Begin Quiz
                         </button>
                         <Link href={`/leaderboard/${quizId}${shareableToken ? `/${urlToken}` : ""}`}>
-                            <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border
+                            <button className={`mt-3 py-[10px] w-[280px] sm:w-[350px] rounded-xl font-semibold bg-zinc-950 border
                             ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}`}>
                                 Leaderboard
                             </button>
                         </Link>
-                        <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border
+                        <button className={`mt-3 py-[10px] w-[280px] sm:w-[350px] rounded-xl font-semibold bg-zinc-950 border
                         ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}`}
                         onClick={() => { toggleModal("quiz-details-modal") }}>
                             Details
@@ -478,9 +497,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 switch (gameState) {
                     case "QUESTION_STARTING":
                         animationClass = " animate__animated animate__flipOutX animate__duration-500ms";
-                        bgStyling = `${selectedParticipant && isCorrect 
-                            ? correctAnswerBg : !isCorrect && isSelected 
-                            ? " bg-zinc-900" : " bg-zinc-950"}`; 
+                        bgStyling = `${isSelected && isCorrect 
+                            ? correctAnswerBg : "bg-zinc-950"}`; 
                         break;
                     case "QUESTION":
                         animationClass = " animate__animated animate__flipInX animate__duration-500ms";
@@ -492,14 +510,14 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         break;
                     case "INCORRECT_ANSWER":
                         animationClass = !isCorrect && isSelected ? " animate-incorrectAnswer" : "";
-                        bgStyling = isCorrect ? correctAnswerBg : isSelected ? " bg-zinc-900" : " bg-zinc-950"; 
+                        bgStyling = "bg-zinc-950"; 
                         break;
                 }
                 return (
                     <div key={participant.id}
-                    className={`w-full flex my-1 rounded-xl bg-gradient-to-r ${animationClass}
+                    className={`w-full py-[1px] px-[2px] my-1 rounded-xl bg-gradient-to-r ${animationClass}
                     ${isTimeAttack(quizInfo) ? " from-blue-500 via-blue-400 to-blue-500" : " from-purple-500 via-pink-500 to-purple-500"}`}>
-                        <button className={`grow py-[10px] m-[1px] rounded-xl font-semibold text-lg ${bgStyling}`}
+                        <button className={`w-full py-[10px] rounded-xl font-semibold text-lg ${bgStyling}`}
                         onClick={() => {
                             if (gameState === "QUESTION") {
                                 setSelectedParticipant(participant);
@@ -553,15 +571,15 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 message = currentMessage;
             }
             return (
-                <div className={`absolute flex left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] rounded-xl bg-gradient-to-r overflow-hidden
+                <div className={`absolute p-[1px] left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] rounded-xl bg-gradient-to-r overflow-hidden
                 ${!isNext ? gameState === "QUESTION_STARTING" ? getCardAnimClass() : "" : ""}
                 ${isTimeAttack(quizInfo) ? " from-blue-500 via-blue-400 to-blue-500" : " from-purple-500 via-pink-500 to-purple-500"}`}>
-                    <div className={`grow flex h-[318px] sm:h-[348px] bg-zinc-950 m-[1px] rounded-xl px-3 ${isTimeAttack(quizInfo) ? "pt-5 pb-8" : "py-5"}`}>
+                    <div className={`w-full flex h-[318px] sm:h-[348px] bg-zinc-950 rounded-xl px-3 ${isTimeAttack(quizInfo) ? "pt-5 pb-8" : "py-5"}`}>
                         <div className="grow px-2 w-full h-full text-xl font-medium overflow-y-scroll overflow-x-hidden">
                             {applyTextMarkup(message.content)}
                         </div>
                         {isTimeAttack(quizInfo) && (
-                            <div className="absolute bottom-[6px] right-3 text-center text-sm font-light text-zinc-700">
+                            <div className="absolute bottom-[6px] right-3 text-center text-sm font-light text-zinc-600">
                                 {isNext ? questionNumber + 1 : questionNumber}/{quizInfo.numberOfQuestions}
                             </div>
                         )}
@@ -634,7 +652,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             if (responseStatus.doAnimate) {
                 modalContent = (<>
                     <div className="mt-[-12px]" />
-                    {renderModalResponseAlert(responseStatus)}
+                    {renderModalResponseAlert(responseStatus, true)}
                 </>);
             } else if (submitting) {
                 modalContent = (
@@ -671,7 +689,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         </div>
                     </form>
                     <div className="flex mx-6 mb-6">
-                        <button className={`py-2 bg-gradient-to-r rounded-xl w-[280px] font-semibold text-xl
+                        <button className={`py-2 bg-gradient-to-r rounded-xl w-[280px] font-semibold text-xl max-w-none grow
                             ${isTimeAttack(quizInfo)
                                 ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100 border border-blue-400"
                                 : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100 border border-pink-400"}`}
@@ -724,7 +742,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     <div className={`flex flex-col pt-3 w-full items-center 
                     ${resultsActionsVisible ? " animate__animated animate__fadeIn" : " invisible"}`}>
                         {!scoreSubmitted &&
-                            <button className={`py-[12px] bg-gradient-to-r rounded-xl w-[280px] text-2xl font-medium
+                            <button className={`py-[12px] bg-gradient-to-r rounded-xl w-[280px] sm:w-[350px] text-2xl font-medium
                             ${isTimeAttack(quizInfo)
                                 ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100"
                                 : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100"}`}
@@ -732,11 +750,11 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                                 Submit
                             </button>
                         }
-                        <button className={`mt-3  w-[280px] ${getLeaderboardButtonStyling()}`}
+                        <button className={`mt-3 w-[280px] sm:w-[350px] ${getLeaderboardButtonStyling()}`}
                         onClick={() => { leaderboardClicked() }}>
                             Leaderboard
                         </button>
-                        <button className={`mt-3 py-[10px] w-[280px] rounded-xl font-semibold bg-zinc-950 border
+                        <button className={`mt-3 py-[10px] w-[280px] sm:w-[350px] rounded-xl font-semibold bg-zinc-950 border
                         ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}`}
                         onClick={() => { pageStateDispatch({ type: 'restart_quiz' }) }}>
                             Play Again

@@ -41,7 +41,7 @@ details > summary.list-none::marker {
     background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #27272a;
+    background: rgb(24 24 27);
 }
 ::-webkit-scrollbar-thumb:hover {
     background: rgb(58, 58, 58);

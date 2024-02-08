@@ -92,10 +92,10 @@ export default function ManageGroupChats() {
     return (<>
         <div className="w-full h-navbar" /> {/* Navbar spacer */}
         <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
-            <div className="w-[97%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] 3xl:w-[40%] mt-4 sm:mt-24 mb-[75px]">
+            <div className="w-[97%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] 3xl:w-[40%] mt-5 sm:mt-24 mb-[75px]">
                 {!loading && 
                     <div className="w-full px-2 flex flex-col md:flex-row mb-6 md:mb-4 justify-center">
-                        <div className="text-3xl md:text-3xl text-center font-semibold mb-2">
+                        <div className="text-3xl md:text-3xl text-center font-medium mb-3">
                             Your Group Chats
                         </div>
                         <button className="w-56 btn btn-md mr-auto md:mr-0 ml-auto text-[16px]
