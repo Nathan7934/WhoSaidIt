@@ -1,6 +1,6 @@
 import usePostGroupChatUpload from "@/app/hooks/api_access/group_chats/usePostGroupChatUpload";
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
-import Modal from "../Modal";
+import Modal from "../modals/Modal";
 import InfoIcon from "../icons/InfoIcon";
 import { toggleModal, renderModalResponseAlert } from "@/app/utilities/miscFunctions";
 import { ResponseStatus } from "@/app/interfaces";
@@ -115,7 +115,7 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
                 <div className="mx-4 mb-4">
                     <div className="text-gray-11 mb-4">
                         This field sets the minimum number of characters that a message must contain
-                        in order to be imported. This is to prevent short messages like "ok" from being included.
+                        in order for it to be imported. This is to prevent short messages like "okay" from being included.
                     </div>
                     <div className="text-gray-11 mb-4">
                         For example, if you set the minimum number of characters to 100, then only messages with 100 or more

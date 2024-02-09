@@ -12,7 +12,7 @@ import DeleteIcon from "@/app/components/icons/DeleteIcon";
 
 import { GroupChat, Participant, ResponseStatus } from "@/app/interfaces";
 import { NAVBAR_HEIGHT } from "@/app/constants";
-import Modal from "@/app/components/Modal";
+import Modal from "@/app/components/modals/Modal";
 import { toggleModal, renderResponseAlert } from "@/app/utilities/miscFunctions";
 
 import { useState, useEffect, useRef } from "react";
@@ -208,7 +208,7 @@ export default function Participants({ params }: { params: { groupChatId: string
                                 setDeletingParticipant(participant);
                                 toggleModal("delete-modal");
                             }}>
-                                <DeleteIcon className="relative bottom-[1px] ml-3 w-5 h-5 text-zinc-400 
+                                <DeleteIcon className="relative bottom-[1px] ml-2 w-[22px] h-[22px] text-zinc-400 
                                 transition duration-400 ease-in-out sm:hover:text-red-5 hover:cursor-pointer" />
                             </button>
                         </div>

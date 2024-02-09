@@ -13,7 +13,7 @@ import {
     TimeAttackQuiz, Participant, ResponseStatus 
 } from "@/app/interfaces";
 import MessageRow from "@/app/components/MessageRow";
-import Modal from "@/app/components/Modal";
+import Modal from "@/app/components/modals/Modal";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -265,7 +265,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         return (
             <div className="w-full">
                 {/* Table header */}
-                <div className="flex py-2 bg-zinc-800 rounded-md border border-zinc-700">
+                <div className="flex py-2 bg-zinc-950 rounded-md border border-zinc-700">
                     <div className="flex-none hidden lg:inline-block w-[35px]"></div>
                     <div className="flex-none hidden lg:inline-block w-[150px]">Sender</div>
                     <div className="grow text-center lg:text-left">Message<span className="lg:hidden">s</span></div>

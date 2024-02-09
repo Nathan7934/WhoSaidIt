@@ -1,8 +1,8 @@
-import usePostGroupChatUpload from "../hooks/api_access/group_chats/usePostGroupChatUpload";
+import usePostGroupChatUpload from "../../hooks/api_access/group_chats/usePostGroupChatUpload";
 import Modal from "./Modal";
-import InfoIcon from "./icons/InfoIcon";
-import { toggleModal, isModalOpen, renderModalResponseAlert } from "../utilities/miscFunctions";
-import { ResponseStatus } from "../interfaces";
+import InfoIcon from "../icons/InfoIcon";
+import { toggleModal, isModalOpen, renderModalResponseAlert } from "../../utilities/miscFunctions";
+import { ResponseStatus } from "../../interfaces";
 
 import { useState } from "react";
 

@@ -1,12 +1,12 @@
-import usePostQuiz from "../hooks/api_access/quizzes/usePostQuiz";
+import usePostQuiz from "../../hooks/api_access/quizzes/usePostQuiz";
 import Modal from "./Modal";
-import { toggleModal, isModalOpen, renderModalResponseAlert } from "../utilities/miscFunctions";
-import { ResponseStatus, PostSurvivalQuiz, PostTimeAttackQuiz } from "../interfaces";
+import { toggleModal, isModalOpen, renderModalResponseAlert } from "../../utilities/miscFunctions";
+import { ResponseStatus, PostSurvivalQuiz, PostTimeAttackQuiz } from "../../interfaces";
 
 import AnimateHeight from "react-animate-height";
 import { Height } from "react-animate-height";
 import { useState } from "react";
-import InfoIcon from "./icons/InfoIcon";
+import InfoIcon from "../icons/InfoIcon";
 
 const TIME_ATTACK: number = 0;
 const SURVIVAL: number = 1;

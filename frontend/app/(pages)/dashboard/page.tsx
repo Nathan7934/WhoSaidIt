@@ -7,8 +7,8 @@ import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import { User, GroupChatInfo, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 import { renderQuizRows, toggleModal, isTimeAttackEntry, isSurvivalEntry } from "@/app/utilities/miscFunctions";
 import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
-import GroupChatUploadModal from "@/app/components/GroupChatUploadModal";
-import CreateQuizModal from "@/app/components/CreateQuizModal";
+import GroupChatUploadModal from "@/app/components/modals/GroupChatUploadModal";
+import CreateQuizModal from "@/app/components/modals/CreateQuizModal";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -129,8 +129,8 @@ export default function Dashboard() {
                         {renderQuizRows(focusedGroupChat, setRefetchDataCounter)}
                     </div>
                     <div className="sm:flex sm:flex-grow sm:items-end justify-center lg:justify-start">
-                        <button className="btn mr-2 w-full sm:w-auto bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500
-                        text-lg sm:text-base font-normal sm:font-medium"
+                        <button className="btn mr-2 w-full sm:w-auto bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600
+                        text-lg sm:text-base font-medium"
                         onClick={() => toggleModal("create-quiz-modal")}>
                             Create New Quiz
                         </button>
@@ -138,7 +138,7 @@ export default function Dashboard() {
                             <Link href={`/messages/${focusedGroupChat.id}`} className="grow sm:flex-none mr-2">
                                 <div className="p-[1px] mt-2 sm:mt-0 rounded-[9px] sm:rounded-[13px] bg-gradient-to-r from-blue-500 to-indigo-500
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
-                                    <button className="w-full bg-black py-[6px] sm:py-[7px] px-3 rounded-lg sm:rounded-xl">
+                                    <button className="w-full bg-black py-[6px] sm:py-[7px] px-3 rounded-lg sm:rounded-xl whitespace-nowrap">
                                         View Messages
                                     </button>
                                 </div>
@@ -146,8 +146,8 @@ export default function Dashboard() {
                             <Link href={`/participants/${focusedGroupChat.id}`}>
                                 <div className="p-[1px] mt-2 sm:mt-0 rounded-[9px] sm:rounded-[13px] bg-gradient-to-r from-indigo-500 to-purple-400 mr-[2px]
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
-                                    <button className="w-full bg-black py-[6px] sm:py-[7px] px-3 rounded-lg sm:rounded-xl">
-                                        Manage Participants
+                                    <button className="w-full bg-black py-[6px] px-6 sm:px-3 sm:py-[7px] rounded-lg sm:rounded-xl">
+                                        <span className="hidden sm:inline-block">Manage</span> Participants
                                     </button>
                                 </div>
                             </Link>
@@ -358,14 +358,6 @@ export default function Dashboard() {
         <div className="w-full h-navbar" /> {/* Navbar spacer */}
         <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
             <div className={`relative w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%]`}>
-                {/* <div className="mt-5 flex flex-col sm:flex-row items-center">
-                    <div className="text-2xl font-medium">
-                        Welcome, {activeUser?.username} 
-                    </div>
-                    <div className="font-light text-gray-12">
-                        Your Dashboard
-                    </div>
-                </div> */}
                 {renderFocusedGroupChat()}
                 <div className="hidden lg:block">
                     <div className="divider divider-horizontal mt-10 mb-6 text-gray-9 font-light">Other Group Chats</div>

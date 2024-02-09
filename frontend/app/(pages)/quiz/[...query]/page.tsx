@@ -5,7 +5,7 @@ import useAuth from "@/app/hooks/context_imports/useAuth";
 
 import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant, ResponseStatus, PostTimeAttackEntry, PostSurvivalEntry } from "@/app/interfaces";
 import AnimatedScoreCounter from "@/app/components/AnimatedScoreCounter";
-import Modal from "@/app/components/Modal";
+import Modal from "@/app/components/modals/Modal";
 import { toggleModal, isModalOpen, applyTextMarkup, renderModalResponseAlert } from "@/app/utilities/miscFunctions";
 
 import useGetQuizInfo from "@/app/hooks/api_access/quizzes/useGetQuizInfo";

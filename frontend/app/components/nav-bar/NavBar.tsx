@@ -2,7 +2,7 @@
 
 import { User, ResponseStatus } from "@/app/interfaces";
 import { renderModalResponseAlert, toggleModal, isModalOpen } from "@/app/utilities/miscFunctions";
-import Modal from "../Modal";
+import Modal from "../modals/Modal";
 
 // Navbar header icons
 import MenuIcon from "../icons/MenuIcon";
@@ -26,6 +26,8 @@ import GroupChatUploadSubmenu from "./GroupChatUploadSubmenu";
 import DashboardFocusSubmenu from "./DashboardFocusSubmenu";
 import ChangePasswordSubmenu from "./ChangePasswordSubmenu";
 import ChangeEmailSubmenu from "./ChangeEmailSubmenu";
+
+import DeleteAccountModal from "../modals/DeleteAccountModal";
 
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
@@ -351,7 +353,8 @@ export default function NavBar() {
                     <a className="transition duration-200 hover:text-gray-11 hover:decoration-gray-11/50 cursor-pointer">
                         License
                     </a>
-                    <a className="transition duration-200 hover:text-gray-11 hover:decoration-gray-11/50 cursor-pointer">
+                    <a className="transition duration-200 hover:text-gray-11 hover:decoration-gray-11/50 cursor-pointer"
+                    onClick={() => toggleModal("delete-account-modal")}>
                         Delete Account
                     </a>
                 </div>
@@ -413,6 +416,7 @@ export default function NavBar() {
                     </div>
                 }
                 {renderLogoutConfirmationModal()}
+                <DeleteAccountModal modalDomId="delete-account-modal" setUser={setUser} />
             </div>
         );
     }

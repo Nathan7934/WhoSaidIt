@@ -3,7 +3,7 @@ import useDeleteQuiz from "../hooks/api_access/quizzes/useDeleteQuiz";
 
 import { TimeAttackQuiz, SurvivalQuiz, ResponseStatus } from "../interfaces";
 import { renderQuizTypeBadge, renderModalResponseAlert, isTimeAttackQuiz, toggleModal, isModalOpen } from "../utilities/miscFunctions";
-import Modal from "./Modal";
+import Modal from "./modals/Modal";
 import MoreIcon from "./icons/MoreIcon";
 import ShareIcon from "./icons/nav-bar/ShareIcon";
 
@@ -133,14 +133,14 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
         } else {
             modalContent = (
                 <div className="flex flex-col w-full px-4 mt-[-4px]">
-                    <div className="flex w-full gap-2 items-center mb-5">
+                    <div className="flex w-full gap-2 items-center mb-3">
                         <ShareIcon className="ml-auto w-5 h-5" />
                         <div className="px-1 text-2xl text-white font-light">
                             Shareable Link
                         </div>
                         <ShareIcon className="mr-auto w-5 h-5 scale-x-[-1]" />
                     </div>
-                    <div className="w-full text-center text-zinc-200 mb-5 font-light">
+                    <div className="w-full text-center text-zinc-200 mb-7 font-light">
                         Anyone with the link below can play this quiz. Copy and send it to your friends!
                     </div>
                     <div className={`flex mb-6 bg-gradient-to-r rounded-[13px]
@@ -176,7 +176,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
         } else if (deleting) {
             modalContent = (
                 <div className="my-6 sm:my-12">
-                    <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-gray-11">
+                    <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-zinc-200">
                             Deleting Quiz...
                     </div>
                     <div className="flex justify-center">
@@ -187,21 +187,21 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
         } else {
             modalContent = (<>
                 <div className="flex flex-col w-full px-1 mb-5 text-center">
-                    <div className="mx-auto mb-2 text-2xl text-gray-11">
+                    <div className="mx-auto mb-2 text-2xl text-zinc-400">
                         Delete Quiz?
                     </div>
-                    <div className="mx-auto mb-2 px-4 max-w-[300px] text-sm text-gray-9 font-light">
+                    <div className="mx-auto mb-2 px-4 max-w-[300px] text-sm text-zinc-500 font-light">
                         Deleting this quiz will also delete all of its leaderboard entries.
                     </div>
-                    <div className="mx-auto text-gray-10 font-semibold">
+                    <div className="mx-auto text-zinc-400 font-semibold">
                         This cannot be undone.
                     </div>
                 </div>
                 <div className="flex gap-2 px-6 mb-4">
-                    <button className="btn grow" onClick={() => toggleModal("delete-modal")}>
+                    <button className="btn bg-black border border-zinc-800 grow" onClick={() => toggleModal("delete-modal")}>
                         Cancel
                     </button>
-                    <button className="btn bg-pink-900 grow" onClick={handleDelete}>
+                    <button className="btn bg-black border border-zinc-800 grow" onClick={handleDelete}>
                         Delete
                     </button>
                 </div>
@@ -250,7 +250,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                             <button className="btn grow m-[1px] bg-black font-semibold">Add Messages to Quiz</button>
                         </div>
                     </Link>
-                    <button className="btn btn-sm w-full mt-[6px] bg-black border border-zinc-900 text-zinc-500 font-light
+                    <button className="btn btn-sm w-full mt-2 bg-black border border-zinc-800 text-zinc-200 font-light
                     rounded-xl"
                     onClick={() => {
                         toggleModal(deleteModalDomId);
@@ -281,7 +281,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                 {/* Options dropdown */}
                 <div className="dropdown">
                     <label tabIndex={0} className="hover:cursor-pointer list-none"><MoreIcon className="text-zinc-400 w-7 h-7" /></label>
-                    <div className={`dropdown-menu bg-zinc-800 shadow-md ${dropdownPosition}`}>
+                    <div className={`dropdown-menu bg-zinc-900 shadow-md ${dropdownPosition}`}>
                         <a tabIndex={-1} className="dropdown-item text-sm font-semibold" 
                         onClick={() => {
                             getShareableLink();
@@ -291,7 +291,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                         </a>
                         <Link href={`/leaderboard/${quiz.id}`} className="dropdown-item text-sm">Quiz Leaderboard</Link>
                         <Link href={`/messages/${groupChatId}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
-                        <a tabIndex={-1} className="dropdown-item text-sm text-red-9"
+                        <a tabIndex={-1} className="dropdown-item text-sm text-zinc-600"
                         onClick={() => toggleModal(deleteModalDomId)}>
                             Delete Quiz
                         </a>
@@ -317,7 +317,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                 </div>
                 {/* Options modal */}
                 <div className="ml-auto self-center">
-                    <MoreIcon className=" text-zinc-400 w-[26px] h-[26px]" />
+                    <MoreIcon className=" text-zinc-300 sm:text-zinc-400 w-[26px] h-[26px]" />
                     {renderMobileOptionsModal()}
                 </div>
             </div>
