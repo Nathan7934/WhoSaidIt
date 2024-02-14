@@ -221,6 +221,28 @@ const config: Config = {
                     from: { marginRight: '310px' },
                     to: { marginRight: '0px' },
                 },
+
+                // TUTORIAL: Swipe Left Idicator Keyframes
+                swipeLeftIndicator: {
+                    '0%': {
+                        transform: 'translateX(200%)',
+                        opacity: '0',
+                    },
+                    '42%' : { // We are simulating a delay between animation repetitions
+                        transform: 'translateX(200%)',
+                        opacity: '0',
+                    },
+                    '49%': { opacity: '1' },
+                    '51%': { opacity: '1' },
+                    '58%' : {
+                        transform: 'translateX(-200%)',
+                        opacity: '0',
+                    },
+                    '100%': {
+                        transform: 'translateX(-200%)',
+                        opacity: '0',
+                    },
+                }
             },
             animation: {
                 // DASHBOARD (Leaderboard preview): Navigation arrows animations
@@ -271,9 +293,12 @@ const config: Config = {
                 subMenuExitingToRight: 'subMenuExitingToRight 0.25s ease-in-out 0s 1 forwards',
                 subMenuExitingToLeft: 'subMenuExitingToLeft 0.25s ease-in-out 0s 1 forwards',
 
-                // NAVBAR: Home/Close button slideover for desktop keyframes
+                // NAVBAR: Home/Close button slideover for desktop animations
                 homeCloseExpand: 'homeCloseExpand 0.15s ease-in-out 0s 1 forwards',
                 homeCloseCollapse: 'homeCloseCollapse 0.15s ease-in-out 0s 1 forwards',
+
+                // TUTORIAL: Swipe Left Idicator animation
+                swipeLeftIndicator: 'swipeLeftIndicator 5s cubic-bezier(.38,0,.44,1) 0s infinite',
             },
             dropShadow: {
                 glow: [

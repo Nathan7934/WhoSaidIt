@@ -9,6 +9,7 @@ import { renderQuizRows, toggleModal, isTimeAttackEntry, isSurvivalEntry } from 
 import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
 import GroupChatUploadModal from "@/app/components/modals/GroupChatUploadModal";
 import CreateQuizModal from "@/app/components/modals/CreateQuizModal";
+import NewUserTutorial from "@/app/components/tutorial/NewUserTutorial";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -84,18 +85,17 @@ export default function Dashboard() {
     // =============== RENDER FUNCTIONS ===============
 
     const renderFocusedGroupChat = () => {
-
-        if (loading) return (<div className="skeleton h-[495px] w-full mt-8 py-7 px-5 rounded-xl border border-gray-7 opacity-25" />);
-
         // In the case where the user hasn't uploaded any group chats yet
-        if (groupChats.length === 0 || !focusedGroupChat) {
-            return (
-                <div className="w-full mt-8 bg-zinc-950 py-24 px-5 rounded-xl border border-gray-7 text-center">
-                    <div className="text-2xl font-light text-gray-10">You haven't uploaded any group chats yet</div>
-                    <div className="mt-6">Click "Upload New Group Chat" to get started!</div>
-                </div>
-            );
-        }
+        // if (groupChats.length === 0 || !focusedGroupChat) {
+        //     return (
+        //         <div className="w-full mt-8 bg-zinc-950 py-24 px-5 rounded-xl border border-gray-7 text-center">
+        //             <div className="text-2xl font-light text-gray-10">You haven't uploaded any group chats yet</div>
+        //             <div className="mt-6">Click "Upload New Group Chat" to get started!</div>
+        //         </div>
+        //     );
+        // }
+
+        if (!focusedGroupChat) return; // Should never happen
 
         return (
             <div className="w-full grid grid-cols-1 lg:grid-cols-3 mb-3 lg:mb-0 mt-5 bg-[#050507] py-7 px-5 rounded-xl border border-zinc-800">
@@ -242,7 +242,7 @@ export default function Dashboard() {
         let leaderboardEntries: Array<JSX.Element> = [];
         if (leaderboard.length === 0) {
             leaderboardEntries.push(
-                <div className="flex flex-col items-center mt-8 text-lg font-light text-zinc-700">
+                <div key={1} className="flex flex-col items-center mt-8 text-lg font-light text-zinc-700">
                     <div className="border border-dashed border-zinc-800 rounded-xl px-16 py-4">
                         No entries yet
                     </div>
@@ -353,6 +353,29 @@ export default function Dashboard() {
     }
 
     // =============== MAIN RENDER ===============
+
+    if (loading || !activeUser) {
+        return (
+            <main className="flex min-h-screen flex-col items-center justify-between p-24">
+                <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[50%] translate-y-[-50%] items-center">
+                    <div className="text-xl">Fetching data</div>
+                    <div className="spinner-dot-pulse spinner-lg">
+                        <div className="spinner-pulse-dot"></div>
+                    </div>
+                </div>
+            </main>
+        ); // Dashboard loading
+    }
+
+    // If the user has no group chats, show the new user tutorial
+    if (groupChats.length === 0) {
+        return (<>
+            <div className="w-full h-navbar" /> {/* Navbar spacer */}
+            <main className="flex flex-col justify-center md:justify-start md:mt-8 h-content overflow-y-scroll">
+                <NewUserTutorial userName={activeUser.username} />
+            </main>
+        </>);
+    }
 
     return (<>
         <div className="w-full h-navbar" /> {/* Navbar spacer */}

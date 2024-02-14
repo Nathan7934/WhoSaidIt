@@ -102,7 +102,7 @@ export default function Login() {
                     <div className="form-field pt-5">
                         <div className="form-control justify-between">
                             <button type="submit" className={`btn w-full 
-                            ${loginLoading ? " btn-outline border-zinc-700 bg-black" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
+                            ${loginLoading ? " btn-outline border-zinc-800 bg-black" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
                                 {loginLoading ? 
                                     <div className="spinner-dot-pulse">
                                         <div className="spinner-pulse-dot"></div>

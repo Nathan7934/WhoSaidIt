@@ -3,10 +3,12 @@
 import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
 import useAuth from "@/app/hooks/context_imports/useAuth";
 
-import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant, ResponseStatus, PostTimeAttackEntry, PostSurvivalEntry } from "@/app/interfaces";
+import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant, ResponseStatus, 
+    PostTimeAttackEntry, PostSurvivalEntry } from "@/app/interfaces";
 import AnimatedScoreCounter from "@/app/components/AnimatedScoreCounter";
 import Modal from "@/app/components/modals/Modal";
-import { toggleModal, isModalOpen, applyTextMarkup, renderModalResponseAlert } from "@/app/utilities/miscFunctions";
+import { toggleModal, isModalOpen, applyTextMarkup, renderModalResponseAlert, 
+    playSoundEffect, executeEventSequence } from "@/app/utilities/miscFunctions";
 
 import useGetQuizInfo from "@/app/hooks/api_access/quizzes/useGetQuizInfo";
 import useGetRandomQuizMessage from "@/app/hooks/api_access/messages/useGetRandomQuizMessage";
@@ -226,30 +228,6 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         }
 
         return options;
-    }
-
-    // ----- UI/UX HELPERS -----
-
-    const executeEventSequence = (sequence: { action: () => void, delay: number }[]) => {
-        let index = 0;
-        const executeNext = () => {
-            const event = sequence[index];
-            setTimeout(() => {
-                event.action();
-                index++;
-                if (index < sequence.length) executeNext();
-            }, event.delay);
-        };
-        executeNext();
-    }
-
-    const playSoundEffect = (audioRef: React.RefObject<HTMLAudioElement>) => {
-        if (audioRef.current) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch((error) => {
-                console.error("Error playing sound effect: ", error);
-            });
-        }
     }
 
     // ----- STATE CHANGE HANDLERS/REDUCERS -----

@@ -172,7 +172,7 @@ export default function NavBar() {
             modalContent = renderModalResponseAlert(logoutResponseStatus, true);
         } else if (loggingOut) {
             modalContent = (
-                <div className="my-6 sm:my-12">
+                <div className="mb-6 mt-4 sm:mb-12 sm:mt-10">
                     <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-gray-11">
                             Logging Out...
                     </div>

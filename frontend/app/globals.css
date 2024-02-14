@@ -90,6 +90,9 @@ details > summary.list-none::marker {
 .animate__animated.animate__delay-700ms { animation-delay: 700ms; }
 .animate__animated.animate__delay-800ms { animation-delay: 800ms; }
 .animate__animated.animate__delay-900ms { animation-delay: 900ms; }
+.animate__animated.animate__delay-1000ms { animation-delay: 1000ms; }
+.animate__animated.animate__delay-1250ms { animation-delay: 1250ms; }
+.animate__animated.animate__delay-1500ms { animation-delay: 1500ms; }
 
 /* Override Ripple-UI pseudo element coloring */
 .input-file::-webkit-file-upload-button,.input-file::file-selector-button {
@@ -98,4 +101,8 @@ details > summary.list-none::marker {
         #2563eb 0%,       
         #3e52e8 100%
     );
+}
+
+.blur-fix {
+    transform: translateZ(0) scale(1.0, 1.0);
 }

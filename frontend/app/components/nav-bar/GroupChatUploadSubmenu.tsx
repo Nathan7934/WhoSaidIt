@@ -147,26 +147,26 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
         );
     } else {
         subMenuContent = (<>
-            <div className="w-full text-center text-2xl font-semibold mb-3">
+            <div className="w-full text-center text-2xl font-semibold mb-5">
                 Upload Group Chat
             </div>
             <AnimateHeight duration={500} height={helpHeight}>
-                <div className="text-zinc-400 mb-4">
+                <div className="text-zinc-400 mb-6 text-center">
                     Export your <span className="text-zinc-200 font-semibold">WhatsApp<WhatsAppIcon className="w-5 h-5 inline-block mx-1" /></span>
                     group chat as a <span className="text-zinc-200 font-semibold">.txt file</span> and upload it here.
                     Once you have uploaded a group chat, you can create quizzes for it.
                 </div>
-                <div className="mb-4">
+                <div className="mb-6 text-center">
                     <a className="text-xl text-primary font-semibold text-transparent bg-clip-text
                     bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400" 
                     href="https://faq.whatsapp.com/1180414079177245/?helpref=uf_share" target="_blank">
                         How to export your chat history
                     </a>
                 </div>
-                <div className="mb-3 sm:mb-6 text-zinc-400">
+                <div className="mb-6 text-zinc-400 text-center">
                     Make sure to select <span className="text-zinc-200 font-semibold">"Without Media"</span> when exporting your chat.
                 </div>
-                <div className="sm:hidden mb-4 text-zinc-600 text-sm">
+                <div className="sm:hidden mb-4 text-zinc-600 text-sm text-center">
                     iPhone users may prefer to email their chat history to themselves and upload it using a PC.
                 </div>
             </AnimateHeight>

@@ -265,11 +265,13 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         return (
             <div className="w-full">
                 {/* Table header */}
-                <div className="flex py-2 bg-zinc-950 rounded-md border border-zinc-700">
-                    <div className="flex-none hidden lg:inline-block w-[35px]"></div>
-                    <div className="flex-none hidden lg:inline-block w-[150px]">Sender</div>
-                    <div className="grow text-center lg:text-left">Message<span className="lg:hidden">s</span></div>
-                    <div className="flex-none hidden lg:inline-block w-[140px]">Timestamp</div>
+                <div className="p-[1px] rounded-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
+                    <div className="flex py-2 bg-zinc-950 rounded-md">
+                        <div className="flex-none hidden lg:inline-block w-[35px]"></div>
+                        <div className="flex-none hidden lg:inline-block w-[150px]">Sender</div>
+                        <div className="grow text-center lg:text-left">Message<span className="lg:hidden">s</span></div>
+                        <div className="flex-none hidden lg:inline-block w-[140px]">Timestamp</div>
+                    </div>
                 </div>
                 {/* Table rows */}
                 {messages.length > 0 ? 
@@ -281,8 +283,18 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                             <div className="text-sm text-zinc-600 mt-2">
                                 This quiz will pull messages from the group chat.
                             </div>
-                            <div className="text-sm font-medium text-zinc-500 mt-3">
-                                To add messages to the quiz, filter by messages in "Group Chat" and select them.
+                            <div className="flex flex-col gap-3 items-center mt-10">
+                                <div className="text-sm font-medium text-zinc-500">To add messages to the quiz, filter by</div>
+                                <div className="flex items-center gap-2 text-zinc-400">
+                                    <div className="bg-zinc-950 border border-zinc-700 rounded-xl py-1 px-3 text-white font-light text-base">
+                                        {"<Messages>"}
+                                    </div>
+                                    <div className="text-zinc-600">in</div>
+                                    <div className="bg-zinc-950 border border-zinc-700 rounded-xl py-1 px-3 text-white font-medium text-base">
+                                        Group Chat
+                                    </div>
+                                </div>
+                                <div className="text-sm font-medium text-zinc-500">where you can then select them.</div>
                             </div>
                         </>}
                     </div>
@@ -336,11 +348,13 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             endPage = isMobile ? pageNumber : pageNumber + 1;
         }
 
+        const activeBgColor: string = " bg-gradient-to-r from-blue-600 to-violet-600";
+
         // Generate core page buttons
         const corePageButtons: Array<JSX.Element> = [];
         for (let i = startPage; i <= endPage; i++) {
             corePageButtons.push(
-                <button key={i} className={`w-[38px] ${i === pageNumber ? " bg-blue-600" : " bg-zinc-800"}`}
+                <button key={i} className={`w-[38px] ${i === pageNumber ? activeBgColor : " bg-zinc-800"}`}
                 onClick={() => handlePageChange(i)}>
                     {i}
                 </button>
@@ -360,7 +374,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                         <Image className="mx-auto" src="/chevron-left.svg" alt="<" width={18} height={18} />
                     </button>
                     {totalPages > 0 && 
-                        <button className={`w-[38px] ${pageNumber === 1 ? " bg-blue-600" : " bg-zinc-800"}`} 
+                        <button className={`w-[38px] ${pageNumber === 1 ? activeBgColor : " bg-zinc-800"}`} 
                         onClick={() => handlePageChange(1)}>
                             1
                         </button>
@@ -369,7 +383,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                     {corePageButtons}
                     {!nearEnd && <button disabled className="w-[38px] bg-zinc-800 opacity-50">...</button>}
                     {totalPages > 1 &&
-                        <button className={`w-[38px] ${pageNumber === totalPages ? " bg-blue-600" : " bg-zinc-800"}`} 
+                        <button className={`w-[38px] ${pageNumber === totalPages ? activeBgColor : " bg-zinc-800"}`} 
                         onClick={() => handlePageChange(totalPages)}>
                             {totalPages}
                         </button>
@@ -392,7 +406,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     const renderQueryFilterControls = () => {
         return (
             <fieldset className="px-[6px] lg:px-3 pb-3 pt-1 border border-zinc-900 w-full rounded-lg lg:w-auto">
-                <legend className="text-zinc-300">Query Filters</legend>
+                <legend className="text-zinc-300 ml-1">Filters</legend>
                 <div className="flex mx">
                     {renderParticipantFilterDropdown()}
                     <div className="self-center mx-[6px] lg:mx-2 text-lg text-zinc-600">
@@ -630,7 +644,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     }
 
     const renderMobileQuizFilterModal = () => {
-        const modalTitle: string = "Quiz Filter";
+        const modalTitle: string = "Message Set Filter";
         const modalContent: JSX.Element = messagesLoading
         ? (<>
             <div className="mx-auto mb-4 text-lg text-gray-11">

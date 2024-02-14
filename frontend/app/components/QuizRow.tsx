@@ -89,7 +89,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
         } else {
             console.error("Error deleting quiz: ", error);
             setResponseStatus({
-                message: "Error deleting quiz",
+                message: error,
                 success: false,
                 doAnimate: true,
             });

@@ -26,7 +26,7 @@ export default function App() {
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[40%] translate-y-[-50%] items-center">
+            <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[50%] translate-y-[-50%] items-center">
                 <div className="text-xl">Verifying authentication status</div>
                 <div className="spinner-dot-pulse spinner-lg">
                     <div className="spinner-pulse-dot"></div>

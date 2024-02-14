@@ -139,7 +139,7 @@ export default function GroupChatInfoRow({ groupChat, isDeleting, setReloadCount
         <div className="accordion">
             <input type="checkbox" id={`toggle-${groupChat.id}`} className="accordion-toggle" />
             <label htmlFor={isDeleting ? "" : `toggle-${groupChat.id}`} 
-            className="accordion-title bg-[#050507]">
+            className="accordion-title bg-[#050507] noselect">
                 <span className="font-light text-xl pr-6">{groupChat.groupChatName}</span>
                 <div className="mt-1 ml-[-4px]">
                     <span className="badge badge-outline mr-2">
@@ -170,10 +170,10 @@ export default function GroupChatInfoRow({ groupChat, isDeleting, setReloadCount
             </label>
             <div className="accordion-content bg-[#070606b9]">
                 <div className="min-h-0">
-                    <div className="hidden lg:block ml-1 mt-5 sm:mt-8 text-lg text-zinc-300 font-light">
+                    <div className="hidden lg:block my-2 text-xl text-zinc-500 font-light">
                         Quizzes for this chat:
                     </div>
-                    <div className="lg:hidden divider divider-horizontal mb-5 mt-2 sm:mt-8 text-zinc-300 font-light">
+                    <div className="lg:hidden divider divider-horizontal mb-5 mt-2 text-zinc-300 font-light">
                         Quizzes for this chat:
                     </div>
                     {renderQuizRows(groupChat, setReloadCounter)}

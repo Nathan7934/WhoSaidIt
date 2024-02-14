@@ -297,7 +297,7 @@ export default function Participants({ params }: { params: { groupChatId: string
     }
 
     const renderParticipantResponseAlert = () => {
-        const positioning = "fixed top-6 left-[50%] translate-x-[-50%]";
+        const positioning = "fixed bottom-12 left-[50%] translate-x-[-50%]";
         return renderResponseAlert(responseStatus, positioning);
     }
 
