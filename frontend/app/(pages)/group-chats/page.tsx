@@ -4,7 +4,7 @@ import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import { User, GroupChatInfo } from "@/app/interfaces";
-import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
+import GroupChatInfoRow from "@/app/components/data-rows/GroupChatInfoRow";
 import WrenchIcon from "@/app/components/icons/WrenchIcon";
 import GroupChatIcon from "@/app/components/icons/nav-bar/GroupChatIcon";
 import UploadIcon from "@/app/components/icons/nav-bar/UploadIcon";
@@ -124,9 +124,7 @@ export default function ManageGroupChats() {
                         </div>
                     </div>
                 }
-                <div className="max-w-[1000px]">
-                    {renderGroupChats()}
-                </div>
+                {renderGroupChats()}
             </div>
             {!loading && 
                 <div className="fixed bottom-0 left-0 right-0 flex py-[10px] bg-zinc-950 border-t border-zinc-800 z-20 backdrop-blur-md

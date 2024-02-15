@@ -5,10 +5,11 @@ export default function usePostLogin() {
 
     const {setUserId, setAuth} = useAuth();
 
-    const postLogin = async (username: string, password: string): Promise<string | null> => {
+    const postLogin = async (username: string, password: string, rememberUser: boolean): Promise<string | null> => {
         const requestBody = {
             username: username,
-            password: password
+            password: password,
+            rememberUser: rememberUser
         };
         const requestUrl: string = `${INTERNAL_API_ROOT}/auth`;
 

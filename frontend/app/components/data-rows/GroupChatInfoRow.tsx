@@ -1,10 +1,10 @@
-import useDeleteGroupChat from "../hooks/api_access/group_chats/useDeleteGroupChat";
-import { formatDateLong, renderQuizRows, toggleModal, isModalOpen, renderModalResponseAlert } from "../utilities/miscFunctions";
-import { GroupChatInfo, ResponseStatus } from "../interfaces"
-import CreateQuizModal from "./modals/CreateQuizModal";
-import Modal from "./modals/Modal";
-import DeleteIcon from "./icons/DeleteIcon";
-import WarningIcon from "./icons/WarningIcon";
+import useDeleteGroupChat from "../../hooks/api_access/group_chats/useDeleteGroupChat";
+import { formatDateLong, renderQuizRows, toggleModal, isModalOpen, renderModalResponseAlert } from "../../utilities/miscFunctions";
+import { GroupChatInfo, ResponseStatus } from "../../interfaces"
+import CreateQuizModal from "../modals/CreateQuizModal";
+import Modal from "../modals/Modal";
+import DeleteIcon from "../icons/DeleteIcon";
+import WarningIcon from "../icons/WarningIcon";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -136,7 +136,7 @@ export default function GroupChatInfoRow({ groupChat, isDeleting, setReloadCount
     // =============== MAIN RENDER ===============
 
     return (<>
-        <div className="accordion">
+        <div className="accordion max-w-none">
             <input type="checkbox" id={`toggle-${groupChat.id}`} className="accordion-toggle" />
             <label htmlFor={isDeleting ? "" : `toggle-${groupChat.id}`} 
             className="accordion-title bg-[#050507] noselect">
@@ -168,7 +168,7 @@ export default function GroupChatInfoRow({ groupChat, isDeleting, setReloadCount
                         </span>
                 }
             </label>
-            <div className="accordion-content bg-[#070606b9]">
+            <div className="accordion-content bg-[#030305]">
                 <div className="min-h-0">
                     <div className="hidden lg:block my-2 text-xl text-zinc-500 font-light">
                         Quizzes for this chat:

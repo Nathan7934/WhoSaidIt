@@ -17,5 +17,14 @@ export async function POST(): Promise<NextResponse> {
         expires: new Date(0)
     });
 
+    // Clear the remember_user cookie; Set the cookie's expiration date to the past.
+    response.cookies.set({
+        name: "remember_user",
+        value: "",
+        sameSite: "lax",
+        path: "/api/refresh",
+        expires: new Date(0)
+    });
+
     return response;
 }

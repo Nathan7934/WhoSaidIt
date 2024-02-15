@@ -1,11 +1,11 @@
-import useGenerateShareableLink from "../hooks/security/useGenerateShareableLink";
-import useDeleteQuiz from "../hooks/api_access/quizzes/useDeleteQuiz";
+import useGenerateShareableLink from "../../hooks/security/useGenerateShareableLink";
+import useDeleteQuiz from "../../hooks/api_access/quizzes/useDeleteQuiz";
 
-import { TimeAttackQuiz, SurvivalQuiz, ResponseStatus } from "../interfaces";
-import { renderQuizTypeBadge, renderModalResponseAlert, isTimeAttackQuiz, toggleModal, isModalOpen } from "../utilities/miscFunctions";
-import Modal from "./modals/Modal";
-import MoreIcon from "./icons/MoreIcon";
-import ShareIcon from "./icons/nav-bar/ShareIcon";
+import { TimeAttackQuiz, SurvivalQuiz, ResponseStatus } from "../../interfaces";
+import { renderQuizTypeBadge, renderModalResponseAlert, isTimeAttackQuiz, toggleModal, isModalOpen } from "../../utilities/miscFunctions";
+import Modal from "../modals/Modal";
+import MoreIcon from "../icons/MoreIcon";
+import ShareIcon from "../icons/nav-bar/ShareIcon";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";

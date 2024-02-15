@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Message } from "../interfaces";
-import { MOBILE_HOLD_DURATION } from "../constants";
+import { Message } from "../../interfaces";
+import { MOBILE_HOLD_DURATION } from "../../constants";
 import AnimateHeight, { Height } from "react-animate-height";
-import { applyTextMarkup } from "../utilities/miscFunctions";
+import { applyTextMarkup } from "../../utilities/miscFunctions";
 
 // This component represents a row of content in a message list.
 // Contains information for a single message, as well as actions for selecting the message.

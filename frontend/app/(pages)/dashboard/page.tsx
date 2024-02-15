@@ -6,8 +6,7 @@ import useGetGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/use
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import { User, GroupChatInfo, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 import { renderQuizRows, toggleModal, isTimeAttackEntry, isSurvivalEntry } from "@/app/utilities/miscFunctions";
-import GroupChatInfoRow from "@/app/components/GroupChatInfoRow";
-import GroupChatUploadModal from "@/app/components/modals/GroupChatUploadModal";
+import GroupChatInfoRow from "@/app/components/data-rows/GroupChatInfoRow";
 import CreateQuizModal from "@/app/components/modals/CreateQuizModal";
 import NewUserTutorial from "@/app/components/tutorial/NewUserTutorial";
 
@@ -388,7 +387,6 @@ export default function Dashboard() {
                 </div>
             </div>
             {/* FIXED POSITION ELEMENTS */}
-            {activeUser && <GroupChatUploadModal userId={activeUser.id} modalDomId="upload-modal" setReloadCounter={setRefetchDataCounter} />}
             {groupChats.length > 0 && 
                 <CreateQuizModal groupChatId={groupChats[0].id} groupChatName={groupChats[0].groupChatName} 
                 modalDomId="create-quiz-modal" setReloadCounter={setRefetchDataCounter} />

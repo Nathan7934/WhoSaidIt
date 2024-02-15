@@ -1,5 +1,5 @@
 import { ResponseStatus, GroupChatInfo, TimeAttackEntry, SurvivalEntry, TimeAttackQuiz, SurvivalQuiz } from "../interfaces";
-import QuizRow from "../components/QuizRow";
+import QuizRow from "../components/data-rows/QuizRow";
 import SuccessIcon from "../components/icons/SuccessIcon";
 import AlertIcon from "../components/icons/AlertIcon";
 

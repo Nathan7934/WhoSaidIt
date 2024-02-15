@@ -18,6 +18,7 @@ export default function Login() {
     // Login form fields state
     const [loginUsername, setLoginUsername] = useState<string>("");
     const [loginPassword, setLoginPassword] = useState<string>("");
+    const [rememberUser, setRememberUser] = useState<boolean>(true);
 
     // Login error message state
     const [loginError, setLoginError] = useState<string>(""); // Empty string means no error
@@ -38,7 +39,7 @@ export default function Login() {
     const loginSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         setLoginLoading(true);
-        postLogin(loginUsername, loginPassword)
+        postLogin(loginUsername, loginPassword, rememberUser)
         .then((error: string | null) => {
             if (!error) {
                 // If we successfully logged in, redirect to the dashboard
@@ -88,7 +89,7 @@ export default function Login() {
                     <div className="form-field">
                         <div className="form-control justify-between">
                             <div className="flex gap-2">
-                                <input type="checkbox" className="checkbox" />
+                                <input type="checkbox" className="checkbox" checked={rememberUser} onChange={(e) => setRememberUser(e.target.checked)} />
                                 <a href="#">Remember me</a>
                             </div>
                             <label className="form-label">

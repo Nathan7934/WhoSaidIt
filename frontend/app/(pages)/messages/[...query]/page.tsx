@@ -12,7 +12,7 @@ import {
     GroupChat, Message, MessagePage, PaginationConfig, SurvivalQuiz,
     TimeAttackQuiz, Participant, ResponseStatus 
 } from "@/app/interfaces";
-import MessageRow from "@/app/components/MessageRow";
+import MessageRow from "@/app/components/data-rows/MessageRow";
 import Modal from "@/app/components/modals/Modal";
 
 import Image from "next/image";
