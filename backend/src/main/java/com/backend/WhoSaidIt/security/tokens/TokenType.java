@@ -1,5 +1,5 @@
 package com.backend.WhoSaidIt.security.tokens;
 
 public enum TokenType {
-    USER, REFRESH, QUIZ
+    USER, REFRESH, QUIZ, PASSWORD_RESET
 }

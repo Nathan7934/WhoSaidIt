@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +23,12 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "9b46704cbe1d2143ef058c48e93dbb6db5e95329696cca78a3a43765b26127e1";
+    @Value("${jwt.secret}") // Value is retrieved from the environment variable pointed to in application.yaml
+    private String SECRET_KEY;
+
     private static final int USER_ACCESS_EXPIRATION = 1000 * 60 * 10; // 10 minutes
     private static final int USER_REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 14; // 2 weeks
+    public static final int PASSWORD_RESET_EXPIRATION = 1000 * 60 * 30; // 1/2 hour
 
     public String generateUserToken(UserDetails userDetails) {
         return generateUserToken(Map.of(), userDetails);
@@ -62,6 +66,25 @@ public class JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + USER_REFRESH_EXPIRATION))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generatePasswordResetToken(UserDetails userDetails) {
+        return generatePasswordResetToken(Map.of(), userDetails);
+    }
+
+    public String generatePasswordResetToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails
+    ) {
+        Map<String, Object> claims = new HashMap<>(extraClaims);
+        claims.put("tokenType", TokenType.PASSWORD_RESET.name());
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + PASSWORD_RESET_EXPIRATION))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

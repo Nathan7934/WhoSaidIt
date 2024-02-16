@@ -3,6 +3,7 @@ package com.backend.WhoSaidIt.security;
 import com.backend.WhoSaidIt.DTOs.AuthenticationResponseDTO;
 import com.backend.WhoSaidIt.DTOs.QuizTokenResponseDTO;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
+import com.backend.WhoSaidIt.exceptions.EmailAlreadyExistsException;
 import com.backend.WhoSaidIt.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,8 @@ public class AuthenticationController {
             newUserAuth = authenticationService.register(request.email(), request.username(), request.password());
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } catch (EmailAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.IM_USED).body(null);
         }
         return ResponseEntity.ok(newUserAuth);
     }
@@ -70,6 +73,18 @@ public class AuthenticationController {
             // This exception is thrown when the old password provided does not match the user's current password.
             // We return a 422 status code to indicate that the request was valid, but the provided data was not.
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/auth/request-password-reset")
+    public ResponseEntity<String> requestPasswordReset(
+            @RequestBody String email
+    ) {
+        try {
+            authenticationService.requestPasswordReset(email);
+            return ResponseEntity.ok("Password reset email sent.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 

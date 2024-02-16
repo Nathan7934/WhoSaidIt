@@ -3,6 +3,7 @@ package com.backend.WhoSaidIt.services;
 import com.backend.WhoSaidIt.entities.GroupChat;
 import com.backend.WhoSaidIt.entities.Participant;
 import com.backend.WhoSaidIt.entities.User;
+import com.backend.WhoSaidIt.exceptions.BadFormatException;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.UserRepository;
 import org.antlr.v4.runtime.misc.Pair;
@@ -48,11 +49,22 @@ public class FileUploadService {
     // For now, we will only filter based on the length of the message.
     // Longer messages are more likely to be attributable to a specific person.
     private static boolean passesFilter(String message, int minCharacters) {
-        if (message.length() < minCharacters)
-            return false;
-        // URL regex
-        Pattern p = Pattern.compile("\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
-        return !p.matcher(message).matches();
+        return message.length() >= minCharacters;
+    }
+
+    // This method is meant to clean the message of any unsightly strings.
+    // These can include links, @mentions, WhatsApp-specific formatting (e.g., <This Message Was Edited>), etc.
+    private static String cleanMessage(String message) {
+        // Remove any URLs from the message
+        String cleanedMessage = message.replaceAll("\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "");
+
+        // Remove any @mentions from the message
+        cleanedMessage = cleanedMessage.replaceAll("@\\d+", "");
+
+        // Remove <This message was edited> tags
+        cleanedMessage = cleanedMessage.replaceAll("<This message was edited>", "");
+
+        return cleanedMessage;
     }
 
     // Returns a string array of length 3
@@ -72,6 +84,7 @@ public class FileUploadService {
             return null;
         }
 
+        parsedLine[CONTENT_INDEX] = cleanMessage(parsedLine[CONTENT_INDEX]);
         return passesFilter(parsedLine[CONTENT_INDEX], minCharacters) ? parsedLine : null;
     }
 
@@ -118,6 +131,7 @@ public class FileUploadService {
     }
 
     // Adds a group chat to the database from a file
+    @Transactional
     public void persistGroupChatFromFile(
             long userId, String groupChatName, MultipartFile file, Integer minCharacters
     ) throws IOException {
@@ -138,6 +152,12 @@ public class FileUploadService {
             } else {
                 messages.put(senderName, new ArrayList<>(List.of(new Pair<>(timestamp, messageContent))));
             }
+        }
+
+        // If the list of messages is empty, we throw an exception
+        // This is because the file is likely not a valid chat export, or the format has been updated by WhatsApp
+        if (messages.isEmpty()) {
+            throw new BadFormatException("Could not parse any messages from the file. Possibly incompatible format.");
         }
 
         for (String senderName : messages.keySet()) {

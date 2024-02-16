@@ -7,6 +7,18 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 60MB
+  mail:
+    host: "smtp.sendgrid.net"
+    port: 587
+    username: "apikey"
+    password: ${SENDGRID_API_KEY} # This secret must be set as an env variable in the execution environment
+    protocol: "smtp"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 springdoc:
   swagger-ui:
@@ -17,3 +29,8 @@ server:
   error:
     include-binding-errors: always
     include-message: always
+
+jwt:
+  # This secret must be set as an env variable in the execution environment
+  # For developers, define this env var as any base64 encoded string
+  secret: ${WHOSAIDIT_JWT_SECRET}

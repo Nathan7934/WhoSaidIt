@@ -6,6 +6,7 @@ import com.backend.WhoSaidIt.entities.Role;
 import com.backend.WhoSaidIt.entities.User;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
+import com.backend.WhoSaidIt.exceptions.EmailAlreadyExistsException;
 import com.backend.WhoSaidIt.exceptions.UserAlreadyExistsException;
 import com.backend.WhoSaidIt.repositories.QuizRepository;
 import com.backend.WhoSaidIt.repositories.UserRepository;
@@ -23,6 +24,7 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final QuizRepository quizRepository;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -31,12 +33,14 @@ public class AuthenticationService {
             UserRepository userRepository,
             QuizRepository quizRepository,
             JwtService jwtService,
+            EmailService emailService,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager
     ) {
         this.userRepository = userRepository;
         this.quizRepository = quizRepository;
         this.jwtService = jwtService;
+        this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }
@@ -45,6 +49,10 @@ public class AuthenticationService {
         if (userRepository.existsByUsername(username)) {
             throw new UserAlreadyExistsException("Username " + username + " is already taken");
         }
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyExistsException("Email is already in use");
+        }
+
         User user = new User(
                 username,
                 passwordEncoder.encode(password), // Passwords are stored in the database as hashes, not plaintext
@@ -80,6 +88,26 @@ public class AuthenticationService {
         String accessToken = jwtService.generateUserToken(user);
         String newRefreshToken = jwtService.generateUserRefreshToken(user);
         return new AuthenticationResponseDTO(user.getId(), accessToken, newRefreshToken);
+    }
+
+    // This method is used to request a password reset. It sends an email to the user with a link to reset their password.
+    public void requestPasswordReset(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new DataNotFoundException("User with email " + email + " not found")
+        );
+        String passwordResetToken = jwtService.generatePasswordResetToken(user);
+        String resetUrl = "https://whosaidit.app/reset-password/" + passwordResetToken;
+
+        // Email the user with a link to reset their password.
+        String subject = "Password Reset Requested";
+        String content =
+            "<p>A password reset was requested for your WhoSaidIt account, <b>" + user.getUsername() + "</b>. " +
+            "If this wasn't you, you can safely ignore this email.</p>" +
+            "<p>To reset your password, click the link below:</p>" +
+            "<a href=\"" + resetUrl + "\">" + resetUrl + "</a>" +
+            "<p>This link will expire after 30 minutes.</p>";
+
+        emailService.sendEmail(email, subject, content, true);
     }
 
     @Transactional
