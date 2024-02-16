@@ -96,7 +96,7 @@ public class AuthenticationService {
                 () -> new DataNotFoundException("User with email " + email + " not found")
         );
         String passwordResetToken = jwtService.generatePasswordResetToken(user);
-        String resetUrl = "https://whosaidit.app/reset-password/" + passwordResetToken;
+        String resetUrl = "https://whosaidit.app/reset-password/" + user.getId() + "/" + passwordResetToken;
 
         // Email the user with a link to reset their password.
         String subject = "Password Reset Requested";
@@ -110,6 +110,18 @@ public class AuthenticationService {
         emailService.sendEmail(email, subject, content, true);
     }
 
+    // This method is used to execute a password reset. It changes the user's password to the new password provided.
+    @Transactional
+    public void executePasswordReset(long userId, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new DataNotFoundException("User with id " + userId + " not found")
+        );
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordModifiedDate(LocalDateTime.now());
+    }
+
+    // This method differs from the one above as it requires the user to provide their current password to change it.
+    // This can be done without going through the password reset process.
     @Transactional
     public void updateUserPassword(long userId, String currentPassword, String newPassword) {
         User user = userRepository.findById(userId).orElseThrow(

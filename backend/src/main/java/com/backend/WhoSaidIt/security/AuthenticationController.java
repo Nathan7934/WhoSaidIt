@@ -88,6 +88,20 @@ public class AuthenticationController {
         }
     }
 
+    // Authentication for this endpoint is handled by the JwtAuthenticationFilter and PasswordResetAuthorizationManager.
+    @PatchMapping("/password-reset/{userId}")
+    public ResponseEntity<String> executePasswordReset(
+            @PathVariable long userId,
+            @RequestBody String newPassword
+    ) {
+        try {
+            authenticationService.executePasswordReset(userId, newPassword);
+            return ResponseEntity.ok("Password reset successfully.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     // This endpoint is used to update a user's email.
     // The endpoint is not prefixed with '/auth' because it requires an authentication token.
     // It is located in this class (rather than UserController) because it requires authentication services.

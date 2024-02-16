@@ -3,6 +3,7 @@ package com.backend.WhoSaidIt.security;
 import com.backend.WhoSaidIt.entities.quiz.Quiz;
 import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.repositories.QuizRepository;
+import com.backend.WhoSaidIt.security.tokens.PasswordResetAuthenticationToken;
 import com.backend.WhoSaidIt.security.tokens.QuizAuthenticationToken;
 import com.backend.WhoSaidIt.security.tokens.TokenType;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -100,6 +101,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 if (jwtService.validateQuizToken(jwtToken, quiz)) {
                     QuizAuthenticationToken authToken = new QuizAuthenticationToken(quizId);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+        } else if (TokenType.PASSWORD_RESET.name().equals(tokenType)) {
+            String username = jwtService.extractSubject(jwtToken);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtService.validatePasswordResetToken(jwtToken, userDetails)) {
+                    PasswordResetAuthenticationToken authToken = new PasswordResetAuthenticationToken(userDetails);
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }

@@ -1,5 +1,6 @@
 package com.backend.WhoSaidIt.security;
 
+import com.backend.WhoSaidIt.security.authentication_managers.PasswordResetAuthorizationManager;
 import com.backend.WhoSaidIt.security.authentication_managers.QuizAuthorizationManager;
 import com.backend.WhoSaidIt.security.authentication_managers.UserAuthorizationManager;
 import org.springframework.context.annotation.Bean;
@@ -29,17 +30,20 @@ public class SecurityConfig {
 
     private final QuizAuthorizationManager quizAuthorizationManager;
     private final UserAuthorizationManager userAuthorizationManager;
+    private final PasswordResetAuthorizationManager passwordResetAuthorizationManager;
 
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthFilter,
             AuthenticationProvider authenticationProvider,
             QuizAuthorizationManager quizAuthorizationManager,
-            UserAuthorizationManager userAuthorizationManager
+            UserAuthorizationManager userAuthorizationManager,
+            PasswordResetAuthorizationManager passwordResetAuthorizationManager
     ) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.authenticationProvider = authenticationProvider;
         this.quizAuthorizationManager = quizAuthorizationManager;
         this.userAuthorizationManager = userAuthorizationManager;
+        this.passwordResetAuthorizationManager = passwordResetAuthorizationManager;
     }
 
     @Bean
@@ -59,6 +63,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/group-chats/**").access(userAuthorizationManager)
                 .requestMatchers("/api/participants/**").access(userAuthorizationManager)
                 .requestMatchers("/api/leaderboard/**").access(userAuthorizationManager)
+                .requestMatchers("/api/password-reset/**").access(passwordResetAuthorizationManager)
                 .anyRequest().permitAll()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -135,6 +135,12 @@ public class JwtService {
         return quizId.equals(quiz.getId().toString()); // TODO: Check quiz token expiration after that feature is added.
     }
 
+    // We only want to make sure that the token is not expired. We don't need to check the token's subject.
+    public boolean validatePasswordResetToken(String token, UserDetails userDetails) {
+        final String username = extractSubject(token);
+        return !isTokenExpired(token) && username.equals(userDetails.getUsername());
+    }
+
     // Extracts the subject from a JWT token.
     public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
