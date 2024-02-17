@@ -120,6 +120,18 @@ public class AuthenticationService {
         user.setPasswordModifiedDate(LocalDateTime.now());
     }
 
+    // This method is used to validate a password reset token. It checks that the token is valid and has not expired.
+    // It does not do anything else with the token. If validation fails, an exception is thrown.
+    public void validatePasswordResetToken(Long userId, String passwordResetToken) {
+        String username = jwtService.extractSubject(passwordResetToken);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new DataNotFoundException("User with username " + username + " not found")
+        );
+        if (!jwtService.validatePasswordResetToken(passwordResetToken, user)) {
+            throw new IllegalArgumentException("Invalid password reset token");
+        }
+    }
+
     // This method differs from the one above as it requires the user to provide their current password to change it.
     // This can be done without going through the password reset process.
     @Transactional

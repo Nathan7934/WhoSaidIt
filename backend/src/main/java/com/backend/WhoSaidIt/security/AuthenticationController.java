@@ -30,10 +30,8 @@ public class AuthenticationController {
         AuthenticationResponseDTO newUserAuth;
         try {
             newUserAuth = authenticationService.register(request.email(), request.username(), request.password());
-        } catch (UserAlreadyExistsException e) {
+        } catch (UserAlreadyExistsException | EmailAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        } catch (EmailAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.IM_USED).body(null);
         }
         return ResponseEntity.ok(newUserAuth);
     }
@@ -99,6 +97,19 @@ public class AuthenticationController {
             return ResponseEntity.ok("Password reset successfully.");
         } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/auth/validate-reset-token/{userId}")
+    public ResponseEntity<String> validatePasswordResetToken(
+            @PathVariable long userId,
+            @RequestBody String passwordResetToken
+    ) {
+        try {
+            authenticationService.validatePasswordResetToken(userId, passwordResetToken);
+            return ResponseEntity.ok("Token is valid.");
+        } catch (IllegalArgumentException | DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 
