@@ -192,7 +192,7 @@ export default function GroupChatInfoRow({ groupChat, isDeleting, setReloadCount
                                     </button>
                                 </div>
                             </Link>
-                            <Link href={`/participants/${groupChat.id}`}>
+                            <Link href={`/participants/${groupChat.id}`} className="grow sm:flex-none">
                                 <div className="p-[1px] mt-2 sm:mt-0 rounded-[9px] sm:rounded-[13px] bg-gradient-to-r from-indigo-500 to-purple-400
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
                                     <button className="w-full bg-black py-[6px] px-6 sm:px-3 sm:py-[7px] rounded-lg sm:rounded-xl">

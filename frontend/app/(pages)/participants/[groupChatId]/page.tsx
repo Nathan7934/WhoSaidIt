@@ -319,12 +319,12 @@ export default function Participants({ params }: { params: { groupChatId: string
         <main className="relative flex flex-col items-center justify-between h-content">
             <div className="absolute top-[50%] translate-y-[-50%] w-[97%] md:w-[80%] lg:w-[70%] xl:w-[60%] 2xl:w-[50%] 3xl:w-[40%]">
                 <div className="flex flex-col w-full p-2 sm:p-8 bg-[#050507] rounded-xl border border-zinc-800 overflow-hidden">
-                    <div className="text-3xl mb-6 sm:mb-5 mt-4 sm:mt-0 mx-auto sm:mx-0 text-center sm:text-left font-semibold">
-                        <span className="hidden sm:inline-block">Participants for<br/></span> 
+                    <div className="text-3xl sm:text-4xl mb-6 sm:mb-5 mt-4 sm:mt-0 mx-auto sm:mx-0 text-center font-semibold">
+                        {/* <span className="hidden sm:inline-block font-normal mr-3">Participants for<br/></span>  */}
                         {loading ? <div className=" inline-block ml-3 skeleton w-48 h-8 rounded-xl" /> : <span> {groupChatName}</span>}
                     </div>
-                    <div className="hidden sm:block text-zinc-600 mb-6 px-1 max-w-[650px]">
-                        Here you can see the participants of a group chat, edit their names, or delete them and all their messages
+                    <div className="hidden sm:block text-zinc-400 mb-6 px-1 max-w-[650px] text-center mx-auto">
+                        Here you can see the participants of a group chat, edit their names, view messages they've sent, or delete them and all their messages
                         from the group chat.
                     </div>
                     <div className="p-[1px] rounded-t-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">

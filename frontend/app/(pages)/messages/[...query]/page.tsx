@@ -348,7 +348,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             endPage = isMobile ? pageNumber : pageNumber + 1;
         }
 
-        const activeBgColor: string = " bg-gradient-to-r from-blue-600 to-violet-600";
+        const activeBgColor: string = " bg-gradient-to-r from-blue-500 to-violet-500";
 
         // Generate core page buttons
         const corePageButtons: Array<JSX.Element> = [];
@@ -510,7 +510,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         }
 
         return(
-            <div className={`fixed flex top-navbar left-0 right-0 translate-y-[-100%] bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-800 z-40
+            <div className={`fixed flex top-navbar left-0 right-0 translate-y-[-100%] pt-1 bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-800 z-40
             ${determineAnimationClass()}`}>
                 <div className="self-center ml-4 text-lg font-semibold">
                     {selectedMessageIds.length} Selected
@@ -644,7 +644,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     }
 
     const renderMobileQuizFilterModal = () => {
-        const modalTitle: string = "Message Set Filter";
+        const modalTitle: string = "Quiz Filter";
         const modalContent: JSX.Element = messagesLoading
         ? (<>
             <div className="mx-auto mb-4 text-lg text-gray-11">
@@ -655,7 +655,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             </div>
         </>)
         : (<>
-            <button className="btn bg-blue-600 mx-6 mb-2"
+            <button className="btn bg-blue-600 mx-6 mb-3 mt-1"
             onClick={() => setFilterQuizId(null)}>
                 Group Chat
             </button>

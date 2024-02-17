@@ -1,9 +1,8 @@
-import useAuth from "../context_imports/useAuth";
 import { EXTERNAL_API_ROOT } from "@/app/constants";
 
 // Takes a URL Token extracted from a shareable link and attempts to validate it.
 // If successful, the returned access token is stored in the AuthContext for use in future requests to appropriate endpoints.
-// Returns true if the token was successfully validated, false otherwise.
+// Returns the access token if validation was successful, or null if the token was invalid.
 
 export default function useValidateUrlToken() {
 

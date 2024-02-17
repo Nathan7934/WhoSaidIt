@@ -114,7 +114,7 @@ export default function ChangeEmailSubmenu() {
                 <div className="form-field mt-4">
                     <label className="form-label leading-4">
                         New Email
-                        {!newEmailValid && <span className="form-label-alt text-error">Must be a valid email</span>}
+                        {!newEmailValid && <span className="form-label-alt text-zinc-500">Must be a valid email</span>}
                     </label>
                     {/* New password field */}
                     <input placeholder="Type here" name="newEmail" value={newEmail} onChange={handleInputChange}
@@ -124,7 +124,7 @@ export default function ChangeEmailSubmenu() {
                 <div className="form-field mt-2">
                     <label className="form-label leading-4">
                         Confirm New Email
-                        {!confirmNewEmailValid && <span className="form-label-alt text-error">Emails must match</span>}
+                        {!confirmNewEmailValid && <span className="form-label-alt text-zinc-500">Emails must match</span>}
                     </label>
                     {/* Confirm new password field */}
                     <input placeholder="Type here" name="confirmNewEmail" value={confirmNewEmail} onChange={handleInputChange}

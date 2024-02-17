@@ -54,10 +54,11 @@ export default function Login() {
         });
     }
 
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="absolute mx-auto flex w-full max-w-sm flex-col gap-6 top-[47%] sm:top-[40%] translate-y-[-50%]">
-                <div className="relative flex flex-col items-center">
+    return (<>
+        <div className="w-full h-navbar" /> {/* Navbar spacer */}
+        <main className="flex flex-col min-h-content max-h-content overflow-y-scroll items-center justify-center">
+            <div className="relative bottom-3 md:bottom-12 mx-auto flex w-full max-w-sm flex-col">
+                <div className="relative flex flex-col items-center mb-8">
                     <h1 className="text-3xl font-semibold">Sign In</h1>
                     <p className="text-sm">Sign in to access your account</p>
                 </div>
@@ -93,10 +94,10 @@ export default function Login() {
                                 <a href="#">Remember me</a>
                             </div>
                             <label className="form-label">
-                                <a className="link link-underline-hover text-sm font-semibold
+                                <Link href="/recover" className="link link-underline-hover text-sm font-semibold
                                 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
                                     Forgot your password?
-                                </a>
+                                </Link>
                             </label>
                         </div>
                     </div>
@@ -136,5 +137,5 @@ export default function Login() {
                 </form>
             </div>
         </main>
-    )
+    </>);
 }

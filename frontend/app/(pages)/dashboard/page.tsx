@@ -84,16 +84,6 @@ export default function Dashboard() {
     // =============== RENDER FUNCTIONS ===============
 
     const renderFocusedGroupChat = () => {
-        // In the case where the user hasn't uploaded any group chats yet
-        // if (groupChats.length === 0 || !focusedGroupChat) {
-        //     return (
-        //         <div className="w-full mt-8 bg-zinc-950 py-24 px-5 rounded-xl border border-gray-7 text-center">
-        //             <div className="text-2xl font-light text-gray-10">You haven't uploaded any group chats yet</div>
-        //             <div className="mt-6">Click "Upload New Group Chat" to get started!</div>
-        //         </div>
-        //     );
-        // }
-
         if (!focusedGroupChat) return; // Should never happen
 
         return (
@@ -142,7 +132,7 @@ export default function Dashboard() {
                                     </button>
                                 </div>
                             </Link>
-                            <Link href={`/participants/${focusedGroupChat.id}`}>
+                            <Link href={`/participants/${focusedGroupChat.id}`} className="grow">
                                 <div className="p-[1px] mt-2 sm:mt-0 rounded-[9px] sm:rounded-[13px] bg-gradient-to-r from-indigo-500 to-purple-400 mr-[2px]
                                 md:from-blue-500 md:via-indigo-500 md:to-purple-500">
                                     <button className="w-full bg-black py-[6px] px-6 sm:px-3 sm:py-[7px] rounded-lg sm:rounded-xl">
@@ -387,8 +377,8 @@ export default function Dashboard() {
                 </div>
             </div>
             {/* FIXED POSITION ELEMENTS */}
-            {groupChats.length > 0 && 
-                <CreateQuizModal groupChatId={groupChats[0].id} groupChatName={groupChats[0].groupChatName} 
+            {focusedGroupChat && 
+                <CreateQuizModal groupChatId={focusedGroupChat.id} groupChatName={focusedGroupChat.groupChatName} 
                 modalDomId="create-quiz-modal" setReloadCounter={setRefetchDataCounter} />
             }
         </main>

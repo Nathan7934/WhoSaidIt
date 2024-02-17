@@ -23,7 +23,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
 
     const linkModalDomId: string = `quiz-link-${quiz.id}`;
     const deleteModalDomId: string = `quiz-delete-${quiz.id}`;
-    const mobileActionsModalDomId: string = `quiz-actions-${quiz.id}`;
+    const quizActionsModalDomId: string = `quiz-actions-${quiz.id}`;
 
     // ----------- Hooks --------------------
     const generateShareableLink = useGenerateShareableLink();
@@ -215,9 +215,9 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
         );
     }
 
-    const renderMobileOptionsModal = () => {
+    const renderQuizOptionsModal = () => {
         return (
-            <Modal domId={mobileActionsModalDomId}>
+            <Modal domId={quizActionsModalDomId}>
                 <div className="flex flex-col items-center px-4 text-center mt-4 mb-2">
                     <h2 className="text-xl text-white mb-1">{quiz.quizName}</h2>
                     <div className="mb-4">{renderQuizTypeBadge(quiz.type, true)}</div>
@@ -228,7 +228,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                     onClick={() => {
                         getShareableLink();
                         toggleModal(linkModalDomId);
-                        toggleModal(mobileActionsModalDomId);
+                        toggleModal(quizActionsModalDomId);
                     }}>
                         Copy Shareable Link
                     </button>
@@ -254,7 +254,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                     rounded-xl"
                     onClick={() => {
                         toggleModal(deleteModalDomId);
-                        toggleModal(mobileActionsModalDomId);
+                        toggleModal(quizActionsModalDomId);
                     }}>
                         Delete Quiz
                     </button>
@@ -274,29 +274,31 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
             </div>
             <div className="row-span-2 justify-self-end self-center flex items-center">
                 <Link href={`/quiz/${quiz.id}`}>
-                    <button className="btn btn-outline border-[1px] border-zinc-700 btn-sm mr-2 whitespace-nowrap hidden sm:block">
+                    <button className="btn btn-outline border-[1px] border-zinc-700 btn-sm mr-3 whitespace-nowrap hidden sm:block">
                         Play Quiz
                     </button>
                 </Link>
                 {/* Options dropdown */}
-                <div className="dropdown">
-                    <label tabIndex={0} className="hover:cursor-pointer list-none"><MoreIcon className="text-zinc-400 w-7 h-7" /></label>
-                    <div className={`dropdown-menu bg-zinc-900 shadow-md ${dropdownPosition}`}>
-                        <a tabIndex={-1} className="dropdown-item text-sm font-semibold" 
-                        onClick={() => {
-                            getShareableLink();
-                            toggleModal(linkModalDomId);
-                        }}>
-                            Share Quiz
-                        </a>
-                        <Link href={`/leaderboard/${quiz.id}`} className="dropdown-item text-sm">Quiz Leaderboard</Link>
-                        <Link href={`/messages/${groupChatId}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
-                        <a tabIndex={-1} className="dropdown-item text-sm text-zinc-600"
-                        onClick={() => toggleModal(deleteModalDomId)}>
-                            Delete Quiz
-                        </a>
-                    </div>
+                <div className="self-center cursor-pointer" onClick={() => toggleModal(quizActionsModalDomId)}>
+                    <MoreIcon className=" text-zinc-300 sm:text-zinc-400 w-9 h-9" />
+                    {renderQuizOptionsModal()}
                 </div>
+                {/* <label tabIndex={0} className="hover:cursor-pointer list-none"><MoreIcon className="text-zinc-400 w-7 h-7" /></label>
+                <div className={`dropdown-menu bg-zinc-900 shadow-md ${dropdownPosition}`}>
+                    <a tabIndex={-1} className="dropdown-item text-sm font-semibold" 
+                    onClick={() => {
+                        getShareableLink();
+                        toggleModal(linkModalDomId);
+                    }}>
+                        Share Quiz
+                    </a>
+                    <Link href={`/leaderboard/${quiz.id}`} className="dropdown-item text-sm">Quiz Leaderboard</Link>
+                    <Link href={`/messages/${groupChatId}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
+                    <a tabIndex={-1} className="dropdown-item text-sm text-zinc-600"
+                    onClick={() => toggleModal(deleteModalDomId)}>
+                        Delete Quiz
+                    </a>
+                </div> */}
             </div>
             {/* If we wanted a date to be shown, we'd uncomment this */}
             {/* <span className="tooltip tooltip-right w-min" data-tooltip="date created">
@@ -308,7 +310,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
         {/* --------------- MOBILE LAYOUT --------------- */}
         <div className={`sm:hidden p-[1px] rounded-2xl bg-gradient-to-r hover:cursor-pointer
         ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500" : " from-purple-400 via-purple-300 to-purple-400"}`}
-        onClick={() => toggleModal(mobileActionsModalDomId)}>
+        onClick={() => toggleModal(quizActionsModalDomId)}>
             <div className="flex rounded-2xl py-3 px-4 bg-black">
                 <div className="flex flex-col">
                     <div className="text-xl font-light text-white">{quiz.quizName}</div>
@@ -318,7 +320,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                 {/* Options modal */}
                 <div className="ml-auto self-center">
                     <MoreIcon className=" text-zinc-300 sm:text-zinc-400 w-[26px] h-[26px]" />
-                    {renderMobileOptionsModal()}
+                    {renderQuizOptionsModal()}
                 </div>
             </div>
         </div>

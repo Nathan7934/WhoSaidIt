@@ -49,7 +49,7 @@ export default function ChangePasswordSubmenu() {
         }
     }
 
-    const submitPasswordResetForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    const submitPasswordUpdateForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!isFormValid()) {
             return;
@@ -120,11 +120,11 @@ export default function ChangePasswordSubmenu() {
                 <h1 className="text-3xl font-semibold">Change Password</h1>
                 <p className="text-sm mt-2 text-center">Once changed, you will be logged out<br/>from all devices.</p>
             </div>
-            <form className="form-group gap-1" onSubmit={submitPasswordResetForm}>
+            <form className="form-group gap-1" onSubmit={submitPasswordUpdateForm}>
                 <div className="form-field">
                     <label className="form-label leading-4">
                         Current Password
-                        {!currentPasswordValid && <span className="form-label-alt text-error">Incorrect password</span>}
+                        {!currentPasswordValid && <span className="form-label-alt text-zinc-500">Incorrect password</span>}
                     </label>
                     {/* Current password field */}
                     <input placeholder="Type here" name="currentPassword" type="password" value={currentPassword} onChange={handleInputChange}
@@ -135,7 +135,7 @@ export default function ChangePasswordSubmenu() {
                 <div className="form-field mt-4">
                     <label className="form-label leading-4">
                         New Password
-                        {newPasswordValidMessage && <span className="form-label-alt text-error">{newPasswordValidMessage}</span>}
+                        {newPasswordValidMessage && <span className="form-label-alt text-zinc-500">{newPasswordValidMessage}</span>}
                     </label>
                     {/* New password field */}
                     <input placeholder="Type here" name="newPassword" type="password" value={newPassword} onChange={handleInputChange}
@@ -145,7 +145,7 @@ export default function ChangePasswordSubmenu() {
                 <div className="form-field mt-1">
                     <label className="form-label leading-4">
                         Confirm New Password
-                        {!confirmNewPasswordValid && <span className="form-label-alt text-error">Passwords must match</span>}
+                        {!confirmNewPasswordValid && <span className="form-label-alt text-zinc-500">Passwords must match</span>}
                     </label>
                     {/* Confirm new password field */}
                     <input placeholder="Type here" name="confirmNewPassword" type="password" value={confirmNewPassword} onChange={handleInputChange}

@@ -24,7 +24,7 @@ export default function usePostRegistration() {
             if (!registerResponse.ok) {
                 // TODO: Refine these error messages
                 if (registerResponse.status === 409) {
-                    return 'Username is already in use';
+                    return 'Username/email is already in use';
                 }
                 else if (registerResponse.status >= 400 && registerResponse.status < 500) {
                     return 'Client failed registration request';
