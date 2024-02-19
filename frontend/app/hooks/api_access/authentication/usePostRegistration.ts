@@ -40,7 +40,7 @@ export default function usePostRegistration() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({username: username, password: password})
+                body: JSON.stringify({username: username, password: password, rememberUser: false})
             });
             if (!loginResponse.ok) {
                 // TODO: Refine these error messages

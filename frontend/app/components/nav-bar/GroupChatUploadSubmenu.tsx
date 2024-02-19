@@ -133,12 +133,19 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
 
     let subMenuContent: JSX.Element;
     if (responseStatus.doAnimate) {
-        subMenuContent = renderModalResponseAlert(responseStatus);
+        subMenuContent = (
+            <div className="absolute w-full top-[45%] translate-y-[-50%]">
+                {renderModalResponseAlert(responseStatus)}
+            </div>
+        );
     } else if (uploading) {
         subMenuContent = (
-            <div className="my-6 sm:my-12">
-                <div className="mx-auto mb-2 text-lg sm:text-xl text-center text-gray-11">
-                        Upload in Progress...
+            <div className="absolute w-full top-[45%] translate-y-[-50%]">
+                <div className="mx-auto mb-1 text-lg sm:text-xl text-center text-zinc-200">
+                        Upload in Progress.
+                </div>
+                <div className="mx-auto mb-3 text-lg sm:text-xl text-center text-zinc-200">
+                    This may take several minutes...
                 </div>
                 <div className="flex justify-center">
                     <div className="spinner-circle w-10 h-10 sm:w-12 sm:h-12" />
@@ -164,7 +171,7 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
                     </a>
                 </div>
                 <div className="mb-6 text-zinc-400 text-center">
-                    Make sure to select <span className="text-zinc-200 font-semibold">"Without Media"</span> when exporting your chat.
+                    Make sure to select <span className="text-zinc-200 font-semibold">"Without Media"</span> when exporting your group chat.
                 </div>
                 <div className="sm:hidden mb-4 text-zinc-600 text-sm text-center">
                     iPhone users may prefer to email their chat history to themselves and upload it using a PC.

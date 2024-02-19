@@ -26,6 +26,10 @@ export default function usePostGroupChatUpload() {
                 body: formData
             });
             if (!response.ok) {
+                if (response.status === 422) {
+                    console.error(`Failed to parse file content: ${response.status}`);
+                    return "Failed to parse file content. Possible bad format."
+                }
                 if (response.status >= 400 && response.status < 500) {
                     console.error(`Client request rejected: ${response.status}`);
                     return "Client request rejected";

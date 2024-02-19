@@ -281,24 +281,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                 {/* Options dropdown */}
                 <div className="self-center cursor-pointer" onClick={() => toggleModal(quizActionsModalDomId)}>
                     <MoreIcon className=" text-zinc-300 sm:text-zinc-400 w-9 h-9" />
-                    {renderQuizOptionsModal()}
                 </div>
-                {/* <label tabIndex={0} className="hover:cursor-pointer list-none"><MoreIcon className="text-zinc-400 w-7 h-7" /></label>
-                <div className={`dropdown-menu bg-zinc-900 shadow-md ${dropdownPosition}`}>
-                    <a tabIndex={-1} className="dropdown-item text-sm font-semibold" 
-                    onClick={() => {
-                        getShareableLink();
-                        toggleModal(linkModalDomId);
-                    }}>
-                        Share Quiz
-                    </a>
-                    <Link href={`/leaderboard/${quiz.id}`} className="dropdown-item text-sm">Quiz Leaderboard</Link>
-                    <Link href={`/messages/${groupChatId}/${quiz.id}`} tabIndex={-1} className="dropdown-item text-sm">Messages in Quiz</Link>
-                    <a tabIndex={-1} className="dropdown-item text-sm text-zinc-600"
-                    onClick={() => toggleModal(deleteModalDomId)}>
-                        Delete Quiz
-                    </a>
-                </div> */}
             </div>
             {/* If we wanted a date to be shown, we'd uncomment this */}
             {/* <span className="tooltip tooltip-right w-min" data-tooltip="date created">
@@ -320,12 +303,12 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                 {/* Options modal */}
                 <div className="ml-auto self-center">
                     <MoreIcon className=" text-zinc-300 sm:text-zinc-400 w-[26px] h-[26px]" />
-                    {renderQuizOptionsModal()}
                 </div>
             </div>
         </div>
         {/* FIXED POSITION ELEMENTS */}
         {renderQuizLinkModal()}
         {renderDeleteQuizModal()}
+        {renderQuizOptionsModal()}
     </>);
 }
