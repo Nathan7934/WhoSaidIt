@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 @Service
@@ -126,7 +127,7 @@ public class FileUploadService {
     // Converts a date string of the form "MM/DD/YYYY, HH:MM AM/PM" to a LocalDateTime object
     private static LocalDateTime convertDateString(String dateStr) {
         String nnbsFixed = dateStr.replace('\u202F', ' ');
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy, h:mm a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy, h:mm a", Locale.US);
         return LocalDateTime.parse(nnbsFixed, formatter);
     }
 
