@@ -21,4 +21,4 @@ jobs:
     - name: Delete old Docker container
       run: sudo docker rm -f whosaidit-frontend || true
     - name: Run new Docker container
-      run: sudo docker run -d -p 3000:3000 --name whosaidit-frontend-container nathan7934/whosaidit-frontend
+      run: sudo docker run -d -p 443:3000 --name whosaidit-frontend-container nathan7934/whosaidit-frontend
