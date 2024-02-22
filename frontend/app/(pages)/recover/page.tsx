@@ -57,8 +57,8 @@ export default function Recover() {
                             Email Address
                             {!emailValid && <span className="form-label-alt text-zinc-500">Must be a valid email</span>}
                         </label>
-                        {/* Username input field */}
-                        <input placeholder="Type here" name="username" value={recoverEmail} onChange={handleEmailChange}
+                        {/* Email input field */}
+                        <input placeholder="Type here" value={recoverEmail} onChange={handleEmailChange}
                         className="input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                     </div>
                     <div className="form-field mt-2 mb-[2px]">

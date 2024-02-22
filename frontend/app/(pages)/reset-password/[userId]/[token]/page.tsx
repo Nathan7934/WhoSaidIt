@@ -134,7 +134,7 @@ export default function ResetPassword({ params }: { params: { userId: string, to
                             New Password
                             {newPasswordValidMessage && <span className="form-label-alt text-zinc-500">{newPasswordValidMessage}</span>}
                         </label>
-                        {/* Current password field */}
+                        {/* New password field */}
                         <input placeholder="Type here" name="newPassword" type="password" value={newPassword} onChange={handleInputChange}
                         className="input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600"/>
                     </div>
