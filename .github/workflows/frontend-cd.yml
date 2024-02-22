@@ -19,6 +19,6 @@ jobs:
     - name: Pull the Docker image
       run: sudo docker pull nathan7934/whosaidit-frontend:latest
     - name: Delete old Docker container
-      run: sudo docker rm -f whosaidit-frontend || true
+      run: sudo docker rm -f whosaidit-frontend-container || true
     - name: Run new Docker container
       run: sudo docker run -d -p 443:3000 --name whosaidit-frontend-container nathan7934/whosaidit-frontend
