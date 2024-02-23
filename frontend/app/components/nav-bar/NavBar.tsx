@@ -404,7 +404,7 @@ export default function NavBar() {
         }
 
         return (
-            <div className={`fixed top-navbar left-0 md:left-auto md:w-[450px] right-0 bottom-0 bg-black z-40 md:border-l border-gray-5 
+            <div className={`fixed top-navbar left-0 md:left-auto md:w-[450px] right-0 bottom-0 bg-black z-40 md:border-l border-zinc-800 
             shadow-[0_0px_15px_5px_rgba(0,0,0,0.8)] overflow-x-hidden ${getMenuAnimationClass()}`}>
                 <div className={`fixed top-0 left-0 right-0 bottom-0 ${getMenuOptionsAnimationClass()}`}>
                     {renderMainMenuOptions()}
@@ -452,7 +452,7 @@ export default function NavBar() {
 
     return (<>
         {/* Navbar Header */}
-        <div className={`fixed flex top-0 left-0 right-0 h-navbar items-center bg-zinc-950 border-b border-zinc-800 z-50
+        <div className={`fixed flex top-0 left-0 right-0 h-navbar items-center bg-zinc-950 border-b border-gray-5 z-50
         shadow-[0_0px_15px_5px_rgba(0,0,0,0.8)]`}>
             <div className="hidden md:inline-block ml-8 text-3xl font-semibold">
                 WhoSaidIt

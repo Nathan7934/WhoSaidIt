@@ -56,7 +56,7 @@ export default function Login() {
 
     return (<>
         <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex flex-col min-h-content max-h-content overflow-y-scroll items-center justify-center">
+        <main className="flex flex-col min-h-content max-h-content overflow-y-scroll items-center justify-center text-white">
             <div className="relative bottom-3 md:bottom-12 mx-auto flex w-full max-w-sm flex-col">
                 <div className="relative flex flex-col items-center mb-8">
                     <h1 className="text-3xl font-semibold">Sign In</h1>

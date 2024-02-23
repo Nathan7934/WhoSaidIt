@@ -214,12 +214,12 @@ const config: Config = {
 
                 // NAVBAR: Home/Close button slideover for desktop keyframes
                 homeCloseExpand: {
-                    from: { marginRight: '0px' },
-                    to: { marginRight: '310px' },
+                    from: { transform: 'translateX(0)' },
+                    to: { transform: 'translateX(-310px)' },
                 },
                 homeCloseCollapse: {
-                    from: { marginRight: '310px' },
-                    to: { marginRight: '0px' },
+                    from: { transform: 'translateX(-310px)' },
+                    to: { transform: 'translateX(0)' },
                 },
 
                 // TUTORIAL: Swipe Left Idicator Keyframes
