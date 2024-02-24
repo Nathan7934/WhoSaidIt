@@ -30,20 +30,20 @@ const config: Config = {
                 
                 // GLOBAL: Keyframes for cycling elements left and right
                 slideInFromRight: {
-                    from: { transform: 'translateX(100%)' },
-                    to: { transform: 'translateX(0)' },
+                    from: { transform: 'translateX(100%) translateZ(0)' },
+                    to: { transform: 'translateX(0) translateZ(0)' },
                 },
                 slideOutToLeft: {
-                    from: { transform: 'translateX(0)' },
-                    to: { transform: 'translateX(-100%)' },
+                    from: { transform: 'translateX(0) translateZ(0)' },
+                    to: { transform: 'translateX(-100%) translateZ(0)' },
                 },
                 slideInFromLeft: {
-                    from: { transform: 'translateX(-100%)' },
-                    to: { transform: 'translateX(0)' },
+                    from: { transform: 'translateX(-100%) translateZ(0)' },
+                    to: { transform: 'translateX(0) translateZ(0)' },
                 },
                 slideOutToRight: {
-                    from: { transform: 'translateX(0)' },
-                    to: { transform: 'translateX(100%)' },
+                    from: { transform: 'translateX(0) translateZ(0)' },
+                    to: { transform: 'translateX(100%) translateZ(0)' },
                 },
 
                 // MESSAGES: Keyframes for response status alerts

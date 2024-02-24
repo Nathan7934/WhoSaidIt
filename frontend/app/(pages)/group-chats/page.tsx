@@ -3,6 +3,7 @@
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 import { User, GroupChatInfo } from "@/app/interfaces";
 import GroupChatInfoRow from "@/app/components/data-rows/GroupChatInfoRow";
 import WrenchIcon from "@/app/components/icons/WrenchIcon";
@@ -27,6 +28,9 @@ export default function ManageGroupChats() {
     // ----------- State (UI) -------------
     const [loading, setLoading] = useState<boolean>(true);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     // ----------- Data Retrieval ---------
     useEffect(() => {
@@ -93,8 +97,8 @@ export default function ManageGroupChats() {
     const totalQuizzes = groupChats.reduce((acc, curr) => acc + curr.quizzes.length, 0);
 
     return (<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content flex flex-col overflow-y-scroll items-center justify-between">
             <div className="w-[97%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] 3xl:w-[40%] mt-7 sm:mt-20 mb-[75px]">
                 {!loading && 
                     <div className="flex flex-row w-full px-[2px] md:px-1 mb-4 md:mb-4 justify-center items-center">

@@ -4,6 +4,7 @@ import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useGetGroupChatsInfo from "@/app/hooks/api_access/group_chats/useGetGroupChatsInfo";
 import useGetGroupChatLeaderboards from "@/app/hooks/api_access/leaderboards/useGetGroupChatLeaderboards";
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 import { User, GroupChatInfo, SurvivalEntry, TimeAttackEntry, QuizLeaderboardInfo } from "@/app/interfaces";
 import { renderQuizRows, toggleModal, isTimeAttackEntry, isSurvivalEntry } from "@/app/utilities/miscFunctions";
 import GroupChatInfoRow from "@/app/components/data-rows/GroupChatInfoRow";
@@ -48,6 +49,9 @@ export default function Dashboard() {
     const [lNavRightAnim, setLNavRightAnim] = useState<boolean>(false);
     const [selectedLeaderboardIndex, setSelectedLeaderboardIndex] = useState<number>(0); // [0, previewLeaderboards.length)
     const [leaderboardAnimationStatus, setLeaderboardAnimationStatus] = useState<LeaderboardAnimationStatus | null>(null);
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     // ----------- Data Retrieval ---------
     useEffect(() => {
@@ -367,8 +371,8 @@ export default function Dashboard() {
     }
 
     return (<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content flex flex-col overflow-y-scroll items-center justify-between">
             <div className={`relative w-[95%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%]`}>
                 {renderFocusedGroupChat()}
                 <div className="hidden lg:block">

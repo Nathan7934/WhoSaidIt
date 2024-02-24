@@ -13,6 +13,7 @@ import { toggleModal, isModalOpen, applyTextMarkup, renderModalResponseAlert,
 import useGetQuizInfo from "@/app/hooks/api_access/quizzes/useGetQuizInfo";
 import useGetRandomQuizMessage from "@/app/hooks/api_access/messages/useGetRandomQuizMessage";
 import usePostLeaderboardEntry from "@/app/hooks/api_access/leaderboards/usePostLeaderboardEntry";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 
 import AnimateHeight from "react-animate-height";
 import { Height } from "react-animate-height";
@@ -98,6 +99,9 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     // Sound effect refs
     const correctAudioRef = useRef<HTMLAudioElement>(new Audio("/correct.mp3"));
     const incorrectAudioRef = useRef<HTMLAudioElement>(new Audio("/incorrect.mp3"));
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     // ----- Data Retrieval/Authentication & Initial animation triggers -----
     useEffect(() => {
@@ -745,10 +749,11 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         </>);
     }
 
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-center overflow-hidden
+    return (<>
+        <div className="navbar h-0 w-full" /> {/* Unrendered navbar ref for useAdjustContentHeight */}
+        <main className="page-content flex flex-col items-center justify-center overflow-hidden
         bg-gradient-to-b from-black via-zinc-950 to-black">
             {renderContent}
         </main>
-    );
+    </>);
 }

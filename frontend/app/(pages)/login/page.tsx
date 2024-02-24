@@ -2,6 +2,7 @@
 
 import usePostLogin from "@/app/hooks/api_access/authentication/usePostLogin";
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 import UserSmallIcon from "@/app/components/icons/nav-bar/UserSmallIcon";
 import PasswordIcon from "@/app/components/icons/nav-bar/PasswordIcon";
 
@@ -25,6 +26,9 @@ export default function Login() {
 
     // Login loading state
     const [loginLoading, setLoginLoading] = useState<boolean>(false);
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     // The onChange event handler for the login form fields
     const handleLoginChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -55,8 +59,8 @@ export default function Login() {
     }
 
     return (<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex flex-col min-h-content max-h-content overflow-y-scroll items-center justify-center text-white">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content flex flex-col overflow-y-scroll items-center justify-center">
             <div className="relative bottom-3 md:bottom-12 mx-auto flex w-full max-w-sm flex-col">
                 <div className="relative flex flex-col items-center mb-8">
                     <h1 className="text-3xl font-semibold">Sign In</h1>

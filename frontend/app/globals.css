@@ -97,3 +97,8 @@ details > summary.list-none::marker {
 .blur-fix {
     transform: translateZ(0) scale(1.0, 1.0);
 }
+
+/* Animation signalers */
+.will-change-transform {
+    will-change: transform;
+}

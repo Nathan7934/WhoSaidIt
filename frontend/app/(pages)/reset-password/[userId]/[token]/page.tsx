@@ -2,6 +2,7 @@
 
 import usePatchPasswordReset from "@/app/hooks/api_access/authentication/usePatchPasswordReset";
 import useValidatePasswordResetToken from "@/app/hooks/security/useValidatePasswordResetToken";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 import { validatePassword } from "@/app/utilities/formValidationFunctions";
 
 import { useState, useEffect } from "react";
@@ -28,6 +29,9 @@ export default function ResetPassword({ params }: { params: { userId: string, to
     const [resetResponse, setResetResponse] = useState<string | null>(null);
     const [newPasswordValidMessage, setNewPasswordValidMessage] = useState<string>("");
     const [confirmNewPasswordValid, setConfirmNewPasswordValid] = useState<boolean>(true);
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     // Initial token validation. If successful, the user will be able to reset their password.
     // If the token is invalid, the user will be redirected to the login page after a delay.
@@ -121,8 +125,8 @@ export default function ResetPassword({ params }: { params: { userId: string, to
     }
 
     return (<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex flex-col min-h-content max-h-content overflow-y-scroll items-center justify-center">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content flex flex-col overflow-y-scroll items-center justify-center">
             <div className="relative bottom-3 md:bottom-12 mx-auto flex w-full max-w-sm flex-col">
                 <div className="relative flex flex-col items-center mb-12 gap-2">
                     <h1 className="text-3xl font-semibold">Reset Password</h1>

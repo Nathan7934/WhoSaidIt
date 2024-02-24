@@ -4,6 +4,7 @@ import useGetLeaderboard from "@/app/hooks/api_access/leaderboards/useGetLeaderb
 import useGetQuiz from "@/app/hooks/api_access/quizzes/useGetQuiz";
 import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
 import useAuth from "@/app/hooks/context_imports/useAuth";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 
 import { TimeAttackEntry, SurvivalEntry, TimeAttackQuiz, SurvivalQuiz } from "@/app/interfaces";
 import { isTimeAttackEntry, isSurvivalEntry, isTimeAttackQuiz } from "@/app/utilities/miscFunctions";
@@ -41,6 +42,9 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
     // ----------- State (UI) -------------
     const [loading, setLoading] = useState<boolean>(true);
     const [expandedEntry, setExpandedEntry] = useState<number>(-1); // -1 means no entry is expanded
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     // ----------- Data Retrieval ---------
     useEffect(() => {
@@ -244,8 +248,8 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
     // =============== MAIN RENDER =============== 
 
     return (<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex flex-col max-h-content overflow-y-scroll items-center justify-between">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content flex flex-col overflow-y-scroll items-center justify-between">
             <div className="mt-7 md:mt-20 lg:mt-36 w-[97%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] 3xl:w-[30%]">
                 <div className="flex justify-center w-full text-3xl sm:text-4xl font-bold whitespace-nowrap">
                     <div className="relative w-[35px] h-[35px] mr-3">

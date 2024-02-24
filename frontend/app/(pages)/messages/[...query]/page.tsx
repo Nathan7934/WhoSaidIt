@@ -6,6 +6,7 @@ import useGetQuizzes from "@/app/hooks/api_access/quizzes/useGetQuizzes";
 import useGetParticipants from "@/app/hooks/api_access/participants/useGetParticipants";
 import usePostMessagesInQuiz from "@/app/hooks/api_access/quizzes/usePostMessagesInQuiz";
 import useDeleteMessages from "@/app/hooks/api_access/messages/useDeleteMessages";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 
 import { renderQuizTypeBadge, renderResponseAlert, toggleModal, isModalOpen } from "@/app/utilities/miscFunctions";
 import { 
@@ -82,6 +83,9 @@ export default function Messages({ params }: { params: { query: string[] }}) {
 
     // HTTP Request errors for adding/removing messages to/from quizzes, and deleting messages
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     // ----------- Data Retrieval ---------
 
@@ -725,8 +729,8 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     // =============== MAIN RENDER =================
 
     return (<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex max-h-content overflow-y-scroll flex-col items-center justify-between">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content flex flex-col overflow-y-scroll items-center justify-between">
             <div className="relative w-[97%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-5">
                 <div className="w-full p-2 mb-3 lg:p-8 bg-[#050507] rounded-xl border border-zinc-800 overflow-x-hidden">
                     <div className="flex mb-2">

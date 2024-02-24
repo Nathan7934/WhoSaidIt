@@ -1,6 +1,7 @@
 "use client";
 
 import usePostRequestPasswordReset from "@/app/hooks/api_access/authentication/usePostRequestPasswordReset";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 import { validateEmail } from "@/app/utilities/formValidationFunctions";
 
 import { useState } from "react";
@@ -17,6 +18,9 @@ export default function Recover() {
     const [recoverResponse, setRecoverResponse] = useState<string>(""); // Empty string means no error
     const [emailValid, setEmailValid] = useState<boolean>(true);
     const [recoverLoading, setRecoverLoading] = useState<boolean>(false);
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const { value } = event.target;
@@ -44,8 +48,8 @@ export default function Recover() {
     }
 
     return (<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex flex-col min-h-content max-h-content overflow-y-scroll items-center justify-center">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content flex flex-col overflow-y-scroll items-center justify-center">
             <div className="relative bottom-3 md:bottom-12 mx-auto flex w-full max-w-sm flex-col">
                 <div className="relative flex flex-col items-center mb-12 gap-2">
                     <h1 className="text-3xl font-semibold">Account Recovery</h1>

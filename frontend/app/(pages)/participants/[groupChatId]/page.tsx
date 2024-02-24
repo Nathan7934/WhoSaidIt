@@ -4,6 +4,7 @@ import useGetGroupChat from "@/app/hooks/api_access/group_chats/useGetGroupChat"
 import useGetParticipants from "@/app/hooks/api_access/participants/useGetParticipants";
 import usePatchParticipantName from "@/app/hooks/api_access/participants/usePatchParticipantName";
 import useDeleteParticipant from "@/app/hooks/api_access/participants/useDeleteParticipant";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 
 import EditIcon from "@/app/components/icons/EditIcon";
 import CheckmarkIcon from "@/app/components/icons/CheckmarkIcon";
@@ -55,6 +56,9 @@ export default function Participants({ params }: { params: { groupChatId: string
     const titleRef = useRef<HTMLDivElement>(null);
     const blurbRef = useRef<HTMLDivElement>(null);
     const nameInputRef = useRef<HTMLInputElement>(null);
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     // ----------- Data Retrieval ---------
     useEffect(() => {
@@ -315,8 +319,8 @@ export default function Participants({ params }: { params: { groupChatId: string
     // =============== MAIN RENDER =================
 
     return (<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="relative flex flex-col items-center justify-between h-content">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content relative flex flex-col items-center justify-between">
             <div className="absolute top-[50%] translate-y-[-50%] w-[97%] md:w-[80%] lg:w-[70%] xl:w-[60%] 2xl:w-[50%] 3xl:w-[40%]">
                 <div className="flex flex-col w-full p-2 sm:p-8 bg-[#050507] rounded-xl border border-zinc-800 overflow-hidden">
                     <div className="text-3xl sm:text-4xl mb-6 sm:mb-5 mt-4 sm:mt-0 mx-auto sm:mx-0 text-center font-semibold">

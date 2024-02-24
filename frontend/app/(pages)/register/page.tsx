@@ -2,6 +2,7 @@
 
 import usePostRegistration from "@/app/hooks/api_access/authentication/usePostRegistration";
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 import { validateUsername, validateEmail, validatePassword } from "@/app/utilities/formValidationFunctions";
 
 import Link from "next/link";
@@ -36,6 +37,9 @@ export default function Register() {
 
     // Registration error message
     const [registerError, setRegisterError] = useState<string>(""); // Empty string means no error
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content");
 
     const handleRegisterChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = event.target;
@@ -93,8 +97,8 @@ export default function Register() {
     // ========================================================================================================================
 
     return(<>
-        <div className="w-full h-navbar" /> {/* Navbar spacer */}
-        <main className="flex flex-col min-h-content max-h-content overflow-y-scroll items-center justify-center">
+        <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+        <main className="page-content flex flex-col overflow-y-scroll items-center justify-center">
             <div className="relative bottom-3 md:bottom-12 mx-auto flex w-full max-w-sm flex-col">
                 <div className="flex flex-col items-center mb-8">
                     <h1 className="text-3xl font-semibold">Register</h1>
