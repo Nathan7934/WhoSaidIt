@@ -1,14 +1,14 @@
-name: Frontend Docker Image CI
+name: Backend Docker Image CI
 
 on:
   push:
     branches: [ "master" ]
     paths:
-      - "frontend/**"
+      - "backend/**"
   pull_request:
     branches: [ "master" ]
     paths:
-      - "frontend/**"
+      - "backend/**"
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
-        context: "{{defaultContext}}:frontend"
+        context: "{{defaultContext}}:backend"
         file: ./Dockerfile
         push: true
-        tags: nathan7934/whosaidit-frontend:latest
+        tags: nathan7934/whosaidit-backend:latest

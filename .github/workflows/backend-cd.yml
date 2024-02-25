@@ -1,0 +1,38 @@
+name: Backend AWS EC2 CD
+
+on:
+  workflow_run:
+    workflows: ["Backend Docker Image CI"]
+    types:
+    - completed
+
+jobs:
+  build:
+    runs-on: [self-hosted, backend]
+
+    steps:
+    - name: Login to Dockerhub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Pull the Docker image
+      run: docker pull nathan7934/whosaidit-backend:latest
+
+    # Check out the repository so we can access the docker-compose.prod.yml file
+    - uses: actions/checkout@v3
+      with:
+        ref: master
+
+    # Create a .env file with the necessary environment variables in the runner's workspace
+    - name: Create .env file
+      run: |
+        echo "${{ secrets.BACKEND_ENV_VARS }}" > ./backend/.env
+
+    # Cycle the docker containers
+    - name: Stop current Docker containers
+      run: docker-compose -f ./backend/docker-compose.prod.yml down
+
+    - name: Start new Docker containers
+      run: docker-compose -f ./backend/docker-compose.prod.yml up -d

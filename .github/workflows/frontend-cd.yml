@@ -16,9 +16,12 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+
     - name: Pull the Docker image
-      run: sudo docker pull nathan7934/whosaidit-frontend:latest
+      run: docker pull nathan7934/whosaidit-frontend:latest
+
     - name: Delete old Docker container
-      run: sudo docker rm -f whosaidit-frontend-container || true
+      run: docker rm -f whosaidit-frontend-container || true
+
     - name: Run new Docker container
-      run: sudo docker run -d -p 80:3000 --name whosaidit-frontend-container nathan7934/whosaidit-frontend
+      run: docker run -d -p 80:3000 --name whosaidit-frontend-container nathan7934/whosaidit-frontend
