@@ -1,12 +1,16 @@
 spring:
+
   application:
     name: "WhoSaidIt Backend"
+
   profiles:
-    default: "dev"
+    active: ${SPRING_PROFILES_ACTIVE:dev} # Default to dev if prod is not explicitly set
+
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 60MB
+      max-file-size: 80MB
+      max-request-size: 90MB
+
   mail:
     host: "smtp.sendgrid.net"
     port: 587
@@ -20,6 +24,7 @@ spring:
           starttls:
             enable: true
 
+
 springdoc:
   swagger-ui:
     path: "/api-docs"
@@ -31,6 +36,6 @@ server:
     include-message: always
 
 jwt:
-  # This secret must be set as an env variable in the execution environment
-  # For developers, define this env var as any base64 encoded string
+  # This secret must be set as an environment variable in the execution environment.
+  # For developers, define this variable as any base64 encoded string
   secret: ${WHOSAIDIT_JWT_SECRET}

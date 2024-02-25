@@ -1,13 +1,18 @@
 spring:
+
   datasource:
     url: "jdbc:postgresql://localhost:5432/whosaidit-db"
     username: "postgres"
-    password: "password"
+    password: password
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create-drop # This will drop and recreate the database on every restart
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+
+app:
+  cors:
+    allowed-origins: "http://localhost:3000"

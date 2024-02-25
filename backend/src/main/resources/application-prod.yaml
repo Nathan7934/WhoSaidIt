@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+app:
+  cors:
+    allowed-origins: "https://whosaidit.app"

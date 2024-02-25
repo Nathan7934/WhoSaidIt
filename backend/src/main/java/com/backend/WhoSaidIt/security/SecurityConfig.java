@@ -3,6 +3,7 @@ package com.backend.WhoSaidIt.security;
 import com.backend.WhoSaidIt.security.authentication_managers.PasswordResetAuthorizationManager;
 import com.backend.WhoSaidIt.security.authentication_managers.QuizAuthorizationManager;
 import com.backend.WhoSaidIt.security.authentication_managers.UserAuthorizationManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -31,6 +32,9 @@ public class SecurityConfig {
     private final QuizAuthorizationManager quizAuthorizationManager;
     private final UserAuthorizationManager userAuthorizationManager;
     private final PasswordResetAuthorizationManager passwordResetAuthorizationManager;
+
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthFilter,
@@ -75,7 +79,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // TODO: Add other allowed origins as needed
+        configuration.setAllowedOrigins(List.of(allowedOrigins));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "HEAD", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

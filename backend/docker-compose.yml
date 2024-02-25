@@ -1,11 +1,11 @@
 services:
   postgres:
-    container_name: postgres-wsi
+    container_name: postgres-wsi-dev
     image: postgres:16.0
     environment:
       POSTGRES_DB: whosaidit-db
-      POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
     networks:
@@ -14,16 +14,21 @@ services:
 
   backend:
     build: .
-    container_name: whosaidit-backend
+    container_name: whosaidit-backend-dev
     image: whosaidit-backend:latest
     ports:
       - "8080:8080"
     depends_on:
       - postgres
     environment:
+      SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/whosaidit-db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password
+      WHOSAIDIT_JWT_SECRET: U1iW4FxEf7ctHOXH3wxQNxgnqmdh4/AhqGPO7bXdZpA= # This secret is for development purposes only.
+
+      # If developers want to test email functionality, they must set this environment variable to a valid SendGrid API key
+      SENDGRID_API_KEY: dummyValue
     networks:
       - webapp
 

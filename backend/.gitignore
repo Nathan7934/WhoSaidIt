@@ -34,3 +34,6 @@ build/
 
 ### demo data ###
 /src/main/resources/demoGroupChat.txt
+
+### Docker Compose ENV ###
+.env

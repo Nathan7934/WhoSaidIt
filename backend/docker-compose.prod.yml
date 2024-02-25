@@ -1,0 +1,41 @@
+services:
+  postgres:
+    container_name: postgres-wsi-prod
+    image: postgres:16.0
+    environment:
+      POSTGRES_DB: whosaidit-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+        - prod_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - webapp
+    restart: unless-stopped
+
+  backend:
+    build: .
+    container_name: whosaidit-backend-prod
+    image: whosaidit-backend:latest
+    ports:
+      - "80:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/whosaidit-db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      WHOSAIDIT_JWT_SECRET: ${WHOSAIDIT_JWT_SECRET}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+    networks:
+      - webapp
+
+volumes:
+  prod_postgres_data:
+    driver: local
+
+networks:
+  webapp:
+    driver: bridge
