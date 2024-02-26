@@ -11,8 +11,11 @@ jobs:
     runs-on: [self-hosted, backend]
 
     steps:
+    - name: Stop current Docker containers
+      run: docker-compose -f ./backend/docker-compose.prod.yml down
+
     - name: Delete old Docker image
-      run: docker rmi nathan7934/whosaidit-backend:latest || true
+      run: docker rmi -f nathan7934/whosaidit-backend || true
 
     - name: Login to Dockerhub
       uses: docker/login-action@v3
@@ -32,10 +35,6 @@ jobs:
     - name: Create .env file
       run: |
         echo "${{ secrets.BACKEND_ENV_VARS }}" > ./backend/.env
-
-    # Cycle the docker containers
-    - name: Stop current Docker containers
-      run: docker-compose -f ./backend/docker-compose.prod.yml down
 
     - name: Start new Docker containers
       run: docker-compose -f ./backend/docker-compose.prod.yml up -d

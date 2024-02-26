@@ -15,7 +15,7 @@ jobs:
       run: docker rm -f whosaidit-frontend-container || true
 
     - name: Delete old Docker image
-      run: docker rmi nathan7934/whosaidit-frontend:latest || true
+      run: docker rmi -f nathan7934/whosaidit-frontend || true
 
     - name: Login to Dockerhub
       uses: docker/login-action@v3
