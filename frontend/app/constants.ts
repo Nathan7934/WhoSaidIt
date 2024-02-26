@@ -5,7 +5,7 @@ export const EXTERNAL_API_ROOT: string = `${process.env.NEXT_PUBLIC_EXTERNAL_API
 export const INTERNAL_API_ROOT: string = "/api";
 
 // Stores the domain URL:
-export const NEXT_PUBLIC_DOMAIN_URL: string = `${process.env.NEXT_PUBLIC_DOMAIN_URL}`;
+export const DOMAIN_URL: string = `${process.env.NEXT_PUBLIC_DOMAIN_URL}`;
 
 // How long the user must hold on a message to select it in mobile layout (ms)
 export const MOBILE_HOLD_DURATION = 400;
