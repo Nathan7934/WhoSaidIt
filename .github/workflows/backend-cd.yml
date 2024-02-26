@@ -11,6 +11,9 @@ jobs:
     runs-on: [self-hosted, backend]
 
     steps:
+    - name: Delete old Docker image
+      run: docker rmi nathan7934/whosaidit-backend:latest || true
+
     - name: Login to Dockerhub
       uses: docker/login-action@v3
       with:

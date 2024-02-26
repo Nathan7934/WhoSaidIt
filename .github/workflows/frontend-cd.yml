@@ -11,6 +11,12 @@ jobs:
     runs-on: [self-hosted, frontend]
 
     steps:
+    - name: Delete old Docker container
+      run: docker rm -f whosaidit-frontend-container || true
+
+    - name: Delete old Docker image
+      run: docker rmi nathan7934/whosaidit-frontend:latest || true
+
     - name: Login to Dockerhub
       uses: docker/login-action@v3
       with:
@@ -20,8 +26,5 @@ jobs:
     - name: Pull the Docker image
       run: docker pull nathan7934/whosaidit-frontend:latest
 
-    - name: Delete old Docker container
-      run: docker rm -f whosaidit-frontend-container || true
-
     - name: Run new Docker container
-      run: docker run -d -p 80:3000 --name whosaidit-frontend-container nathan7934/whosaidit-frontend
+      run: docker run -d -p 80:3000 --name whosaidit-frontend-container nathan7934/whosaidit-frontend:latest
