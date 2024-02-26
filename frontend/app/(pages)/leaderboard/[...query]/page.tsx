@@ -44,7 +44,7 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
     const [expandedEntry, setExpandedEntry] = useState<number>(-1); // -1 means no entry is expanded
 
     // Adjust the height of the page content area
-    useAdjustContentHeight(".navbar", ".page-content");
+    useAdjustContentHeight(".navbar", ".page-content", [loading]);
 
     // ----------- Data Retrieval ---------
     useEffect(() => {

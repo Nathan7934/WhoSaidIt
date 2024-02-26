@@ -85,7 +85,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
 
     // Adjust the height of the page content area
-    useAdjustContentHeight(".navbar", ".page-content");
+    useAdjustContentHeight(".navbar", ".page-content", [stableDataLoading, messagesLoading]);
 
     // ----------- Data Retrieval ---------
 

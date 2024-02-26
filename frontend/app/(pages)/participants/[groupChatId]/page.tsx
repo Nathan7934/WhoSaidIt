@@ -58,7 +58,7 @@ export default function Participants({ params }: { params: { groupChatId: string
     const nameInputRef = useRef<HTMLInputElement>(null);
 
     // Adjust the height of the page content area
-    useAdjustContentHeight(".navbar", ".page-content");
+    useAdjustContentHeight(".navbar", ".page-content", [loading]);
 
     // ----------- Data Retrieval ---------
     useEffect(() => {

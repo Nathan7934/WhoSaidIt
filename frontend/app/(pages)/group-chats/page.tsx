@@ -30,7 +30,7 @@ export default function ManageGroupChats() {
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
     // Adjust the height of the page content area
-    useAdjustContentHeight(".navbar", ".page-content");
+    useAdjustContentHeight(".navbar", ".page-content", [loading]);
 
     // ----------- Data Retrieval ---------
     useEffect(() => {

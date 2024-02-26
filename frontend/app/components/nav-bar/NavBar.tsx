@@ -344,16 +344,16 @@ export default function NavBar() {
                         </div>
                     </div>
                 </div>
-                <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-6 items-center mt-2 text-gray-6 underline font-light
-                decoration-1 decoration-gray-6/50 underline-offset-4 noselect text-sm">
-                    <a className="transition duration-200 hover:text-gray-11 hover:decoration-gray-11/50 cursor-pointer"
+                <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-6 items-center mt-2 underline font-light
+                decoration-1 decoration-zinc-700/50 underline-offset-4 noselect text-sm">
+                    <a className="transition duration-200 cursor-pointer text-zinc-600"
                     href="https://github.com/Nathan7934/WhoSaidIt" target="_blank">
                         GitHub
                     </a>
-                    <a className="transition duration-200 hover:text-gray-11 hover:decoration-gray-11/50 cursor-pointer">
+                    <a className="transition duration-200 cursor-pointer text-zinc-600">
                         License
                     </a>
-                    <a className="transition duration-200 hover:text-gray-11 hover:decoration-gray-11/50 cursor-pointer"
+                    <a className="transition duration-200 cursor-pointer text-zinc-600"
                     onClick={() => toggleModal("delete-account-modal")}>
                         Delete Account
                     </a>

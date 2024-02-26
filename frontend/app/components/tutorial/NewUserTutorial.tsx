@@ -370,7 +370,7 @@ export default function NewUserTutorial({ userName } : { userName: string }) {
     );
 
     return (
-        <div className="relative w-[98%] max-h-[650px] md:w-[80%] lg:w-[70%] xl:w-[50%] 2xl:w-[40%] 3xl:w-[30%] mt-5 mb-3 mx-auto
+        <div className="grow relative w-[98%] max-h-[650px] md:w-[80%] lg:w-[70%] xl:w-[50%] 2xl:w-[40%] 3xl:w-[30%] mx-auto my-auto
         bg-[#050507] pt-4 pb-8 rounded-xl border border-zinc-800 overflow-y-scroll">
             <Swiper className="h-full" onSlideChange={(swiper) => setIndex(swiper.activeIndex)}>
                 {tutorialSlides}

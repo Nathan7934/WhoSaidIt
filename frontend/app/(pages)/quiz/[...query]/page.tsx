@@ -101,7 +101,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const incorrectAudioRef = useRef<HTMLAudioElement>(new Audio("/incorrect.mp3"));
 
     // Adjust the height of the page content area
-    useAdjustContentHeight(".navbar", ".page-content");
+    useAdjustContentHeight(".navbar", ".page-content", [staticDataLoading]);
 
     // ----- Data Retrieval/Authentication & Initial animation triggers -----
     useEffect(() => {
@@ -750,8 +750,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     }
 
     return (<>
-        <div className="navbar h-0 w-full" /> {/* Unrendered navbar ref for useAdjustContentHeight */}
-        <main className="page-content flex flex-col items-center justify-center overflow-hidden
+        <div className="navbar h-0 p-0 w-full" /> {/* Unrendered navbar ref for useAdjustContentHeight */}
+        <main className="page-content flex flex-col items-center justify-center overflow-x-hidden overflow-y-scroll
         bg-gradient-to-b from-black via-zinc-950 to-black">
             {renderContent}
         </main>

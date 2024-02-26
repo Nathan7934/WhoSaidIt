@@ -67,7 +67,7 @@ export default function PreviewQuiz({ setQuizComplete }: PreviewQuizProps) {
                 Can you guess who said this quote?
             </div>
             <div className="p-[1px] rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-                <div className="w-full rounded-xl bg-black py-6 px-3 text-xl font-medium text-zinc-300">
+                <div className="w-full rounded-xl bg-black py-6 px-3 text-lg font-medium text-zinc-300">
                     "I know very little about acting,<br/>I'm just an incredibly gifted faker."
                 </div>
             </div>

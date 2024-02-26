@@ -51,7 +51,7 @@ export default function Dashboard() {
     const [leaderboardAnimationStatus, setLeaderboardAnimationStatus] = useState<LeaderboardAnimationStatus | null>(null);
 
     // Adjust the height of the page content area
-    useAdjustContentHeight(".navbar", ".page-content");
+    useAdjustContentHeight(".navbar", ".page-content", [loading]);
 
     // ----------- Data Retrieval ---------
     useEffect(() => {
@@ -363,8 +363,8 @@ export default function Dashboard() {
     // If the user has no group chats, show the new user tutorial
     if (groupChats.length === 0) {
         return (<>
-            <div className="w-full h-navbar" /> {/* Navbar spacer */}
-            <main className="flex flex-col justify-center md:justify-start md:mt-8 h-content overflow-y-scroll">
+            <div className="navbar h-navbar w-full" /> {/* Navbar spacer */}
+            <main className="page-content flex flex-col items-center justify-center overflow-y-scroll py-2">
                 <NewUserTutorial userName={activeUser.username} />
             </main>
         </>);
