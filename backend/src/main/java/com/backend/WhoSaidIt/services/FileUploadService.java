@@ -73,14 +73,18 @@ public class FileUploadService {
     private static String[] parseLine(String line, int minCharacters) {
         // Pattern A: "MM/DD/YY, HH:MM AM/PM - Sender Name: Message Content"
         Pattern a = Pattern.compile("^\\d{1,2}/\\d{1,2}/\\d{1,2}, \\d{1,2}:\\d{1,2}[ \\u202F](AM|PM) - .*:.*$");
-        // Pattern B (older export version): "[MM/DD/YY, HH:MM:SS AM/PM] Sender Name: Message Content"
+        // Pattern B: "[MM/DD/YY, HH:MM:SS AM/PM] Sender Name: Message Content"
         Pattern b = Pattern.compile("^\\[\\d{1,2}/\\d{1,2}/\\d{1,2}, \\d{1,2}:\\d{1,2}:\\d{1,2} (AM|PM)] .*: .*$");
+        // Pattern C: "[YYYY-MM-DD, HH:MM:SS AM/PM] Sender Name: Message Content"
+        Pattern c = Pattern.compile("^\\[\\d{4}-\\d{1,2}-\\d{1,2}, \\d{1,2}:\\d{1,2}:\\d{1,2} (AM|PM)] .*: .*$");
 
         String[] parsedLine;
         if (a.matcher(line).matches()) {
             parsedLine = parsePatternA(line);
         } else if (b.matcher(line).matches()) {
             parsedLine = parsePatternB(line);
+        } else if (c.matcher(line).matches()) {
+            parsedLine = parsePatternC(line);
         } else {
             return null;
         }
@@ -95,7 +99,7 @@ public class FileUploadService {
         int dateEndIndex = -1;
         for (int i = 0; i < line.length(); i++) {
             if (line.charAt(i) == '-' && dateEndIndex == -1) {
-                parsedLine[DATE_INDEX] = line.substring(0, i - 1);
+                parsedLine[DATE_INDEX] = "A:" + line.substring(0, i - 1);
                 dateEndIndex = i + 2;
             } else if (line.charAt(i) == ':' && dateEndIndex != -1) {
                 parsedLine[SENDER_INDEX] = line.substring(dateEndIndex, i);
@@ -106,14 +110,14 @@ public class FileUploadService {
         return parsedLine;
     }
 
-    // Pattern B (older export version): "[MM/DD/YY, HH:MM:SS AM/PM] Sender Name: Message Content"
+    // Pattern B: "[MM/DD/YY, HH:MM:SS AM/PM] Sender Name: Message Content"
     private static String[] parsePatternB(String line) {
         String[] parsedLine = new String[3];
         int dateEndIndex = -1;
         for (int i = 0; i < line.length(); i++) {
             if (line.charAt(i) == ']' && dateEndIndex == -1) {
-                // We exclude the seconds from the older version of the date string
-                parsedLine[DATE_INDEX] = line.substring(1, i - 6) + line.substring(i - 3, i);
+                // We exclude the seconds
+                parsedLine[DATE_INDEX] = "B:" + line.substring(1, i - 6) + line.substring(i - 3, i);
                 dateEndIndex = i + 2;
             } else if (line.charAt(i) == ':' && dateEndIndex != -1) {
                 parsedLine[SENDER_INDEX] = line.substring(dateEndIndex, i);
@@ -124,10 +128,23 @@ public class FileUploadService {
         return parsedLine;
     }
 
-    // Converts a date string of the form "MM/DD/YYYY, HH:MM AM/PM" to a LocalDateTime object
+    // Pattern C: "[YYYY-MM-DD, HH:MM:SS AM/PM] Sender Name: Message Content"
+    private static String[] parsePatternC(String line) {
+        String[] parsedLine = parsePatternB(line);
+        parsedLine[DATE_INDEX] = "C:" + parsedLine[DATE_INDEX].substring(2);
+        return parsedLine;
+    }
+
+    // Converts a date string of the form "MM/DD/YY, HH:MM AM/PM" to a LocalDateTime object
     private static LocalDateTime convertDateString(String dateStr) {
-        String nnbsFixed = dateStr.replace('\u202F', ' ');
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy, h:mm a", Locale.US);
+        String dateForm = dateStr.substring(0, 2);
+        String nnbsFixed = dateStr.substring(2).replace('\u202F', ' ');
+        DateTimeFormatter formatter;
+        if (dateForm.equals("C:")) {
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd, h:mm a", Locale.US);
+        } else {
+            formatter = DateTimeFormatter.ofPattern("M/d/yy, h:mm a", Locale.US);
+        }
         return LocalDateTime.parse(nnbsFixed, formatter);
     }
 
