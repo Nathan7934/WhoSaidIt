@@ -97,7 +97,7 @@ export default function ChangeEmailSubmenu() {
     return (
         <div className="flex flex-col absolute w-full px-5 mt-12">
             <div className="flex flex-col items-center mb-12">
-                <h1 className="text-3xl font-semibold">Change Email Address</h1>
+                <h1 className="text-3xl font-semibold text-center">Change Email</h1>
                 <p className="text-sm mt-2 text-center">Your email is only used in case of password reset</p>
             </div>
             <form className="form-group gap-1" onSubmit={submitEmailChangeForm}>

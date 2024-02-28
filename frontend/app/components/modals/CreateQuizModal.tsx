@@ -287,7 +287,7 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
         );
     } else {
         modalContent = (<>
-            <div className="text-zinc-600 mr-1 mb-1 mt-1 w-full text-center font-medium">
+            <div className="text-zinc-400 mr-1 mb-1 mt-1 w-full text-center font-medium">
                 Create a new quiz for:
             </div>
             <div className="text-2xl font-semibold w-full text-center">
@@ -309,16 +309,16 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
                     ${quizType === SURVIVAL ? " animate-quizTypeSelectionEntering" : " animate-quizTypeSelectionExiting"}`} />
                 </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col gap-2">
                 <div>
                     <label className="form-label mb-1">Quiz Name</label>
                     <input name="quizName" placeholder="Enter name" value={quizName} onChange={handleInputChange}
-                    className="input w-full max-w-none border-[1px] bg-black border-zinc-800 placeholder-zinc-600"/>
+                    className="input w-full max-w-none border-[1px] bg-black border-zinc-800 placeholder-zinc-600 focus:border-blue-500"/>
                 </div>
                 <div className="sm:grow">
                     <label className="form-label mb-1">Description</label>
                     <input name="quizDescription" placeholder="(Max 200 Chars)" value={description} onChange={handleInputChange}
-                    className="input w-full max-w-none border-[1px] bg-black border-zinc-800 placeholder-zinc-600" />
+                    className="input w-full max-w-none border-[1px] bg-black border-zinc-800 placeholder-zinc-600 focus:border-blue-500" />
                 </div>
             </div>
             <div className="flex w-full mt-2">
@@ -329,10 +329,10 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
             </div>
             {renderAdvancedOptions()}
             <div className="flex gap-2 w-full mt-5 justify-center">
-                <button className="hidden sm:inline-block grow btn max-w-[200px]" onClick={() => toggleModal(modalDomId)}>
+                <button className="hidden sm:inline-block grow btn bg-black border border-zinc-800 max-w-[200px]" onClick={() => toggleModal(modalDomId)}>
                     Cancel
                 </button>
-                <button className="grow btn btn-lg bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 font-normal" 
+                <button className="grow btn btn-lg sm:btn-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 font-normal" 
                 onClick={() => createQuiz()}>
                     Create Quiz
                 </button>

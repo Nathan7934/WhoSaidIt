@@ -32,6 +32,7 @@ import DeleteAccountModal from "../modals/DeleteAccountModal";
 import useNavBar from "@/app/hooks/context_imports/useNavBar";
 import useGetActiveUser from "@/app/hooks/api_access/user/useGetActiveUser";
 import useHandleLogout from "@/app/hooks/security/useHandleLogout";
+import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -65,6 +66,9 @@ export default function NavBar() {
 
     const [loggingOut, setLoggingOut] = useState<boolean>(false);
     const [logoutResponseStatus, setLogoutResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
+
+    // Adjust the height of the page content area
+    useAdjustContentHeight(".navbar", ".page-content", [loading, navBarState]);
 
     // ----------- Determine if rendered -----------
     // We do not want the Navbar to render on certain pages. As of now, '/quiz' is the only page where the Navbar should not render.
@@ -454,7 +458,7 @@ export default function NavBar() {
         {/* Navbar Header */}
         <div className={`fixed flex top-0 left-0 right-0 h-navbar items-center bg-zinc-950 border-b border-gray-5 z-50
         shadow-[0_0px_15px_5px_rgba(0,0,0,0.8)]`}>
-            <div className="hidden md:inline-block ml-8 text-3xl font-semibold">
+            <div className="hidden md:inline-block ml-8 text-3xl font-semibold noselect">
                 WhoSaidIt
             </div>
             <div className={`h-full flex items-center w-[70px] md:w-[70px] md:ml-auto md:pl-[5px] md:border-l border-gray-5

@@ -510,7 +510,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                                 }
                             }
                         }}>
-                            {participant.name} {isCorrect ? "(*)" : ""} {/* TODO: Remove correct answer indicator for production */}
+                            {participant.name}
                         </button>
                     </div>
                 );
@@ -553,10 +553,10 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 message = currentMessage;
             }
             return (
-                <div className={`absolute p-[1px] left-0 top-0 m-[-1px] w-full h-[320px] sm:h-[350px] rounded-xl bg-gradient-to-r overflow-hidden
+                <div className={`absolute p-[1px] left-0 top-0 m-[-1px] w-full h-full rounded-xl bg-gradient-to-r overflow-hidden
                 ${!isNext ? gameState === "QUESTION_STARTING" ? getCardAnimClass() : "" : ""}
                 ${isTimeAttack(quizInfo) ? " from-blue-500 via-blue-400 to-blue-500" : " from-purple-500 via-pink-500 to-purple-500"}`}>
-                    <div className={`w-full flex h-[318px] sm:h-[348px] bg-zinc-950 rounded-xl px-3 ${isTimeAttack(quizInfo) ? "pt-5 pb-8" : "py-5"}`}>
+                    <div className={`w-full h-full flex bg-zinc-950 rounded-xl px-3 ${isTimeAttack(quizInfo) ? "pt-5 pb-8" : "py-5"}`}>
                         <div className="grow px-2 w-full h-full text-xl font-medium overflow-y-scroll overflow-x-hidden">
                             {applyTextMarkup(message.content)}
                         </div>
@@ -571,18 +571,20 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         }
 
         renderContent = (
-            <div className={`flex flex-col items-center min-w-[270px] w-[90%] max-w-[500px] animate__animated
+            <div className={`flex flex-col h-full items-center py-4 min-w-[270px] w-[90%] max-w-[500px] animate__animated
             ${pageState === "QUIZ_ENDING" ? " animate__fadeOut" : " animate__fadeIn animate__duration-500ms"}`}>
-                <AnimatedScoreCounter type={isTimeAttack(quizInfo) ? "score" : "streak"} score={score} scoreGained={scoreGained} 
-                delay={isTimeAttack(quizInfo) ? 1000 : 2000} duration={800} isAnimated={isTimeAttack(quizInfo)} />
-                <div className={`relative w-full h-[320px] sm:h-[350px] mt-4 mb-4 sm:my-6 bg-zinc-950 rounded-xl border 
+                <div className="mt-auto">
+                    <AnimatedScoreCounter type={isTimeAttack(quizInfo) ? "score" : "streak"} score={score} scoreGained={scoreGained} 
+                    delay={isTimeAttack(quizInfo) ? 1000 : 2000} duration={800} isAnimated={isTimeAttack(quizInfo)} />
+                </div>
+                <div className={`relative w-full grow max-h-[400px] mt-4 mb-4 sm:my-6 bg-zinc-950 rounded-xl border 
                 ${isTimeAttack(quizInfo) ? " border-blue-500" : " border-purple-500"}`}>
                     {/* We render the next message underneath the current message */}
                     {renderQuestionCard(true)}
                     {/* Current message */}
                     {renderQuestionCard(false)}
                 </div>
-                <div className="flex flex-col w-full">
+                <div className="flex flex-col w-full mb-auto">
                     {renderParticipantOptions()}
                 </div>
             </div>

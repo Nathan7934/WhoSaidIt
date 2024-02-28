@@ -192,8 +192,8 @@ export default function Participants({ params }: { params: { groupChatId: string
     const renderParticipantRows = () => {
         return participants.map((participant: Participant, index: number) => {
             return (
-                <div className="my-[6px] drop-shadow-md p-[1px] rounded-md bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
-                    <div key={index} className={`flex items-center justify-between w-full py-4 sm:py-3 px-3 
+                <div key={index} className="my-[6px] drop-shadow-md p-[1px] rounded-md bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
+                    <div className={`flex items-center justify-between w-full py-4 sm:py-3 px-3 
                     rounded-md bg-black`}>
                         <div className="flex items-center">
                             {renderParticipantEditableName(participant)}
@@ -201,7 +201,7 @@ export default function Participants({ params }: { params: { groupChatId: string
                         <div className="flex items-center">
                             <Link href={`/messages/${groupChatId}/nfq/${participant.id}`} 
                             className="group flex items-center hover:cursor-pointer">
-                                <div className="ml-1 w-7 text-right text-sm text-zinc-400 font-light 
+                                <div className="ml-1 w-12 text-right text-sm text-zinc-400 font-light 
                                 transition duration-400 ease-in-out sm:group-hover:text-gray-10">
                                     ({participant.numberOfMessages})
                                 </div>
@@ -313,7 +313,7 @@ export default function Participants({ params }: { params: { groupChatId: string
         const blurbHeight = blurbRef.current?.clientHeight || 0;
         const remainingStaticHeight = 182 + 24 + NAVBAR_HEIGHT; // 182px for the static content, 24px for margins
         const maxHeight = window.innerHeight - titleHeight - blurbHeight - remainingStaticHeight;
-        setListMaxHeight(`${Math.min(600, maxHeight)}px`);
+        setListMaxHeight(`${Math.min(700, maxHeight)}px`);
     }
 
     // =============== MAIN RENDER =================
@@ -331,10 +331,8 @@ export default function Participants({ params }: { params: { groupChatId: string
                         Here you can see the participants of a group chat, edit their names, view messages they've sent, or delete them and all their messages
                         from the group chat.
                     </div>
-                    <div className="p-[1px] rounded-t-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
-                        <div className="w-full py-2 bg-black text-lg rounded-t-md text-center">
-                            Manage Participants
-                        </div>
+                    <div className="w-full py-2 bg-black border border-zinc-700 text-lg rounded-t-md text-center">
+                        Manage Participants
                     </div>
                     {loading 
                         ? <div className={`skeleton w-full h-[350px]`} />
@@ -342,16 +340,13 @@ export default function Participants({ params }: { params: { groupChatId: string
                             {renderParticipantRows()}
                         </div>
                     }
-                    <div className="p-[1px] mb-3 rounded-b-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
-                        <div className="w-full py-[6px] bg-black rounded-b-md border border-zinc-800 text-center text-sm" >
-                            Total: 
-                            {loading 
-                                ? <div className="relative top-[1px] inline-block skeleton ml-1 w-5 h-3 rounded-lg" /> 
-                                : <span> {participants.length}</span>
-                            }
-                        </div>
+                    <div className="w-full py-[6px] bg-black rounded-b-md border border-zinc-700 text-center text-sm" >
+                        Total: 
+                        {loading 
+                            ? <div className="relative top-[1px] inline-block skeleton ml-1 w-5 h-3 rounded-lg" /> 
+                            : <span> {participants.length}</span>
+                        }
                     </div>
-                    
                 </div>
             </div>
             {/* FIXED POSITION ELEMENTS */}

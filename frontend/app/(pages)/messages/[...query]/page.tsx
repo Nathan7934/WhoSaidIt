@@ -267,15 +267,13 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         });
 
         return (
-            <div className="w-full">
+            <div className="w-full noselect">
                 {/* Table header */}
-                <div className="p-[1px] rounded-md bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
-                    <div className="flex py-2 bg-zinc-950 rounded-md">
-                        <div className="flex-none hidden lg:inline-block w-[35px]"></div>
-                        <div className="flex-none hidden lg:inline-block w-[150px]">Sender</div>
-                        <div className="grow text-center lg:text-left">Message<span className="lg:hidden">s</span></div>
-                        <div className="flex-none hidden lg:inline-block w-[140px]">Timestamp</div>
-                    </div>
+                <div className="flex py-2 bg-zinc-950 border border-zinc-800 rounded-md noselect">
+                    <div className="flex-none hidden lg:inline-block w-[35px]"></div>
+                    <div className="flex-none hidden lg:inline-block w-[150px]">Sender</div>
+                    <div className="grow text-center lg:text-left">Message<span className="lg:hidden">s</span></div>
+                    <div className="flex-none hidden lg:inline-block w-[140px]">Timestamp</div>
                 </div>
                 {/* Table rows */}
                 {messages.length > 0 ? 
@@ -410,7 +408,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
     const renderQueryFilterControls = () => {
         return (
             <fieldset className="px-[6px] lg:px-3 pb-3 pt-1 border border-zinc-900 w-full rounded-lg lg:w-auto">
-                <legend className="text-zinc-300 ml-1">Filters</legend>
+                <legend className="text-zinc-300 ml-1 noselect">Filters</legend>
                 <div className="flex mx">
                     {renderParticipantFilterDropdown()}
                     <div className="self-center mx-[6px] lg:mx-2 text-lg text-zinc-600">
@@ -432,9 +430,9 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         
         if (isMobile) {
             const getSelectedParticipantName = () => {
-                if (filterParticipantId === null) return "All Messages";
+                if (filterParticipantId === null) return "Everyone";
                 const participant = participants.find(p => p.id === filterParticipantId);
-                return participant ? participant.name : "All Messages";
+                return participant ? participant.name : "Everyone";
             }
 
             return (
@@ -448,7 +446,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             <select className="select sm:w-48 pr-7 bg-zinc-950 border-zinc-700 border-[1px] text-ellipsis overflow-hidden
             transition duration-300 ease-in-out hover:border-zinc-400" 
             onChange={selectionChanged} defaultValue={participantId ? participantId : ""} >
-                <option value={""}>All Messages</option>
+                <option value={""}>Everyone</option>
                 {participants.map((participant: Participant) => {
                     return (
                         <option key={participant.id} value={participant.id}>
@@ -632,7 +630,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
         : (<>
             <button className="btn bg-blue-600 mx-6 mb-2"
             onClick={() => setFilterParticipantId(null)}>
-                All Messages
+                Everyone
             </button>
             <div className="w-full text-center text-sm text-gray-9 mb-2">
                 Or select a participant:
@@ -734,7 +732,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
             <div className="relative w-[97%] lg:w-[90%] xl:w-[80%] 2xl:w-[70%] 3xl:w-[50%] mt-5">
                 <div className="w-full p-2 mb-3 lg:p-8 bg-[#050507] rounded-xl border border-zinc-800 overflow-x-hidden">
                     <div className="flex mb-2">
-                        <div className="text-3xl mb-3 lg:mb-5 mt-4 lg:mt-0 mx-auto lg:mx-0 text-center lg:text-left font-semibold">
+                        <div className="text-3xl mb-3 lg:mb-5 mt-4 lg:mt-0 mx-auto lg:mx-0 text-center lg:text-left font-semibold noselect">
                             {stableDataLoading ? "..." : groupChatName}
                         </div>
                         {/* HTTP Response alert */}
@@ -745,7 +743,7 @@ export default function Messages({ params }: { params: { query: string[] }}) {
                         {/* Desktop selection action controls */}
                         {!isMobile &&
                             <fieldset className="ml-auto px-3 pb-3 pt-1 border border-zinc-900 rounded-lg ">
-                                <legend className={`text-zinc-400 transition duration-300 ease-in-out 
+                                <legend className={`text-zinc-400 transition duration-300 ease-in-out noselect
                                 ${selectedMessageIds.length === 0 ? "opacity-25" : ""}`}>
                                     Selection Actions
                                 </legend>

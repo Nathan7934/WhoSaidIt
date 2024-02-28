@@ -29,7 +29,7 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
     const [nameMissing, setNameMissing] = useState<boolean>(false);
     const [fileMissing, setFileMissing] = useState<boolean>(false);
-    const [helpHeight, setHelpHeight] = useState<Height>('auto');
+    const [helpHeight, setHelpHeight] = useState<Height>(0);
 
     // ----------- Data Helpers -----------
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +81,7 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
         } else {
             console.error("Error uploading group chat: ", error);
             setResponseStatus({
-                message: "Error uploading group chat",
+                message: error,
                 success: false,
                 doAnimate: true,
             });
@@ -117,10 +117,11 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
                         This field sets the minimum number of characters that a message must contain
                         in order for it to be imported. This is to prevent short messages like "okay" from being included.
                     </div>
-                    <div className="text-gray-11 mb-4">
+                    {/* Too verbose probably */}
+                    {/* <div className="text-gray-11 mb-4">
                         For example, if you set the minimum number of characters to 100, then only messages with 100 or more
                         characters will be included in the message set.
-                    </div>
+                    </div> */}
                     <div className="mb-1">
                         The default value is 100.
                     </div>
@@ -134,17 +135,17 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
     let subMenuContent: JSX.Element;
     if (responseStatus.doAnimate) {
         subMenuContent = (
-            <div className="absolute w-full top-[45%] translate-y-[-50%]">
+            <div className="absolute left-[50%] top-[45%] translate-x-[-50%] translate-y-[-50%]">
                 {renderModalResponseAlert(responseStatus)}
             </div>
         );
     } else if (uploading) {
         subMenuContent = (
-            <div className="absolute w-full top-[45%] translate-y-[-50%]">
-                <div className="mx-auto mb-1 text-lg sm:text-xl text-center text-zinc-200">
+            <div className="absolute left-[50%] top-[45%] translate-x-[-50%] translate-y-[-50%]">
+                <div className="mb-[6px] text-lg font-medium sm:text-xl text-center text-zinc-200">
                         Upload in Progress.
                 </div>
-                <div className="mx-auto mb-3 text-lg sm:text-xl text-center text-zinc-200">
+                <div className="mb-4 text-lg font-light sm:text-xl text-center text-zinc-200 whitespace-nowrap">
                     This may take several minutes...
                 </div>
                 <div className="flex justify-center">
@@ -171,13 +172,13 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
                     </a>
                 </div>
                 <div className="mb-6 text-zinc-400 text-center">
-                    Make sure to select <span className="text-zinc-200 font-semibold">"Without Media"</span> when exporting your group chat.
+                    Select <span className="text-zinc-200 text-lg font-semibold">"Without Media"</span> when prompted.
                 </div>
-                <div className="sm:hidden mb-4 text-zinc-600 text-sm text-center">
+                {/* <div className="sm:hidden mb-4 text-zinc-600 text-sm text-center">
                     iPhone users may prefer to email their chat history to themselves and upload it using a PC.
-                </div>
+                </div> */}
             </AnimateHeight>
-            <div className="divider divider-horizontal my-0 text-sm text-zinc-500 font-medium" 
+            <div className="divider divider-horizontal my-0 text-sm text-zinc-500 font-medium hover:cursor-pointer noselect" 
             onClick={() => setHelpHeight(helpHeight === 0 ? 'auto' : 0)}>
                 {helpHeight === 0 ? "Show" : "Hide"} Help
             </div>
@@ -199,7 +200,7 @@ export default function GroupChatUploadSubmenu({ userId }: GroupChatUploadSubmen
                     </div>
                 </div>
             </div>
-            <div className="flex flex-wrap justify-center">
+            <div className="flex flex-wrap justify-center pb-10">
                 <div className="flex grow bg-white mb-3 rounded-[13px] bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
                     <input className={`input-file m-[1px] grow max-w-none  border-none bg-black`} 
                     type="file" accept=".txt" onChange={handleFileChange} />

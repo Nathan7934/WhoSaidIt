@@ -98,8 +98,8 @@ export default function Login() {
                                 <a href="#">Remember me</a>
                             </div>
                             <label className="form-label">
-                                <Link href="/recover" className="link link-underline-hover text-sm font-semibold
-                                text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                                <Link href="/recover" className="text-sm font-semibold transition-colors duration-200 ease-in-out
+                                text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 sm:hover:text-zinc-300">
                                     Forgot your password?
                                 </Link>
                             </label>
@@ -107,10 +107,10 @@ export default function Login() {
                     </div>
                     <div className="form-field pt-5">
                         <div className="form-control justify-between">
-                            <button type="submit" className={`btn w-full 
-                            ${loginLoading ? " btn-outline border-zinc-800 bg-black" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
+                            <button type="submit" className={`w-full h-[40px] font-medium rounded-xl
+                            ${loginLoading ? "border border-zinc-700 bg-black" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
                                 {loginLoading ? 
-                                    <div className="spinner-dot-pulse">
+                                    <div className="spinner-dot-pulse mx-auto">
                                         <div className="spinner-pulse-dot"></div>
                                     </div> 
                                     : "Sign In"
@@ -120,8 +120,8 @@ export default function Login() {
                     </div>
                     <div className="form-field">
                         <div className="form-control justify-center">
-                            <Link href="/register" className="link link-underline-hover text-sm font-semibold
-                            text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                            <Link href="/register" className="text-sm font-semibold transition-colors duration-200 ease-in-out
+                                text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 sm:hover:text-zinc-300">
                                 Don't have an account yet? Sign up.
                             </Link>
                         </div>

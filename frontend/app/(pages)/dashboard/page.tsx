@@ -124,7 +124,7 @@ export default function Dashboard() {
                     <div className="sm:flex sm:flex-grow sm:items-end justify-center lg:justify-start">
                         <button className="btn mr-2 w-full sm:w-auto bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600
                         text-lg sm:text-base font-medium"
-                        onClick={() => toggleModal("create-quiz-modal")}>
+                        onClick={() => toggleModal("create-quiz-modal-focus")}>
                             Create New Quiz
                         </button>
                         <div className="flex items-end">
@@ -383,7 +383,7 @@ export default function Dashboard() {
             {/* FIXED POSITION ELEMENTS */}
             {focusedGroupChat && 
                 <CreateQuizModal groupChatId={focusedGroupChat.id} groupChatName={focusedGroupChat.groupChatName} 
-                modalDomId="create-quiz-modal" setReloadCounter={setRefetchDataCounter} />
+                modalDomId="create-quiz-modal-focus" setReloadCounter={setRefetchDataCounter} />
             }
         </main>
     </>)

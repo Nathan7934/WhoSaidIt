@@ -180,7 +180,7 @@ export default function GroupChatInfoRow({ groupChat, isDeleting, setReloadCount
                     <div className="sm:flex sm:flex-grow sm:items-end justify-center sm:justify-start mt-8 sm:mt-3">
                         <button className="btn mr-2 w-full sm:w-auto bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600
                         text-lg sm:text-base font-medium"
-                        onClick={() => toggleModal("create-quiz-modal")}>
+                        onClick={() => toggleModal(`create-quiz-modal-${groupChat.id}`)}>
                             Create New Quiz
                         </button>
                         <div className="flex items-end">

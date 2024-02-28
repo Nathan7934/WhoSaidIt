@@ -222,7 +222,7 @@ export default function MessageRow({ message, isMobile, selectedMessageIds, setS
 
     if (isMobile) { // Mobile layout
         return (
-            <div ref={mobileDOMref} className={`flex flex-col relative px-1 py-2 overflow-hidden 
+            <div ref={mobileDOMref} className={`flex flex-col relative px-1 py-2 overflow-hidden noselect
             transition-colors duration-100 ${selectedMessageIds.includes(message.id) ? "bg-blue-500/10" : ""}`}>
                 {/* div for hold wave effect */}
                 <div ref={holdWaveDOMref} className="absolute w-[0%] translate-x-[-50%] translate-y-[-50%] 

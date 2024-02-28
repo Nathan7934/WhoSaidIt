@@ -111,7 +111,7 @@ export default function Register() {
                                 <UserSmallIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
                                 Username
                             </div>
-                            {!usernameValid && <span className="form-label-alt text-zinc-500">Must be at least 4 characters</span>}
+                            {!usernameValid && <span className="form-label-alt text-zinc-400">Must be at least 4 characters</span>}
                         </label>
                         {/* Username input field */}
                         <input placeholder="Type here" name="username" value={registerUsername} onChange={handleRegisterChange}
@@ -124,7 +124,7 @@ export default function Register() {
                                 <EmailIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[1px]" />
                                 Email Address
                             </div>
-                            {!emailValid && <span className="form-label-alt text-zinc-500">Must be a valid email</span>}
+                            {!emailValid && <span className="form-label-alt text-zinc-400">Must be a valid email</span>}
                         </label>
                         {/* Email input field */}
                         <input placeholder="Type here" type="email" name="email" value={registerEmail} onChange={handleRegisterChange}
@@ -137,7 +137,7 @@ export default function Register() {
                                 <PasswordIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
                                 Password
                             </div>
-                            {passwordValidMessage && <span className="form-label-alt text-zinc-500">{passwordValidMessage}</span>}
+                            {passwordValidMessage && <span className="form-label-alt text-zinc-400">{passwordValidMessage}</span>}
                         </label>
                         <div className="form-control">
                             {/* Password input field */}
@@ -152,7 +152,7 @@ export default function Register() {
                                 <PasswordIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
                                 Confirm Password
                             </div>
-                            {!confirmPasswordValid && <span className="form-label-alt text-zinc-500">Passwords must match</span>}
+                            {!confirmPasswordValid && <span className="form-label-alt text-zinc-400">Passwords must match</span>}
                         </label>
                         <div className="form-control">
                             {/* Confirm Password input field */}
@@ -162,11 +162,11 @@ export default function Register() {
                         </div>
                     </div>
                     <div className="form-field pt-5">
-                        <div className="form-control justify-between">
-                            <button type="submit" className={`btn w-full 
-                            ${registerLoading ? " btn-outline bg-black" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
+                    <div className="form-control justify-between">
+                            <button type="submit" className={`w-full h-[40px] font-medium rounded-xl
+                            ${registerLoading ? "border border-zinc-700 bg-black" : " bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"}`}>
                                 {registerLoading ? 
-                                    <div className="spinner-dot-pulse">
+                                    <div className="spinner-dot-pulse mx-auto">
                                         <div className="spinner-pulse-dot"></div>
                                     </div> 
                                     : "Register"
@@ -176,8 +176,8 @@ export default function Register() {
                     </div>
                     <div className="form-field">
                         <div className="form-control justify-center">
-                            <Link href="/login" className="link link-underline-hover text-blue-500 text-sm font-semibold
-                            text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                            <Link href="/login" className="text-sm font-semibold transition-colors duration-200 ease-in-out
+                                text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 sm:hover:text-zinc-300">
                                 Already have an account? Sign in.
                             </Link>
                         </div>
