@@ -74,9 +74,9 @@ public class FileUploadService {
         // Pattern A: "MM/DD/YY, HH:MM AM/PM - Sender Name: Message Content"
         Pattern a = Pattern.compile("^\\d{1,2}/\\d{1,2}/\\d{1,2}, \\d{1,2}:\\d{1,2}[ \\u202F](AM|PM) - .*:.*$");
         // Pattern B: "[MM/DD/YY, HH:MM:SS AM/PM] Sender Name: Message Content"
-        Pattern b = Pattern.compile("^\\[\\d{1,2}/\\d{1,2}/\\d{1,2}, \\d{1,2}:\\d{1,2}:\\d{1,2} (AM|PM)] .*: .*$");
+        Pattern b = Pattern.compile("^\\[\\d{1,2}/\\d{1,2}/\\d{1,2}, \\d{1,2}:\\d{1,2}:\\d{1,2}[ \\u202F](AM|PM)] .*: .*$");
         // Pattern C: "[YYYY-MM-DD, HH:MM:SS AM/PM] Sender Name: Message Content"
-        Pattern c = Pattern.compile("^\\[\\d{4}-\\d{1,2}-\\d{1,2}, \\d{1,2}:\\d{1,2}:\\d{1,2} (AM|PM)] .*: .*$");
+        Pattern c = Pattern.compile("^\\[\\d{4}-\\d{1,2}-\\d{1,2}, \\d{1,2}:\\d{1,2}:\\d{1,2}[ \\u202F](AM|PM)] .*: .*$");
 
         String[] parsedLine;
         if (a.matcher(line).matches()) {
