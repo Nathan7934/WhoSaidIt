@@ -217,7 +217,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         let potentialParticipants: Array<Participant> = quizInfo.participants.filter(p => p.id !== currentSender.id);
         const options = [currentSender];
         const numOptions = isTimeAttack(quizInfo) ? 4 : 3;
-        while (options.length < Math.min(numOptions, potentialParticipants.length)) {
+        while (options.length < Math.min(numOptions, quizInfo.participants.length)) {
             const randomParticipant = potentialParticipants[Math.floor(Math.random() * potentialParticipants.length)];
             potentialParticipants = potentialParticipants.filter(p => p.id !== randomParticipant.id);
             options.push(randomParticipant);
