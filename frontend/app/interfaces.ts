@@ -109,6 +109,7 @@ export interface QuizLeaderboardInfo {
 // Post request interfaces
 export interface PostLeaderboardEntry {
     playerName: string;
+    playerUUID: string;
 }
 
 export interface PostTimeAttackEntry extends PostLeaderboardEntry {

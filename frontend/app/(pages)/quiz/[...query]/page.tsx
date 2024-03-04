@@ -4,19 +4,23 @@ import useValidateUrlToken from "@/app/hooks/security/useValidateUrlToken";
 import useAuth from "@/app/hooks/context_imports/useAuth";
 
 import { SurvivalQuizInfo, TimeAttackQuizInfo, Message, Participant, ResponseStatus, 
-    PostTimeAttackEntry, PostSurvivalEntry } from "@/app/interfaces";
+    PostTimeAttackEntry, PostSurvivalEntry, TimeAttackEntry, SurvivalEntry } from "@/app/interfaces";
 import AnimatedScoreCounter from "@/app/components/AnimatedScoreCounter";
 import Modal from "@/app/components/modals/Modal";
 import { toggleModal, isModalOpen, applyTextMarkup, renderModalResponseAlert, 
-    playSoundEffect, executeEventSequence } from "@/app/utilities/miscFunctions";
+    playSoundEffect, executeEventSequence, isTimeAttackEntry } from "@/app/utilities/miscFunctions";
 
 import useGetQuizInfo from "@/app/hooks/api_access/quizzes/useGetQuizInfo";
 import useGetRandomQuizMessage from "@/app/hooks/api_access/messages/useGetRandomQuizMessage";
 import usePostLeaderboardEntry from "@/app/hooks/api_access/leaderboards/usePostLeaderboardEntry";
 import useAdjustContentHeight from "@/app/hooks/useAdjustContentHeight";
+import useGetPastPlayerLeaderboardEntry from "@/app/hooks/api_access/leaderboards/useGetPastPlayerLeaderboardEntry";
+import usePatchLeaderboardEntry from "@/app/hooks/api_access/leaderboards/usePatchLeaderboardEntry";
 
 import AnimateHeight from "react-animate-height";
 import { Height } from "react-animate-height";
+import {v4 as uuidv4} from "uuid";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useReducer, useRef } from "react";
@@ -56,6 +60,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const getQuizInfo = useGetQuizInfo();
     const getRandomQuizMessage = useGetRandomQuizMessage();
     const postLeaderboardEntry = usePostLeaderboardEntry();
+    const getPastPlayerLeaderboardEntry = useGetPastPlayerLeaderboardEntry();
+    const patchLeaderboardEntry = usePatchLeaderboardEntry();
 
     // Security
     const { auth } = useAuth();
@@ -69,6 +75,8 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const [nextMessage, setNextMessage] = useState<Message | null>(null);
     const [seenMessageIds, setSeenMessageIds] = useState<Array<number>>([]); // Prevent repeats
     const [playerName, setPlayerName] = useState<string>(""); // The name of the player (for submitting to the leaderboard)
+    const [playerUUID, setPlayerUUID] = useState<string | null>(null); // The UUID of the player (for updating previous leaderboard submissions)
+    const [previousLeaderboardEntry, setPreviousLeaderboardEntry] = useState<TimeAttackEntry | SurvivalEntry | null>(null); // The player's previous leaderboard entry [if any]
     const [scoreSubmitted, setScoreSubmitted] = useState<boolean>(false); // Whether the score has been submitted to the leaderboard
 
     // ----------- State (Game) -----------
@@ -82,6 +90,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     // ----------- State (UI) -------------
     const [staticDataLoading, setStaticDataLoading] = useState<boolean>(true);
     const [submitting, setSubmitting] = useState<boolean>(false); // Whether the score is being submitted to the leaderboard
+    const [noResubmit, setNoResubmit] = useState<boolean>(false); // Whether the user has decided not to update their previous leaderboard entry
     // The response status of the leaderboard submission
     const [responseStatus, setResponseStatus] = useState<ResponseStatus>({ message: "", success: false, doAnimate: false });
 
@@ -139,6 +148,19 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 console.error("Error retrieving data, redirecting to root");
                 router.push("/");
             }
+
+            // See if the player has a UUID in local storage, if not, create one and store it
+            let uuid: string | null = localStorage.getItem("quizPlayerUUID");
+            if (uuid) {
+                // If there is a UUID, retrieve the player's previous leaderboard entry (if any)
+                const entry: TimeAttackEntry | SurvivalEntry | null = await getPastPlayerLeaderboardEntry(quizId, uuid, shareableToken || undefined);
+                if (entry) setPreviousLeaderboardEntry(entry);
+            } else {
+                uuid = uuidv4(); // Generate a new one
+                localStorage.setItem("quizPlayerUUID", uuid);
+            }
+            setPlayerUUID(uuid);
+
             setStaticDataLoading(false);
             
             // Begin the intro splash timing sequence
@@ -172,24 +194,43 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         }
     }
 
-    const submitLeaderboardEntry = async () => {
-        if (!quizInfo || !totalTimeTaken || playerName === "") return;
+    const submitLeaderboardEntry = async (isUpdate: boolean = false) => {
+        if (!quizInfo || !totalTimeTaken || (!isUpdate && playerName === "") || !playerUUID) {
+            console.error("Error submitting leaderboard entry: Missing required data");
+            return;
+        }
+        if (isUpdate && !previousLeaderboardEntry) {
+            console.error("Error submitting leaderboard entry: No previous entry found");
+            return;
+        }
         setSubmitting(true);
+
+        // Build the request object
         let postRequest: PostTimeAttackEntry | PostSurvivalEntry;
         if (isTimeAttack(quizInfo)) {
             postRequest = {
-                playerName: playerName,
+                playerName: (isUpdate && previousLeaderboardEntry) ? previousLeaderboardEntry.playerName : playerName,
                 score: score,
                 timeTaken: totalTimeTaken,
+                playerUUID: playerUUID
             };
         } else {
             postRequest = {
-                playerName: playerName,
+                playerName: (isUpdate && previousLeaderboardEntry) ? previousLeaderboardEntry.playerName : playerName,
                 streak: score,
                 skipsUsed: skipsUsed,
+                playerUUID: playerUUID
             };
         }
-        const error: string | null = await postLeaderboardEntry(quizId, postRequest, shareableToken || undefined);
+
+        // Make the API request
+        let error: string | null;
+        if (isUpdate && previousLeaderboardEntry) {
+            error = await patchLeaderboardEntry(quizId, previousLeaderboardEntry.id, postRequest, shareableToken || undefined);
+        } else {
+            error = await postLeaderboardEntry(quizId, postRequest, shareableToken || undefined);
+        }
+
         if (!error) {
             setResponseStatus({ message: "Entry submitted!", success: true, doAnimate: true });
             setScoreSubmitted(true);
@@ -198,14 +239,14 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             setResponseStatus({ message: error, success: false, doAnimate: true });
         }
 
-        // Display the response message for 3 seconds, then close the modal
+        // Display the response message for 1.5 seconds, then close the modal
         setTimeout(() => {
             if (isModalOpen("leaderboard-submit-modal")) {
                 toggleModal("leaderboard-submit-modal");
             }
             setSubmitting(false);
             setResponseStatus({ message: "", success: false, doAnimate: false });
-        }, 3000);
+        }, 1500);
     }
 
     // Gets a random selection of 4 or 3 (depending on type) participants to choose from, including the correct participant.
@@ -639,16 +680,42 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     {renderModalResponseAlert(responseStatus, true)}
                 </>);
             } else if (submitting) {
-                modalContent = (
-                    <div className="mb-8 mt-1 sm:my-12">
-                        <div className="mx-auto mb-3 text-2xl text-center">
+                modalContent = (<>
+                    <div className="mt-[-12px]" />
+                    <div className="mb-6 mt-4 sm:mb-12 sm:mt-10">
+                        <div className="mx-auto mb-2 text-xl text-center">
                                 Submitting...
                         </div>
                         <div className="flex justify-center">
                             <div className="spinner-circle w-12 h-12 sm:w-14 sm:h-14" />
                         </div>
                     </div>
-                );
+                </>);
+            } else if (previousLeaderboardEntry && !noResubmit) {
+                modalContent = (<>
+                    <div className="w-full mt-3 text-center text-2xl font-semibold">
+                        Update previous entry?
+                    </div>
+                    <div className="w-full text-center text-lg mt-3 text-zinc-300 font-light">
+                        You had a {isTimeAttack(quizInfo) ? "score" : "streak"} of: 
+                        <span className="ml-2 text-white font-medium">
+                            {isTimeAttackEntry(previousLeaderboardEntry) ? previousLeaderboardEntry.score : previousLeaderboardEntry.streak}
+                        </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-6 mb-5 mx-7">
+                        <button className="grow btn btn-lg bg-black border border-zinc-900 text-zinc-400 font-light"
+                        onClick={() => setNoResubmit(true)}>
+                            No Thanks
+                        </button>
+                        <button className={`grow btn btn-lg bg-gradient-to-r font-semibold
+                        ${isTimeAttack(quizInfo)
+                            ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100"
+                            : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100"}`}
+                        onClick={() => submitLeaderboardEntry(true)}>
+                            Update
+                        </button>
+                    </div>
+                </>);
             } else {
                 modalContent = (<>
                     <div className={`w-full mt-2 text-center text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r
@@ -730,7 +797,10 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                             ${isTimeAttack(quizInfo)
                                 ? " from-blue-500 from-0% via-blue-400 to-blue-500 to-100% text-indigo-100"
                                 : " from-purple-500 from-0% via-pink-500 to-purple-500 to-100% text-purple-100"}`}
-                            onClick={() => { toggleModal("leaderboard-submit-modal") }}>
+                            onClick={() => { 
+                                setNoResubmit(false);
+                                toggleModal("leaderboard-submit-modal");
+                            }}>
                                 Submit
                             </button>
                         }
