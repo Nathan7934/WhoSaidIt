@@ -13,8 +13,8 @@ const SURVIVAL: number = 1;
 
 const DEFAULT_NUM_QUESTIONS: number = 20;
 const DEFAULT_INITIAL_QUESTION_SCORE: number = 500;
-const DEFAULT_PENALTY_PER_SECOND: number = 50;
-const DEFAULT_WRONG_ANSWER_PENALTY: number = 200;
+const DEFAULT_PENALTY_PER_SECOND: number = 25;
+const DEFAULT_WRONG_ANSWER_PENALTY: number = 100;
 const DEFAULT_NUMBER_OF_SKIPS: number = 3;
 
 interface CreateQuizModalProps {

@@ -111,12 +111,15 @@ export default function Register() {
                                 <UserSmallIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
                                 Username
                             </div>
-                            {!usernameValid && <span className="form-label-alt text-zinc-400">Must be at least 4 characters</span>}
+                            {!usernameValid && 
+                                <span className={`form-label-alt ${submitFailed ? "text-pink-400" : " text-zinc-400"}`}>
+                                    Must be at least 4 characters
+                                </span>
+                            }
                         </label>
                         {/* Username input field */}
                         <input placeholder="Type here" name="username" value={registerUsername} onChange={handleRegisterChange}
-                        className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
-                        ${!usernameValid && submitFailed ? " input-error" : ""}`}/>
+                        className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600`}/>
                     </div>
                     <div className="form-field gap-1">
                         <label className="form-label">
@@ -124,12 +127,15 @@ export default function Register() {
                                 <EmailIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[1px]" />
                                 Email Address
                             </div>
-                            {!emailValid && <span className="form-label-alt text-zinc-400">Must be a valid email</span>}
+                            {!emailValid && 
+                                <span className={`form-label-alt ${submitFailed ? "text-pink-400" : " text-zinc-400"}`}>
+                                    Must be a valid email
+                                </span>
+                            }
                         </label>
                         {/* Email input field */}
                         <input placeholder="Type here" type="email" name="email" value={registerEmail} onChange={handleRegisterChange}
-                        className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
-                        ${!emailValid && submitFailed ? " input-error" : ""}`}/>
+                        className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600`}/>
                     </div>
                     <div className="form-field mt-5 gap-1">
                         <label className="form-label">
@@ -137,13 +143,16 @@ export default function Register() {
                                 <PasswordIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
                                 Password
                             </div>
-                            {passwordValidMessage && <span className="form-label-alt text-zinc-400">{passwordValidMessage}</span>}
+                            {passwordValidMessage && 
+                                <span className={`form-label-alt ${submitFailed ? "text-pink-400" : " text-zinc-400"}`}>
+                                    {passwordValidMessage}
+                                </span>
+                            }
                         </label>
                         <div className="form-control">
                             {/* Password input field */}
                             <input placeholder="Type here" type="password"  name="password" value={registerPassword} onChange={handleRegisterChange}
-                            className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
-                            ${passwordValidMessage && submitFailed ? " input-error" : ""}`}/>
+                            className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600`}/>
                         </div>
                     </div>
                     <div className="form-field gap-1">
@@ -152,13 +161,16 @@ export default function Register() {
                                 <PasswordIcon className="w-[18px] h-[18px] mr-[6px] relative bottom-[2px]" />
                                 Confirm Password
                             </div>
-                            {!confirmPasswordValid && <span className="form-label-alt text-zinc-400">Passwords must match</span>}
+                            {!confirmPasswordValid && 
+                                <span className={`form-label-alt ${submitFailed ? "text-pink-400" : " text-zinc-400"}`}>
+                                    Passwords must match
+                                </span>
+                            }
                         </label>
                         <div className="form-control">
                             {/* Confirm Password input field */}
                             <input placeholder="Type here" type="password" name="confirmPassword" value={registerConfirmPassword} onChange={handleRegisterChange}
-                            className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600
-                            ${!confirmPasswordValid && submitFailed ? " input-error" : ""}`}/>
+                            className={`input max-w-full focus:border-blue-500 border-[1px] bg-black border-zinc-700 placeholder-zinc-600`}/>
                         </div>
                     </div>
                     <div className="form-field pt-5">

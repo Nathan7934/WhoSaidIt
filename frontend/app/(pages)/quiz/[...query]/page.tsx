@@ -9,6 +9,8 @@ import AnimatedScoreCounter from "@/app/components/AnimatedScoreCounter";
 import Modal from "@/app/components/modals/Modal";
 import { toggleModal, isModalOpen, applyTextMarkup, renderModalResponseAlert, 
     playSoundEffect, executeEventSequence, isTimeAttackEntry } from "@/app/utilities/miscFunctions";
+import VolumeOnIcon from "@/app/components/icons/VolumeOnIcon";
+import VolumeOffIcon from "@/app/components/icons/VolumeOffIcon";
 
 import useGetQuizInfo from "@/app/hooks/api_access/quizzes/useGetQuizInfo";
 import useGetRandomQuizMessage from "@/app/hooks/api_access/messages/useGetRandomQuizMessage";
@@ -91,6 +93,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
     const [playerUUID, setPlayerUUID] = useState<string | null>(null); // The UUID of the player (for updating previous leaderboard submissions)
     const [previousLeaderboardEntry, setPreviousLeaderboardEntry] = useState<TimeAttackEntry | SurvivalEntry | null>(null); // The player's previous leaderboard entry [if any]
     const [scoreSubmitted, setScoreSubmitted] = useState<boolean>(false); // Whether the score has been submitted to the leaderboard
+    const [playSFX, setPlaySFX] = useState<boolean>(true); // Whether sound effects are enabled [default: true]
 
     // ----------- State (Game) -----------
     const [score, setScore] = useState<number>(0); // For Survival Quizzes, this state records the streak instead.
@@ -173,6 +176,14 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 localStorage.setItem("quizPlayerUUID", uuid);
             }
             setPlayerUUID(uuid);
+
+            // See if the player has a stored preference for playing SFX in local storage
+            let sfxPref: string | null = localStorage.getItem("quizSFX");
+            if (!sfxPref) {
+                localStorage.setItem("quizSFX", "true");
+                sfxPref = "true";
+            }
+            setPlaySFX(sfxPref === "true");
 
             setStaticDataLoading(false);
             
@@ -373,8 +384,10 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     setScore(score + 1);
                 }
 
-                if (navigator.vibrate) navigator.vibrate(200); // Vibrate on correct answer (if supported by the device)
-                playSoundEffect(correctAudioRef);
+                if (playSFX) {
+                    if (navigator.vibrate) navigator.vibrate(100); // Vibrate on correct answer (if supported by the device)
+                    playSoundEffect(correctAudioRef);
+                }
 
                 setTimeout(() => {
                     if (isTimeAttack(quizInfo) && questionNumber >= quizInfo.numberOfQuestions) {
@@ -393,8 +406,10 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                     setScore(score - wrongAnswerPenalty);
                 }
 
-                if (navigator.vibrate) navigator.vibrate(400); // Vibrate on incorrect answer (if supported by the device)
-                playSoundEffect(incorrectAudioRef);
+                if (playSFX) {
+                    if (navigator.vibrate) navigator.vibrate(400); // Vibrate on incorrect answer (if supported by the device)
+                    playSoundEffect(incorrectAudioRef);
+                }
 
                 setTimeout(() => {
                     if (!isTimeAttack(quizInfo) || questionNumber >= quizInfo.numberOfQuestions) {
@@ -463,7 +478,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         ${isTimeAttack(quizInfo) ? " text-blue-300" : " text-pink-400"}`}>
                             Description
                         </label>
-                        <div className="w-fullpx-3 mb-4 text-center text-sm">
+                        <div className="w-full px-3 mb-4 text-center text-sm">
                             {quizInfo.description}
                         </div>
                     </>)}
@@ -519,8 +534,15 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         <button className={`mt-3 py-[10px] w-[280px] sm:w-[350px] rounded-xl font-semibold bg-zinc-950 border
                         ${isTimeAttack(quizInfo) ? " border-blue-400" : " border-pink-400"}`}
                         onClick={() => { toggleModal("quiz-details-modal") }}>
-                            Details
+                            Quiz Info
                         </button>
+                        <div className="fixed bottom-5 mt-3 px-[6px] py-[5px] rounded-lg bg-black cursor-pointer border border-zinc-900"
+                        onClick={() => {
+                            localStorage.setItem("quizSFX", (!playSFX).toString());
+                            setPlaySFX(!playSFX);
+                        }}>
+                            {playSFX ? <VolumeOnIcon className="w-6 h-6 text-zinc-700" /> : <VolumeOffIcon className="w-6 h-6 text-zinc-700" />}
+                        </div>
                     </div>
                 </AnimateHeight>
             </div>
