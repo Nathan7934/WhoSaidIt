@@ -17,8 +17,13 @@ import com.backend.WhoSaidIt.repositories.QuizRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class LeaderboardService {
@@ -59,6 +64,18 @@ public class LeaderboardService {
         return entry.toDTO();
     }
 
+    // This is used to determine if a player has already submitted a score for a quiz on their device/browser.
+    // UUIDs are generated client-side and are stored in localstorage. We return the most recent entry for a given UUID.
+    // Player UUIDs are only used for this purpose and are not tied to any user account.
+    public Optional<LeaderboardEntryDTO> getLeaderboardEntryByUUID(long quizId, UUID playerUUID) {
+        List<LeaderboardEntry> playerEntries = leaderboardEntryRepository.findByQuizIdAndPlayerUUID(quizId, playerUUID);
+        if (playerEntries.isEmpty()) {
+            return Optional.empty();
+        }
+        // Return the most recent entry with the corresponding UUID
+        return Optional.of(playerEntries.stream().max(Comparator.comparing(LeaderboardEntry::getSubmissionDate)).get().toDTO());
+    }
+
     public TimeAttackEntryDTO createTimeAttackEntry(long quizId, LeaderboardController.TimeAttackEntryPostRequest taEntry) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
@@ -67,7 +84,7 @@ public class LeaderboardService {
         }
         double avgTimePerQuestion = taEntry.timeTaken() / (double) taQuiz.getNumberOfQuestions();
         TimeAttackEntry entry = new TimeAttackEntry(
-                quiz, taEntry.playerName(), taEntry.score(), taEntry.timeTaken(), avgTimePerQuestion
+                quiz, taEntry.playerName(), UUID.fromString(taEntry.playerUUID()), taEntry.score(), taEntry.timeTaken(), avgTimePerQuestion
         );
         return leaderboardEntryRepository.save(entry).toDTO();
     }
@@ -75,8 +92,46 @@ public class LeaderboardService {
     public SurvivalEntryDTO createSurvivalEntry(long quizId, LeaderboardController.SurvivalEntryPostRequest sEntry) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new DataNotFoundException("Quiz with id " + quizId + " not found."));
-        SurvivalEntry entry = new SurvivalEntry(quiz, sEntry.playerName(), sEntry.streak(), sEntry.skipsUsed());
+        SurvivalEntry entry = new SurvivalEntry(
+                quiz, sEntry.playerName(), UUID.fromString(sEntry.playerUUID()), sEntry.streak(), sEntry.skipsUsed()
+        );
         return leaderboardEntryRepository.save(entry).toDTO();
+    }
+
+    @Transactional
+    public void updateTimeAttackEntry(long quizId, long entryId, LeaderboardController.TimeAttackEntryPostRequest taEntry) {
+        LeaderboardEntry entry = leaderboardEntryRepository.findById(entryId).orElseThrow(
+                () -> new DataNotFoundException("Entry with id " + entryId + " not found.")
+        );
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(
+                () -> new DataNotFoundException("Quiz with id " + quizId + " not found.")
+        );
+        if (!(entry instanceof TimeAttackEntry taEntryToUpdate) || !(quiz instanceof TimeAttackQuiz taQuiz)) {
+            throw new IllegalStateException("Either the entry or the quiz has an invalid type.");
+        }
+
+        double avgTimePerQuestion = taEntry.timeTaken() / (double) taQuiz.getNumberOfQuestions();
+        taEntryToUpdate.setSubmissionDate(LocalDateTime.now());
+        taEntryToUpdate.setScore(taEntry.score());
+        taEntryToUpdate.setTimeTaken(taEntry.timeTaken());
+        taEntryToUpdate.setAverageTimePerQuestion(avgTimePerQuestion);
+    }
+
+    @Transactional
+    public void updateSurvivalEntry(long quizId, long entryId, LeaderboardController.SurvivalEntryPostRequest sEntry) {
+        LeaderboardEntry entry = leaderboardEntryRepository.findById(entryId).orElseThrow(
+                () -> new DataNotFoundException("Entry with id " + entryId + " not found.")
+        );
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(
+                () -> new DataNotFoundException("Quiz with id " + quizId + " not found.")
+        );
+        if (!(entry instanceof SurvivalEntry sEntryToUpdate) || !(quiz instanceof SurvivalQuiz)) {
+            throw new IllegalStateException("Either the entry or the quiz has an invalid type.");
+        }
+
+        sEntryToUpdate.setSubmissionDate(LocalDateTime.now());
+        sEntryToUpdate.setStreak(sEntry.streak());
+        sEntryToUpdate.setSkipsUsed(sEntry.skipsUsed());
     }
 
     public void deleteLeaderboardEntry(long id) {

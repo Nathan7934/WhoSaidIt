@@ -6,6 +6,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
+import java.util.UUID;
+
 @Entity
 @DiscriminatorValue("SURVIVAL")
 public class SurvivalEntry extends LeaderboardEntry {
@@ -18,8 +20,8 @@ public class SurvivalEntry extends LeaderboardEntry {
 
     public SurvivalEntry() {}
 
-    public SurvivalEntry(Quiz quiz, String playerName, Integer streak, Integer skipsUsed) {
-        super(quiz, playerName);
+    public SurvivalEntry(Quiz quiz, String playerName, UUID playerUUID, Integer streak, Integer skipsUsed) {
+        super(quiz, playerName, playerUUID);
         this.streak = streak;
         this.skipsUsed = skipsUsed;
     }
@@ -27,6 +29,10 @@ public class SurvivalEntry extends LeaderboardEntry {
     public Integer getStreak() { return streak; }
 
     public Integer getSkipsUsed() { return skipsUsed; }
+
+    public void setStreak(Integer streak) { this.streak = streak; }
+
+    public void setSkipsUsed(Integer skipsUsed) { this.skipsUsed = skipsUsed; }
 
     public SurvivalEntryDTO toDTO() {
         return new SurvivalEntryDTO(

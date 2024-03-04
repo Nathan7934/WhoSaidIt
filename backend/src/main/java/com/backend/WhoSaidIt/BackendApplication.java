@@ -16,6 +16,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.UUID;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -89,59 +90,59 @@ public class BackendApplication {
 
 			// Adding demo leaderboard entries to quiz ID 4
 			LeaderboardController.TimeAttackEntryPostRequest taEntry1 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Joy Gibbs", 11324, 53.25);
+					"Joy Gibbs", 11324, 53.25, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(4L, taEntry1);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry2 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Bobby Baxter", 9020, 60.01);
+					"Bobby Baxter", 9020, 60.01, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(4L, taEntry2);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry3 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Mr. Word", 8750, 47.33);
+					"Mr. Word", 8750, 47.33, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(4L, taEntry3);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry4 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Gravey", 8015, 71.12);
+					"Gravey", 8015, 71.12, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(4L, taEntry4);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry5 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Chuck Jones", 7500, 55.00);
+					"Chuck Jones", 7500, 55.00, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(4L, taEntry5);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry6 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"JareBear", 6235, 62.48);
+					"JareBear", 6235, 62.48, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(4L, taEntry6);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry7 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Mick Lyons", 5950, 49.95);
+					"Mick Lyons", 5950, 49.95, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(4L, taEntry7);
 
 			// Adding demo leaderboard entries to quiz ID 5
 			LeaderboardController.SurvivalEntryPostRequest sEntry1 = new LeaderboardController.SurvivalEntryPostRequest(
-					"Chuck Jones", 23, 0);
+					"Chuck Jones", 23, 0, UUID.randomUUID().toString());
 			leaderboardService.createSurvivalEntry(5L, sEntry1);
 			LeaderboardController.SurvivalEntryPostRequest sEntry2 = new LeaderboardController.SurvivalEntryPostRequest(
-					"Mr. Word", 21, 1);
+					"Mr. Word", 21, 1, UUID.randomUUID().toString());
 			leaderboardService.createSurvivalEntry(5L, sEntry2);
 			LeaderboardController.SurvivalEntryPostRequest sEntry3 = new LeaderboardController.SurvivalEntryPostRequest(
-					"Dwarman", 15, 0);
+					"Dwarman", 15, 0, UUID.randomUUID().toString());
 			leaderboardService.createSurvivalEntry(5L, sEntry3);
 			LeaderboardController.SurvivalEntryPostRequest sEntry4 = new LeaderboardController.SurvivalEntryPostRequest(
-					"Gravey", 14, 2);
+					"Gravey", 14, 2, UUID.randomUUID().toString());
 			leaderboardService.createSurvivalEntry(5L, sEntry4);
 			LeaderboardController.SurvivalEntryPostRequest sEntry5 = new LeaderboardController.SurvivalEntryPostRequest(
-					"Joy Gibbs", 12, 0);
+					"Joy Gibbs", 12, 0, UUID.randomUUID().toString());
 			leaderboardService.createSurvivalEntry(5L, sEntry5);
 			LeaderboardController.SurvivalEntryPostRequest sEntry6 = new LeaderboardController.SurvivalEntryPostRequest(
-					"Ceilester", 8, 3);
+					"Ceilester", 8, 3, UUID.randomUUID().toString());
 			leaderboardService.createSurvivalEntry(5L, sEntry6);
 
 			// Adding demo leaderboard entries to quiz ID 6
 			LeaderboardController.TimeAttackEntryPostRequest taEntry8 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Joy Gibbs", 16452, 85.10);
+					"Joy Gibbs", 16452, 85.10, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(6L, taEntry8);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry9 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Rob Robson", 14019, 90.01);
+					"Rob Robson", 14019, 90.01, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(6L, taEntry9);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry10 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Troy Grant", 13000, 80.33);
+					"Troy Grant", 13000, 80.33, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(6L, taEntry10);
 			LeaderboardController.TimeAttackEntryPostRequest taEntry11 = new LeaderboardController.TimeAttackEntryPostRequest(
-					"Whitney", 12215, 71.12);
+					"Whitney", 12215, 71.12, UUID.randomUUID().toString());
 			leaderboardService.createTimeAttackEntry(6L, taEntry11);
 		};
 	}

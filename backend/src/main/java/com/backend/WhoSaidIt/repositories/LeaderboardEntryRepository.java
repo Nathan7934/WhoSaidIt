@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface LeaderboardEntryRepository extends JpaRepository<LeaderboardEntry, Long> {
 
@@ -14,4 +15,6 @@ public interface LeaderboardEntryRepository extends JpaRepository<LeaderboardEnt
 
     @Query("SELECT e FROM SurvivalEntry e WHERE e.quiz.id = :quizId ORDER BY e.streak DESC, e.skipsUsed ASC")
     List<LeaderboardEntry> findSurvivalEntriesByQuizId(long quizId);
+
+    List<LeaderboardEntry> findByQuizIdAndPlayerUUID(long quizId, UUID playerUUID);
 }

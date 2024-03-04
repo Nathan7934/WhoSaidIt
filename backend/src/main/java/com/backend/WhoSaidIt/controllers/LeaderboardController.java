@@ -3,12 +3,15 @@ package com.backend.WhoSaidIt.controllers;
 import com.backend.WhoSaidIt.DTOs.leaderboard.LeaderboardEntryDTO;
 import com.backend.WhoSaidIt.DTOs.leaderboard.SurvivalEntryDTO;
 import com.backend.WhoSaidIt.DTOs.leaderboard.TimeAttackEntryDTO;
+import com.backend.WhoSaidIt.exceptions.DataNotFoundException;
 import com.backend.WhoSaidIt.services.LeaderboardService;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -37,6 +40,15 @@ public class LeaderboardController {
         return ResponseEntity.ok(leaderboardService.getGroupChatLeaderboards(groupChatId));
     }
 
+    @GetMapping("/quizzes/{quizId}/leaderboard/{playerUUID}")
+    public ResponseEntity<LeaderboardEntryDTO> getLeaderboardByPlayerUUID(
+            @PathVariable long quizId,
+            @PathVariable String playerUUID
+    ) {
+        Optional<LeaderboardEntryDTO> playerEntry = leaderboardService.getLeaderboardEntryByUUID(quizId, UUID.fromString(playerUUID));
+        return playerEntry.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/quizzes/{quizId}/leaderboard/time-attack")
     public ResponseEntity<TimeAttackEntryDTO> createTimeAttackEntry(
             @PathVariable long quizId,
@@ -51,6 +63,36 @@ public class LeaderboardController {
         return ResponseEntity.ok(leaderboardService.createSurvivalEntry(quizId, survivalEntry));
     }
 
+    @PatchMapping("/quizzes/{quizId}/leaderboard/{entryId}/time-attack")
+    public ResponseEntity<String> updateTimeAttackEntry(
+            @PathVariable long quizId,
+            @PathVariable long entryId,
+            @RequestBody TimeAttackEntryPostRequest taEntry) {
+        try {
+            leaderboardService.updateTimeAttackEntry(quizId, entryId, taEntry);
+            return ResponseEntity.ok("Time attack entry with id " + entryId + " updated.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/quizzes/{quizId}/leaderboard/{entryId}/survival")
+    public ResponseEntity<String> updateSurvivalEntry(
+            @PathVariable long quizId,
+            @PathVariable long entryId,
+            @RequestBody SurvivalEntryPostRequest sEntry) {
+        try {
+            leaderboardService.updateSurvivalEntry(quizId, entryId, sEntry);
+            return ResponseEntity.ok("Survival entry with id " + entryId + " updated.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/leaderboard/{entryId}")
     public ResponseEntity<String> deleteLeaderboardEntry(@PathVariable long entryId) {
         leaderboardService.deleteLeaderboardEntry(entryId);
@@ -60,12 +102,14 @@ public class LeaderboardController {
     public record TimeAttackEntryPostRequest(
             String playerName,
             Integer score,
-            Double timeTaken
+            Double timeTaken,
+            String playerUUID
     ) {}
 
     public record SurvivalEntryPostRequest(
             String playerName,
             Integer streak,
-            Integer skipsUsed
+            Integer skipsUsed,
+            String playerUUID
     ) {}
 }
