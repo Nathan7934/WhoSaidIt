@@ -276,7 +276,7 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
                 {renderLeaderboardEntries()}
                 {!loading && quiz &&
                 <div className="fixed bottom-0 sm:relative w-full flex bg-gradient-to-t from-black">
-                    <Link href={`/quiz/${quizId}${shareableToken ? `/${urlToken}` : ""}`} className="mx-auto mb-4">
+                    <Link href={`/quiz/${quizId}${shareableToken ? `/${urlToken}` : ""}/noa`} className="mx-auto mb-4">
                         <button className={`py-3 px-5 rounded-xl bg-black/90 border text-xl
                         text-blue-50 font-semibold backdrop-blur-sm ${isTimeAttackQuiz(quiz) ? " border-blue-400" : " border-purple-400"}`}>
                             Start New Attempt
@@ -285,7 +285,6 @@ export default function Leaderboard({ params }: { params: { query: string[]}}) {
                 </div>
             }
             </div>
-            
         </main>
     </>);
 }

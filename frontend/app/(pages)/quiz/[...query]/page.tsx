@@ -49,9 +49,22 @@ const isTimeAttack = (quizInfo: TimeAttackQuizInfo | SurvivalQuizInfo): quizInfo
 
 export default function Quiz({ params }: { params: { query: string[] } }) {
 
-    // Extracting the NextJS route query parameters "/quiz/{quizId}/{?urlToken}"
+    // Extracting the NextJS route query parameters "/quiz/{quizId}/{?urlToken}/{?noa}"
     const quizId = Number(params.query[0]);
-    const urlToken: string | null = params.query.length > 1 ? params.query[1] : null;
+    let urlToken: string | null = null;
+    let doAnimateIntro: boolean = true;
+    if (params.query.length === 2) {
+        if (params.query[1] === "noa") {
+            doAnimateIntro = false;
+        } else {
+            urlToken = params.query[1];
+        }
+    } else if (params.query.length > 2) {
+        urlToken = params.query[1];
+        if (params.query[2] === "noa") {
+            doAnimateIntro = false;
+        }
+    }
 
     // ----------- Hooks ------------------
     const router = useRouter();
@@ -164,14 +177,22 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
             setStaticDataLoading(false);
             
             // Begin the intro splash timing sequence
-            const introSplashSequence = [
-                { action: () => setIntroSplashTextEntering(["ENTERING", "WAITING"]), delay: 1800 },
-                { action: () => setIntroSplashTextEntering(["EXITING", "WAITING"]), delay: 2250 },
-                { action: () => setIntroSplashTextEntering(["WAITING", "ENTERING"]), delay: 500 },
-                { action: () => setIntroSplashTextEntering(["WAITING", "EXITING"]), delay: 2500},
-                { action: () => setLandingActionsHeight("auto"), delay: 500 },
-                { action: () => setLandingActionsVisible(true), delay: 500 }
-            ];
+            let introSplashSequence: Array<{ action: () => void, delay: number }>;
+            if (doAnimateIntro) {
+                introSplashSequence = [
+                    { action: () => setIntroSplashTextEntering(["ENTERING", "WAITING"]), delay: 1800 },
+                    { action: () => setIntroSplashTextEntering(["EXITING", "WAITING"]), delay: 2250 },
+                    { action: () => setIntroSplashTextEntering(["WAITING", "ENTERING"]), delay: 500 },
+                    { action: () => setIntroSplashTextEntering(["WAITING", "EXITING"]), delay: 2500},
+                    { action: () => setLandingActionsHeight("auto"), delay: 500 },
+                    { action: () => setLandingActionsVisible(true), delay: 500 }
+                ];
+            } else {
+                introSplashSequence = [
+                    { action: () => setLandingActionsHeight("auto"), delay: 1800 },
+                    { action: () => setLandingActionsVisible(true), delay: 500 }
+                ];
+            }
             executeEventSequence(introSplashSequence);
         }
         getPageData();

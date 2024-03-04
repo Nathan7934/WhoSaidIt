@@ -232,7 +232,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                     }}>
                         Copy Shareable Link
                     </button>
-                    <Link href={`/quiz/${quiz.id}`}>
+                    <Link href={`/quiz/${quiz.id}/noa`}>
                         <div className={`flex w-full mt-2 rounded-xl bg-gradient-to-r
                         ${isTimeAttackQuiz(quiz) ? " from-blue-500 via-blue-400 to-blue-500 text-blue-50" : " from-purple-400/75 via-pink-300/75 to-purple-400/75 text-pink-50"}`}>
                             <button className="btn grow m-[1px] text-lg bg-black font-medium">Play Quiz</button>
@@ -273,7 +273,7 @@ export default function QuizRow({groupChatId, quiz, setReloadCounter, dropdownPo
                 {renderQuizTypeBadge(quiz.type)}
             </div>
             <div className="row-span-2 justify-self-end self-center flex items-center">
-                <Link href={`/quiz/${quiz.id}`}>
+                <Link href={`/quiz/${quiz.id}/noa`}>
                     <button className="btn btn-outline border-[1px] border-zinc-700 btn-sm mr-3 whitespace-nowrap hidden sm:block">
                         Play Quiz
                     </button>
