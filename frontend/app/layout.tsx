@@ -11,6 +11,32 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
     title: 'WhoSaidIt',
     description: 'Quiz your friends and see who said it!',
+    icons: [
+        {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '16x16',
+            url: '/favicon/icon16.png'
+        },
+        {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '32x32',
+            url: '/favicon/icon32.png'
+        },
+        {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '64x64',
+            url: '/favicon/icon64.png'
+        },
+        {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '128x128',
+            url: '/favicon/icon128.png'
+        },
+    ]
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
