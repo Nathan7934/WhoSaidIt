@@ -165,18 +165,6 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 router.push("/");
             }
 
-            // See if the player has a UUID in local storage, if not, create one and store it
-            let uuid: string | null = localStorage.getItem("quizPlayerUUID");
-            if (uuid) {
-                // If there is a UUID, retrieve the player's previous leaderboard entry (if any)
-                const entry: TimeAttackEntry | SurvivalEntry | null = await getPastPlayerLeaderboardEntry(quizId, uuid, shareableToken || undefined);
-                if (entry) setPreviousLeaderboardEntry(entry);
-            } else {
-                uuid = uuidv4(); // Generate a new one
-                localStorage.setItem("quizPlayerUUID", uuid);
-            }
-            setPlayerUUID(uuid);
-
             // See if the player has a stored preference for playing SFX in local storage
             let sfxPref: string | null = localStorage.getItem("quizSFX");
             if (!sfxPref) {
@@ -208,6 +196,30 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
         }
         getPageData();
     }, []);
+
+    // Handles the generation/retrieval of the player's UUID and previous leaderboard entry (for updating)
+    // Runs on component mount and whenever a quiz is restarted after a score is submitted.
+    useEffect(() => {
+        const setUuidAndGetPreviousEntry = async () => {
+
+            if (scoreSubmitted) return;
+            // When scoreSubmitted changes from true to false, the player submitted a score and clicked "Play Again".
+            // This means they will have a new previous entry, and we need to update the state accordingly.
+
+            // See if the player has a UUID in local storage, if not, create one and store it
+            let uuid: string | null = localStorage.getItem("quizPlayerUUID");
+            if (uuid) {
+                // If there is a UUID, retrieve the player's previous leaderboard entry (if any)
+                const entry: TimeAttackEntry | SurvivalEntry | null = await getPastPlayerLeaderboardEntry(quizId, uuid, shareableToken || undefined);
+                if (entry) setPreviousLeaderboardEntry(entry);
+            } else {
+                uuid = uuidv4(); // Generate a new one
+                localStorage.setItem("quizPlayerUUID", uuid);
+            }
+            setPlayerUUID(uuid);
+        }
+        setUuidAndGetPreviousEntry();
+    }, [scoreSubmitted]);
 
     // ----- DATA HELPERS -----
 
@@ -736,7 +748,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                 </>);
             } else if (previousLeaderboardEntry && !noResubmit) {
                 modalContent = (<>
-                    <div className="w-full mt-3 text-center text-2xl font-semibold">
+                    <div className="w-full mt-5 text-center text-2xl font-semibold">
                         Update previous entry?
                     </div>
                     <div className="w-full text-center text-lg mt-3 text-zinc-300 font-light">
@@ -746,7 +758,7 @@ export default function Quiz({ params }: { params: { query: string[] } }) {
                         </span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 mt-6 mb-5 mx-7">
-                        <button className="grow btn btn-lg bg-black border border-zinc-900 text-zinc-400 font-light"
+                        <button className="grow btn btn-lg bg-black border border-zinc-900 text-zinc-400 font-light whitespace-nowrap"
                         onClick={() => setNoResubmit(true)}>
                             No Thanks
                         </button>

@@ -86,7 +86,7 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
             });
         }
 
-        // Display the response message for 3 seconds, then close the modal and re-fetch the data.
+        // Display the response message for 1.5 seconds, then close the modal and re-fetch the data.
         setTimeout(() => {
             if (isModalOpen(modalDomId)) {
                 toggleModal(modalDomId);
@@ -101,7 +101,7 @@ export default function CreateQuizModal({ groupChatId, groupChatName, modalDomId
                     setReloadCounter(c => c + 1) // Reload the parent page to display the new group chat after 0.5s.
                 }, 500);
             }
-        }, 3000);
+        }, 1500);
 
         setCreating(false);
     }
