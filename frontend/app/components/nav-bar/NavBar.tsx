@@ -354,7 +354,8 @@ export default function NavBar() {
                     href="https://github.com/Nathan7934/WhoSaidIt" target="_blank">
                         GitHub
                     </a>
-                    <a className="transition duration-200 cursor-pointer text-zinc-600">
+                    <a className="transition duration-200 cursor-pointer text-zinc-600"
+                    href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">
                         License
                     </a>
                     <a className="transition duration-200 cursor-pointer text-zinc-600"
