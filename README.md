@@ -7,11 +7,11 @@
 4. [About the Author](#about-the-author)
 5. [Development Instructions](#development-instructions)
 6. [Attribution](#attribution)
-7. [License](#license-gplv30)
+7. [License Disclaimer](#license-disclaimer)
 
 ## Overview
 
-**WhoSaidIt** is a web application centered around creating and sharing quizzes based on the messages sent in your WhatsApp group chats. Quizzes present the player with a message from the chat, where they must then determine *Who Said It*!
+**WhoSaidIt** is a web application where you can create and share quizzes drawn from the messages in your WhatsApp group chats. Quizzes present the player with a message from the chat, where they must then determine *Who Said It*! Compete against your friends for the high score!
 
 ### Features Include:
 
@@ -19,10 +19,10 @@
 - **Creating quizzes** of two varieties:
     - **Time Attack** - Players answer a set number of questions as quickly as possible to achieve the highest score. Faster answers yield greater rewards.
     - **Survival** - Players compete for the longest streak of consecutive correct answers. One wrong answer ends your run!
-- **Customizing quizzes** by altering parameters during quiz creation and selecting your favorite iconic messages from your friends using the **messages browser**.
+- **Customizing quizzes** by selecting your favorite iconic messages from your friends using the **messages browser**.
 - Generating **shareable links** that allow your friends to play your quiz, no account required!
 - Competing for **high scores** against your friends on the **shared leaderboard**.
-- A handcrafted, responsive interface that offers a seamless and rewarding user experience.
+- A handcrafted, responsively designed interface that offers a seamless and rewarding user experience.
 - And more...
 
 ## Deployed Application Links
@@ -42,11 +42,11 @@ The backend application is built using **[SpringBoot](https://spring.io/projects
 
 ## About the Author
 
-WhoSaidIt was developed by myself, **Nathan Raymant**. I am a University of Toronto graduate with an H.B.Sc. in Computational Cognitive Science, Computer Science, and Mathematics, with an undying passion for creating accessible, well-designed software. This application was developed with two fundamental goals in mind:
+WhoSaidIt was developed by **Nathan Raymant**, a University of Toronto graduate with an H.B.Sc. in Computational Cognitive Science, Computer Science, and Mathematics. With an undying passion for creating accessible, well-designed software, the application was developed with two fundamental goals in mind:
 
-1. To create a fun and engaging way for friends to laugh while reminiscing over their shared past, and to fascilitate lighthearted competition that reveals who knows their friends the best!
+1. To create a fun and engaging way for friends to laugh while reminiscing over their shared past, and to facilitate lighthearted competition that reveals who knows their friends the best!
 
-2. To improve my own skills as a developer by learning new frameworks and technologies, and to push my own personal limits as a designer and engineer by architecting a large scale application using a sensible and extensible methodology.
+2. To improve his skills as a developer by learning new frameworks and technologies, and to push his own personal limits as a designer and engineer by architecting a large scale application using a sensible and extensible methodology.
 
 #### Contact Information
 - Phone: +1 (313) 410 3667
@@ -54,7 +54,7 @@ WhoSaidIt was developed by myself, **Nathan Raymant**. I am a University of Toro
 
 ## Development Instructions
 
-Any enterprising developers are free to improve upon my original design, so long as they follow the conditions outlined in the license (GPLv3.0, see [LICENSE](https://github.com/Nathan7934/WhoSaidIt/blob/master/LICENSE)). This repository is open to pull request submissions, but you may also fork it.
+Any enterprising developers are free to improve upon the original design, so long as they follow the conditions outlined in the license (GPLv3.0, see [LICENSE](https://github.com/Nathan7934/WhoSaidIt/blob/master/LICENSE)). This repository is open to pull request submissions, but you may also fork it.
 
 #### To get started developing on your personal machine, you will need:
 - **[NodeJS](https://nodejs.org/en)** and **[NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)**
@@ -110,12 +110,16 @@ Finally, start the backend application using your IDE of choice, using `BackendA
 
 ## Attribution
 
-While the majority of WhoSaidIt was developed from the ground-up, some visual assets and lightweight animation libraries were used. They include:
+While the majority of WhoSaidIt was developed from the ground-up, some visual assets and lightweight animation libraries were used. They include (but are not limited to):
 
 - [Feather Icons](https://www.iconfinder.com/search/icons?family=feather) (Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/))
 - [Animate.css](https://animate.style/) (Licensed under [HL3](https://firstdonoharm.dev/))
 
-## License (GPLv3.0)
+For all packages used, see `package.json` in the `/frontend` directory.
+
+## License Disclaimer
+
+For the full terms and conditions, see [LICENSE](https://github.com/Nathan7934/WhoSaidIt/blob/master/LICENSE).
 
     WhoSaidIt - A quiz app for friends to test how well they know each other.
     Copyright (C) 2024  Nathan Christian Raymant
