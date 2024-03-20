@@ -1,8 +1,9 @@
-# WhoSaidIt
+<h1><span style="font-size: 40px">WhoSaidIt</span></h1>
 
 ### Table of Contents
 1. [Overview](#overview)
 2. [Deployed Application Links](#deployed-application-links)
+3. [Screenshots](#preview-screenshots)
 3. [Technology Stack](#technology-stack)
 4. [About the Author](#about-the-author)
 5. [Development Instructions](#development-instructions)
@@ -27,8 +28,32 @@
 
 ## Deployed Application Links
 
-### Main application: **[https://whosaidit.app](https://whosaidit.app)**
-Deployed backend API documentation: [https://api.whosaidit.app/api-docs](https://api.whosaidit.app/api-docs)
+<h3 style="margin-bottom: 20px; font-size: 22px; font-weight: 700;">
+    <a href="https://whosaidit.app" 
+    style="padding-left: 10px; padding-right: 10px; padding-bottom: 7px; padding-top: 3px; border: 1px solid; 
+    border-radius: 10px; background-color: black; color: #60a5fa; border-color: #60a5fa;">
+        https://whosaidit.app
+    </a>
+</h3>
+
+<h3 style="margin-bottom: 30px; font-size: 14px; font-weight: 400;">
+    <a href="https://api.whosaidit.app/api-docs" 
+    style="padding-left: 10px; padding-right: 10px; padding-bottom: 7px; padding-top: 4px; border: 1px solid; 
+    border-radius: 10px; background-color: black; color: #a78bfa; border-color: #a78bfa;">
+        Backend API documentation
+    </a>
+</h3>
+
+<!-- Deployed backend API documentation: [https://api.whosaidit.app/api-docs](https://api.whosaidit.app/api-docs) -->
+
+## Preview Screenshots
+<div style="display: flex; overflow-x: auto; white-space: nowrap; padding-bottom: 15px;">
+  <img src="./previews/image1.png" style="max-height: 650px; margin-right: 20px; border-radius: 10px;" alt="Preview 1"/>
+  <img src="./previews/image2.png" style="max-height: 650px; margin-right: 20px; border-radius: 10px;" alt="Preview 2"/>
+  <img src="./previews/image3.png" style="max-height: 650px; margin-right: 20px; border-radius: 10px;" alt="Preview 3"/>
+  <img src="./previews/image4.png" style="max-height: 650px; margin-right: 20px; border-radius: 10px;" alt="Preview 4"/>
+  <img src="./previews/image5.png" style="max-height: 650px; border-radius: 10px;" alt="Preview 5"/>
+</div>
 
 ## Technology Stack
 
