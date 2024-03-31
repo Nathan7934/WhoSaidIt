@@ -16,9 +16,9 @@ export default function App() {
                 // If we successfully refreshed (i.e. user has a stored refresh cookie), redirect to the dashboard
                 router.push("/dashboard");
             } else {
-                // If no token was returned or there was an error, redirect to the login page
+                // If no token was returned or there was an error, redirect to the landing page
                 console.log("No token returned or there was an error");
-                router.push("/login");
+                router.push("/landing");
             }
         }
         authRefresh();
