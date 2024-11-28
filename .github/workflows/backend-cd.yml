@@ -11,6 +11,11 @@ jobs:
     runs-on: [self-hosted, backend]
 
     steps:
+    # Check out the repository so we can access the docker-compose.prod.yml file
+    - uses: actions/checkout@v3
+      with:
+        ref: master
+    
     - name: Stop current Docker containers
       run: docker-compose -f ./backend/docker-compose.prod.yml down
 
@@ -25,11 +30,6 @@ jobs:
 
     - name: Pull the Docker image
       run: docker pull nathan7934/whosaidit-backend:latest
-
-    # Check out the repository so we can access the docker-compose.prod.yml file
-    - uses: actions/checkout@v3
-      with:
-        ref: master
 
     # Create a .env file with the necessary environment variables in the runner's workspace
     - name: Create .env file
